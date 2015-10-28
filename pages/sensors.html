@@ -224,68 +224,7 @@
     var ref = new Firebase("https://sunsspot.firebaseio.com/testObjects");
     var sensors = null;
     // Attach an asynchronous callback to read the data at our posts reference
-    ref.once("value", function(snapshot) {
-      sensors = snapshot.val();
-      createElements(sensors);
-    }, function (errorObject) {
-      console.log("The read failed: " + errorObject.code);
-    });
-
-    function createElements(sensors){
-
-      var addresses = Object.keys(sensors);
-
-      var addressArrayCounter = 0;
-      for(x in sensors){
-
-        var sensorElement = $("#sensorTemplate").clone();
-
-
-        $(sensorElement).attr('id', addresses[addressArrayCounter]);
-
-        $(sensorElement).find("#spot-name")[0].innerHTML = sensors[x].name;
-
-
-        var link =  $(sensorElement).find("#modalLink")[0];
-        $(link).data('name', sensors[x].name);
-        $(link).data('task', sensors[x].task);
-        $(link).data('address', addresses[addressArrayCounter]);
-
-
-
-
-        if(sensors[x].task == "idle"){ //sensor is idle
-
-          $("#idle-sensor-list").append(sensorElement);
-
-
-          sensorElement.removeClass('hidden');
-
-        }else if(sensors[x].task == "sm"){ //sensor is motion sensor
-
-          $("#motion-sensor-list").append(sensorElement);
-          sensorElement.removeClass('hidden');
-        }else if(sensors[x].task == "sl"){ //sensor is light sensor
-          console.log("light");
-
-          $("#light-sensor-list").append(sensorElement);
-          sensorElement.removeClass('hidden');
-        }else if(sensors[x].task == "st"){ //sensor is temp sensor
-          console.log("temp");
-
-          $("#temp-sensor-list").append(sensorElement);
-          sensorElement.removeClass('hidden');
-        }else { //sensor is zone sensor
-          console.log("SENSOR NOT: idle, temp, light or motion");
-
-          $("body").append(sensorElement);
-          sensorElement.removeClass('hidden');
-        }
-        addressArrayCounter++;
-
-      }
-
-    }
+  
 
     $(document).on("click", "#modalLink", function(){
       var name = $(this).data('name');
@@ -300,8 +239,8 @@
 
     });
 
-    function modalSubmit(){
-      console.log("submit clicked");
+  function modalSubmit(){
+    //  console.log("submit clicked");
       var address = document.getElementById('spotAddress').innerHTML;
       var newName = document.getElementById('name').value;
       var newTask = $('input[name="optradio"]:checked').val();
@@ -319,18 +258,17 @@
 
       updateRef.child(address).set({ name: newName, task: newTask});
 
-}
+  }
 
     var changedRef = new Firebase("https://sunsspot.firebaseio.com/testObjects");
 
     changedRef.on("child_changed", function(snapshot){
 
         var changedSensor = snapshot.val();
-        console.log("Sensor changed!");
-        console.log(snapshot.key());
-
-        console.log(changedSensor.name);
-        console.log(changedSensor)
+      //  console.log("Sensor changed!");
+        //  console.log(snapshot.key());
+        //  console.log(changedSensor.name);
+        //  console.log(changedSensor)
 
         var changedElement = $('#'+snapshot.key())[0]
 
@@ -346,7 +284,7 @@
         if(oldTask != changedSensor.task){
           if(changedSensor.task == "idle"){ //sensor is idle
 
-            $("#idle-sensor-list").appendTo(changedElement);
+            $("#idle-sensor-list").append(changedElement);
 
           }else if(changedSensor.task == "sm"){ //sensor is motion sensor
 
@@ -370,9 +308,51 @@
           }
         }
 
+    });
+
+    ref.on("child_added", function(snapshot){
+        console.log(snapshot.key());
+
+        newSensor = snapshot.val();
+
+        var sensorElement = $("#sensorTemplate").clone();
+
+        $(sensorElement).attr('id', snapshot.key());
+        $(sensorElement).find("#spot-name")[0].innerHTML = newSensor.name;
 
 
+        var link =  $(sensorElement).find("#modalLink")[0];
+        $(link).data('name', newSensor.name);
+        $(link).data('task', newSensor.task);
+        $(link).data('address', snapshot.key());
 
+        if(newSensor.task == "idle"){ //sensor is idle
+
+          $("#idle-sensor-list").append(sensorElement);
+
+
+          sensorElement.removeClass('hidden');
+
+        }else if(newSensor.task == "sm"){ //sensor is motion sensor
+
+          $("#motion-sensor-list").append(sensorElement);
+          sensorElement.removeClass('hidden');
+        }else if(newSensor.task == "sl"){ //sensor is light sensor
+        //  console.log("light");
+
+          $("#light-sensor-list").append(sensorElement);
+          sensorElement.removeClass('hidden');
+        }else if(newSensor.task == "st"){ //sensor is temp sensor
+        //  console.log("temp");
+
+          $("#temp-sensor-list").append(sensorElement);
+          sensorElement.removeClass('hidden');
+        }else { //sensor is zone sensor
+          console.log("SENSOR NOT: idle, temp, light or motion");
+
+          $("body").append(sensorElement);
+          sensorElement.removeClass('hidden');
+        }
     });
 
     </script>
