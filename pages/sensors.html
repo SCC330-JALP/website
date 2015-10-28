@@ -186,7 +186,7 @@
     <!-- /#wrapper -->
 
 
-    <div id="idleTemplate" class="col-xs-12 hidden">
+    <div id="sensorTemplate" class="col-xs-12 hidden">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <i class="fa fa-bar-chart-o fa-fw"></i>
@@ -234,10 +234,15 @@
     function createElements(sensors){
 
       var addresses = Object.keys(sensors);
+
       var addressArrayCounter = 0;
       for(x in sensors){
 
-        var sensorElement = $("#idleTemplate").clone();
+        var sensorElement = $("#sensorTemplate").clone();
+
+
+        $(sensorElement).attr('id', addresses[addressArrayCounter]);
+
         $(sensorElement).find("#spot-name")[0].innerHTML = sensors[x].name;
 
 
@@ -245,7 +250,7 @@
         $(link).data('name', sensors[x].name);
         $(link).data('task', sensors[x].task);
         $(link).data('address', addresses[addressArrayCounter]);
-        //$(link).data('address', sensors[x])
+
 
 
 
@@ -301,7 +306,7 @@
       var newName = document.getElementById('name').value;
       var newTask = $('input[name="optradio"]:checked').val();
 
-      var updateRef = new Firebase("https://sunsspot.firebaseio.com/testObjects/"+address);
+      var updateRef = new Firebase("https://sunsspot.firebaseio.com/testObjects/");
 
       var onComplete = function(error) {
         if (error) {
@@ -311,10 +316,64 @@
           }
       };
 
-      updateRef.update({ name: newName, task: newTask}, onComplete);
-      location.reload();
+
+      updateRef.child(address).set({ name: newName, task: newTask});
+
 }
 
+    var changedRef = new Firebase("https://sunsspot.firebaseio.com/testObjects");
+
+    changedRef.on("child_changed", function(snapshot){
+
+        var changedSensor = snapshot.val();
+        console.log("Sensor changed!");
+        console.log(snapshot.key());
+
+        console.log(changedSensor.name);
+        console.log(changedSensor)
+
+        var changedElement = $('#'+snapshot.key())[0]
+
+        $(changedElement).find("#spot-name")[0].innerHTML = changedSensor.name;
+
+        var link =  $(changedElement).find("#modalLink")[0];
+
+        var oldTask = $(link).data('task');
+
+        $(link).data('name', changedSensor.name);
+        $(link).data('task', changedSensor.task);
+
+        if(oldTask != changedSensor.task){
+          if(changedSensor.task == "idle"){ //sensor is idle
+
+            $("#idle-sensor-list").appendTo(changedElement);
+
+          }else if(changedSensor.task == "sm"){ //sensor is motion sensor
+
+            $("#motion-sensor-list").append(changedElement);
+
+          }else if(changedSensor.task == "sl"){ //sensor is light sensor
+            console.log("light");
+
+            $("#light-sensor-list").append(changedElement);
+
+          }else if(changedSensor.task == "st"){ //sensor is temp sensor
+            console.log("temp");
+
+            $("#temp-sensor-list").append(changedElement);
+
+          }else { //sensor is zone sensor
+            console.log("SENSOR NOT: idle, temp, light or motion");
+
+            $("body").append(changedElement);
+
+          }
+        }
+
+
+
+
+    });
 
     </script>
 
