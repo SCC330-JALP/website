@@ -37,7 +37,10 @@
     <![endif]-->
     <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
     <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
-
+     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+     <script type="text/javascript">
+      google.load("visualization", "1", {packages:["timeline","table"]});
+      </script>
 
 
 </head>
@@ -88,6 +91,7 @@
                     <h1 class="page-header">SunSpot Sensors</h1>
                 </div>
                 <!-- /.col-lg-12 -->
+                <div id="unknownTasks"></div>
             </div>
 
 
@@ -151,6 +155,7 @@
                     <form class="form-horizontal" role="form">
                       <div class="form-group">
                         <label class="control-label col-sm-2" for="email">Sensor Type:</label>
+                        Warning: changing the sensor type will remove any data stored currently.
                         <div class="col-sm-10">
                           <div class="radio">
                             <label><input type="radio" id="sm" value="sm" name="optradio" >Motion</label><br>
@@ -233,7 +238,7 @@
             </div>
             <!-- /.panel-heading -->
             <div class="panel-body">
-                <div id="chart_div_1" style="width: 500px; height: 120px;"></div>
+                <div id="dataOutput"></div>
             </div>
             <!-- /.panel-body -->
 
@@ -318,7 +323,7 @@
         //  console.log(changedSensor.name);
         //  console.log(changedSensor)
 
-        var changedElement = $('#'+snapshot.key())[0]
+        var changedElement = $('#'+snapshot.key().replace(/ /g,"_"))[0]
 
         $(changedElement).find("#spot-name")[0].innerHTML = changedSensor.name;
 
@@ -334,6 +339,8 @@
         $(deleteLink).data('task',changedSensor.task);
 
         if(oldTask != changedSensor.task){
+          $(changedElement).find('#dataOutput').remove()
+
           if(changedSensor.task == "idle"){ //sensor is idle
 
             $("#idle-sensor-list").append(changedElement);
@@ -355,7 +362,7 @@
           }else { //sensor is zone sensor
             console.log("SENSOR NOT: idle, temp, light or motion");
 
-            $("body").append(changedElement);
+            $("#unknownTasks").append(changedElement);
 
           }
         }
@@ -363,15 +370,44 @@
     });
 
     ref.on("child_added", function(snapshot){
-        console.log(snapshot.key());
+      //  console.log(snapshot.key());
 
         newSensor = snapshot.val();
 
+
         var sensorElement = $("#sensorTemplate").clone();
 
-        $(sensorElement).attr('id', snapshot.key());
+        $(sensorElement).attr('id', snapshot.key().replace(/ /g,"_"));
+
+
         $(sensorElement).find("#spot-name")[0].innerHTML = newSensor.name;
 
+        if(newSensor.Readings){
+
+            var readings = newSensor.Readings
+
+            var dt = new google.visualization.DataTable
+            dt.addColumn('datetime', 'Date/Time');
+            dt.addColumn('number', 'Event');
+
+            for(x in readings){
+              console.log(readings[x]);
+              dt.addRow([new Date(readings[x]), 1]);
+              console.log("Date:" + new Date(readings[x]));
+            }
+
+            var options = {
+
+              zoomButtonsOrder: ['1-hour','1-day','1-week','max'],
+              width: 500
+
+            }
+          //  $(sensorElement).find("#dataOutput").css();
+            var chart = new google.visualization.Table($(sensorElement).find("#dataOutput")[0]);
+            chart.draw(dt, options);
+
+
+        }
 
         var link =  $(sensorElement).find("#modalLink")[0];
         $(link).data('name', newSensor.name);
@@ -407,7 +443,7 @@
         }else { //sensor is zone sensor
           console.log("SENSOR NOT: idle, temp, light or motion");
 
-          $("body").append(sensorElement);
+          $("#unknownTasks").append(sensorElement);
           sensorElement.removeClass('hidden');
         }
     });
