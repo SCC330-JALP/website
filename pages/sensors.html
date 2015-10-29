@@ -238,7 +238,7 @@
             </div>
             <!-- /.panel-heading -->
             <div class="panel-body">
-                <div id="dataOutput"></div>
+                <div id="dataOutput" style="width:100%"></div>
             </div>
             <!-- /.panel-body -->
 
@@ -387,23 +387,28 @@
             var readings = newSensor.Readings
 
             var dt = new google.visualization.DataTable
-            dt.addColumn('datetime', 'Date/Time');
-            dt.addColumn('number', 'Event');
+            dt.addColumn({ type: 'string', id: 'Role' });
+            dt.addColumn({ type: 'datetime', id: 'Start' });
+            dt.addColumn({ type: 'datetime', id: 'End' });
 
             for(x in readings){
               console.log(readings[x]);
-              dt.addRow([new Date(readings[x]), 1]);
-              console.log("Date:" + new Date(readings[x]));
+
+              dt.addRow(
+                [newSensor.name, new Date(readings[x]), new Date(readings[x] + 100)]
+              );
+
             }
 
             var options = {
+              width: 800,
+              chartArea: {left: 100}
 
-              zoomButtonsOrder: ['1-hour','1-day','1-week','max'],
-              width: 500
+
 
             }
           //  $(sensorElement).find("#dataOutput").css();
-            var chart = new google.visualization.Table($(sensorElement).find("#dataOutput")[0]);
+            var chart = new google.visualization.Timeline($(sensorElement).find("#dataOutput")[0]);
             chart.draw(dt, options);
 
 
