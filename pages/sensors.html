@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-
+   <!-- Author: Josh Stennett -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -38,7 +38,7 @@
     <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
     <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
      <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-     <script type="text/javascript">
+     <script type="text/javascript"> //load visualization apis
       google.load("visualization", "1", {packages:["timeline","table"]});
       </script>
 
@@ -91,17 +91,17 @@
                     <h1 class="page-header">SunSpot Sensors</h1>
                 </div>
                 <!-- /.col-lg-12 -->
-                <div id="unknownTasks"></div>
+                <div id="unknownTasks"></div> <!-- any unknown sensor tasks get put here-->
             </div>
 
 
               <div class="row">
                 <div class="col-lg-12">
-                  <h3>Motion Sensors</h3>
+                  <h3>Motion Sensors</h3> <!--Example of a subheading-->
                 </div>
               </div>
               <!-- /.row -->
-              <div id="motion-sensor-list" class="row"></div>
+              <div id="motion-sensor-list" class="row"></div> <!-- any motion sensors will get appended here -->
 
                 <div class="row">
                   <div class="col-lg-12">
@@ -135,7 +135,7 @@
     </div>
 
 
-
+<!-- Modal boilerplate code: will get customised when it is loaded.  -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -190,6 +190,7 @@
     </div>
     <!-- /#wrapper -->
 
+<!-- Modal boilerplate code: will get customised when it is loaded.  -->
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -252,16 +253,15 @@
     // Get a reference to our logs
     var ref = new Firebase("https://sunsspot.firebaseio.com/testObjects");
     var sensors = null;
-    // Attach an asynchronous callback to read the data at our posts reference
 
 
-    $(document).on("click", "#modalLink", function(){
-      var name = $(this).data('name');
+    $(document).on("click", "#modalLink", function(){ //when you open the Edit modal
+      var name = $(this).data('name'); //populate variables from data-attributes
       var task = $(this).data('task');
       var address = $(this).data('address');
 
-      var modal = $(".modal");
-      modal.find("#myModalLabel")[0].innerHTML = name;
+      var modal = $(".modal"); //get the modal element
+      modal.find("#myModalLabel")[0].innerHTML = name; //insert variables to the element
       modal.find("#spotAddress")[0].innerHTML = address;
       modal.find("input#name")[0].value = name;
       modal.find("input#" + task).prop("checked", true);
@@ -283,67 +283,54 @@
     });
 
     function deleteSubmit(){
-      var address = document.getElementById('deleteSpotAddress').innerHTML;
-      console.log("Deleting "+ address);
+      var address = document.getElementById('deleteSpotAddress').innerHTML; //read in the address
+      console.log("Deleting "+ address); //log the delete address just in case
 
-      var delRef = new Firebase("https://sunsspot.firebaseio.com/testObjects/"+address);
+      var delRef = new Firebase("https://sunsspot.firebaseio.com/testObjects/"+address); //programatically generate the reference url
 
-      delRef.remove();
-      $("#"+address).remove();
+      delRef.remove(); //call the remove function to remove the data from Firebase
+      $("#"+address).remove(); //remove th element from the DOM
     }
 
-  function modalSubmit(){
-      //  console.log("submit clicked");
-      var address = document.getElementById('spotAddress').innerHTML;
+  function modalSubmit(){ //triggered when you submit the Edit form
+
+      var address = document.getElementById('spotAddress').innerHTML; //populate variables based off of form values
       var newName = document.getElementById('name').value;
       var newTask = $('input[name="optradio"]:checked').val();
 
-      var updateRef = new Firebase("https://sunsspot.firebaseio.com/testObjects/");
+      var updateRef = new Firebase("https://sunsspot.firebaseio.com/testObjects/"); //create reference
 
-      var onComplete = function(error) {
-        if (error) {
-          console.log('Synchronization failed');
-        } else {
-          console.log('Synchronization succeeded');
-          }
-      };
-
-
-      updateRef.child(address).set({ name: newName, task: newTask});
+      updateRef.child(address).set({ name: newName, task: newTask}); //update the record with the new data
 
   }
 
     var changedRef = new Firebase("https://sunsspot.firebaseio.com/testObjects");
 
-    changedRef.on("child_changed", function(snapshot){
+    changedRef.on("child_changed", function(snapshot){ //listen for when a child is edited
 
         var changedSensor = snapshot.val();
-        //  console.log("Sensor changed!");
-        //  console.log(snapshot.key());
-        //  console.log(changedSensor.name);
-        //  console.log(changedSensor)
 
-        var changedElement = $('#'+snapshot.key().replace(/ /g,"_"))[0]
+        var changedElement = $('#'+snapshot.key().replace(/ /g,"_"))[0] //element ID's are the MAC address with underscores instead of spaces
 
-        $(changedElement).find("#spot-name")[0].innerHTML = changedSensor.name;
+        $(changedElement).find("#spot-name")[0].innerHTML = changedSensor.name; //populate element name
 
-        var link =  $(changedElement).find("#modalLink")[0];
+        var link =  $(changedElement).find("#modalLink")[0];  //find the link to Edit modal
 
-        var oldTask = $(link).data('task');
+        var oldTask = $(link).data('task'); //get the old task from the data attribute on the link
 
-        $(link).data('name', changedSensor.name);
+        $(link).data('name', changedSensor.name); //update the data attributes to the new data
         $(link).data('task', changedSensor.task);
 
-        var deleteLink = $(changedElement).find("#deleteLink")[0];
-        $(deleteLink).data('name',changedSensor.name);
+        var deleteLink = $(changedElement).find("#deleteLink")[0]; //get the link to Remove
+        $(deleteLink).data('name',changedSensor.name); //update data attributes on Remove link
         $(deleteLink).data('task',changedSensor.task);
 
-        if(oldTask != changedSensor.task){
-          $(changedElement).find('#dataOutput').remove()
+        if(oldTask != changedSensor.task){ //if the task has changed, the element needs to move to a different sub-heading
+          $(changedElement).find('#dataOutput').remove() //if task has changed, then the Readings must have been deleted : remove the graph from the DOM
 
           if(changedSensor.task == "idle"){ //sensor is idle
 
-            $("#idle-sensor-list").append(changedElement);
+            $("#idle-sensor-list").append(changedElement); //append element to the correct section
 
           }else if(changedSensor.task == "sm"){ //sensor is motion sensor
 
@@ -359,7 +346,7 @@
 
             $("#temp-sensor-list").append(changedElement);
 
-          }else { //sensor is zone sensor
+          }else { //sensor is zone sensor, or unknown
             console.log("SENSOR NOT: idle, temp, light or motion");
 
             $("#unknownTasks").append(changedElement);
@@ -369,33 +356,33 @@
 
     });
 
-    ref.on("child_added", function(snapshot){
+    ref.on("child_added", function(snapshot){ //listen for when a child is added : also triggers once for each child in database on page load.
       //  console.log(snapshot.key());
 
         newSensor = snapshot.val();
 
 
-        var sensorElement = $("#sensorTemplate").clone();
+        var sensorElement = $("#sensorTemplate").clone(); //create an instance of the template
 
-        $(sensorElement).attr('id', snapshot.key().replace(/ /g,"_"));
+        $(sensorElement).attr('id', snapshot.key().replace(/ /g,"_")); //set the id of the element to the MAC address, with underscores instead of spaces
 
 
-        $(sensorElement).find("#spot-name")[0].innerHTML = newSensor.name;
+        $(sensorElement).find("#spot-name")[0].innerHTML = newSensor.name; //insert the spot name
 
-        if(newSensor.Readings){
+        if(newSensor.Readings){ //if the sensor has data to display
 
-            var readings = newSensor.Readings
+            var readings = newSensor.Readings //extract the readings
 
-            var dt = new google.visualization.DataTable
+            var dt = new google.visualization.DataTable //construct a DataTable
             dt.addColumn({ type: 'string', id: 'Role' });
             dt.addColumn({ type: 'datetime', id: 'Start' });
             dt.addColumn({ type: 'datetime', id: 'End' });
 
             for(x in readings){
-              console.log(readings[x]);
+            //  console.log(readings[x]);
 
               dt.addRow(
-                [newSensor.name, new Date(readings[x]), new Date(readings[x] + 100)]
+                [newSensor.name, new Date(readings[x]), new Date(readings[x] + 100)] //add a row for each reading
               );
 
             }
@@ -404,17 +391,15 @@
               width: 800,
               chartArea: {left: 100}
 
-
-
             }
           //  $(sensorElement).find("#dataOutput").css();
-            var chart = new google.visualization.Timeline($(sensorElement).find("#dataOutput")[0]);
-            chart.draw(dt, options);
+            var chart = new google.visualization.Timeline($(sensorElement).find("#dataOutput")[0]); //assign the chart container to be the dataOutput div within this element
+            chart.draw(dt, options); //draw the chart
 
 
         }
 
-        var link =  $(sensorElement).find("#modalLink")[0];
+        var link =  $(sensorElement).find("#modalLink")[0]; //set up the links as seen in child_changed listener
         $(link).data('name', newSensor.name);
         $(link).data('task', newSensor.task);
         $(link).data('address', snapshot.key());
@@ -454,15 +439,6 @@
     });
 
   </script>
-
-
-
-
-
-
-
-
-
 
     <!-- jQuery -->
     <script src="../bower_components/jquery/dist/jquery.min.js"></script>
