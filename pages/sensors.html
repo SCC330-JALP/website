@@ -1,219 +1,137 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-   <!-- Author: Josh Stennett -->
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>JALP SmartLab</title>
-
-    <!-- Bootstrap Core CSS -->
-    <link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- MetisMenu CSS -->
-    <link href="../bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
-
-    <!-- Timeline CSS -->
-    <link href="../dist/css/timeline.css" rel="stylesheet">
-
-    <!-- Custom CSS -->
-    <link href="../dist/css/sb-admin-2.css" rel="stylesheet">
-
-    <!-- Morris Charts CSS -->
-    <link href="../bower_components/morrisjs/morris.css" rel="stylesheet">
-
-    <!-- Custom Fonts -->
-    <link href="../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
-    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
-     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-     <script type="text/javascript"> //load visualization apis
-      google.load("visualization", "1", {packages:["timeline","table"]});
-      </script>
-
-
-</head>
-
-<body>
-
-    <div id="wrapper">
-
-        <!-- Navigation -->
-        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="index.html">JALP SmartLab</a>
-            </div>
-            <!-- /.navbar-header -->
-
-
-
-            <div class="navbar-default sidebar" role="navigation">
-                <div class="sidebar-nav navbar-collapse">
-                    <ul class="nav" id="side-menu">
-
-
-                        <li>
-                            <a href="index.html"><i class="fa fa-dashboard fa-fw"></i> Live data</a>
-                        </li>
-                        <li>
-                            <a href="history.html"><i class="fa fa-bar-chart-o fa-fw"></i> History</a>
-                        </li>
-                        <li>
-                            <a href="sensors.html"><i class="glyphicon glyphicon-phone"></i> Sensors</a>
-                        </li>
-                    </ul>
-                </div>
-                <!-- /.sidebar-collapse -->
-            </div>
-            <!-- /.navbar-static-side -->
-        </nav>
-
-        <div id="page-wrapper">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h1 class="page-header">SunSpot Sensors</h1>
-                </div>
-                <!-- /.col-lg-12 -->
-                <div id="unknownTasks"></div> <!-- any unknown sensor tasks get put here-->
-            </div>
-
-
-              <div class="row">
-                <div class="col-lg-12">
-                  <h3>Motion Sensors</h3> <!--Example of a subheading-->
-                </div>
-              </div>
-              <!-- /.row -->
-              <div id="motion-sensor-list" class="row"></div> <!-- any motion sensors will get appended here -->
-
-                <div class="row">
-                  <div class="col-lg-12">
-                    <h3>Light Sensors</h3>
-                  </div>
-                </div>
-                <!-- /.row -->
-                <div id="light-sensor-list" class="row"></div>
-
-                  <div class="row">
-                    <div class="col-lg-12">
-                      <h3>Temperature Sensors</h3>
-                    </div>
-                  </div>
-                  <!-- /.row -->
-                  <div id="temp-sensor-list" class="row"></div>
-
-                  <div class="row">
-                    <div class="col-lg-12">
-                      <h3>Idle Sensors</h3>
-                    </div>
-                  </div>
-                  <!-- /.row -->
-                  <div id="idle-sensor-list" class="row"></div>
-
-            </div>
-            <!-- /.row -->
-        </div>
-        <!-- /#page-wrapper -->
-
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">SunSpot Sensors</h1>
     </div>
+    <!-- /.col-lg-12 -->
+    <div id="unknownTasks"></div>
+    <!-- any unknown sensor tasks get put here-->
+</div>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <h3>Motion Sensors</h3>
+        <!--Example of a subheading-->
+    </div>
+</div>
+<!-- /.row -->
+<div id="motion-sensor-list" class="row"></div>
+<!-- any motion sensors will get appended here -->
+
+<div class="row">
+    <div class="col-lg-12">
+        <h3>Light Sensors</h3>
+    </div>
+</div>
+<!-- /.row -->
+<div id="light-sensor-list" class="row"></div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <h3>Temperature Sensors</h3>
+    </div>
+</div>
+<!-- /.row -->
+<div id="temp-sensor-list" class="row"></div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <h3>Idle Sensors</h3>
+    </div>
+</div>
+<!-- /.row -->
+<div id="idle-sensor-list" class="row"></div>
+
+</div>
+<!-- /.row -->
+
+</div>
 
 
 <!-- Modal boilerplate code: will get customised when it is loaded.  -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="myModalLabel">Spot Name</h4><small id="spotAddress">Address Unknown</small>
-                </div>
-                <div class="modal-body">
-                  <form class="form-horizontal" role="form">
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Spot Name</h4><small id="spotAddress">Address Unknown</small>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form">
                     <div class="form-group">
-                      <label class="control-label col-sm-2" for="email">Name:</label>
-                      <div class="col-sm-10">
-                        <input type="name" class="form-control" id="name" placeholder="Enter Name" value=>
-                      </div>
+                        <label class="control-label col-sm-2" for="email">Name:</label>
+                        <div class="col-sm-10">
+                            <input type="name" class="form-control" id="name" placeholder="Enter Name" value=>
+                        </div>
                     </div>
 
                     <form class="form-horizontal" role="form">
-                      <div class="form-group">
-                        <label class="control-label col-sm-2" for="email">Sensor Type:</label>
-                        Warning: changing the sensor type will remove any data stored currently.
-                        <div class="col-sm-10">
-                          <div class="radio">
-                            <label><input type="radio" id="sm" value="sm" name="optradio" >Motion</label><br>
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="email">Sensor Type:</label>
+                            Warning: changing the sensor type will remove any data stored currently.
+                            <div class="col-sm-10">
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" id="sm" value="sm" name="optradio">Motion</label>
+                                    <br>
 
-                            <label><input type="radio" id="sl" value="sl" name="optradio">Light</label> <br>
+                                    <label>
+                                        <input type="radio" id="sl" value="sl" name="optradio">Light</label>
+                                    <br>
 
-                            <label><input type="radio" id="st" value="st" name="optradio">Temperature</label><br>
+                                    <label>
+                                        <input type="radio" id="st" value="st" name="optradio">Temperature</label>
+                                    <br>
 
 
 
-                          <!--  <label><input type="radio" id="zone" value="zone" name="optradio" >Zone</label><br> -->
+                                    <!--  <label><input type="radio" id="zone" value="zone" name="optradio" >Zone</label><br> -->
 
-                            <label><input type="radio" id="idle" value="idle" name="optradio" >Idle</label>
-                          </div>
+                                    <label>
+                                        <input type="radio" id="idle" value="idle" name="optradio">Idle</label>
+                                </div>
+                            </div>
                         </div>
-                      </div>
 
 
-                    <div class="form-group">
-                      <div class="col-sm-offset-2 col-sm-10 modal-footer">
-                        <button type="submit" class="btn btn-default" data-dismiss="modal"
-                         onclick="modalSubmit()">Submit</button>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10 modal-footer">
+                                <!-- <button type="submit" class="btn btn-default" data-dismiss="modal" -->
+                                <button type="submit" class="btn btn-default" data-dismiss="modal" ng-click="modalSubmit()">Submit</button>
+                            </div>
+                        </div>
+                    </form>
             </div>
-            <!-- /.modal-content -->
+
         </div>
-        <!-- /.modal-dialog -->
+        <!-- /.modal-content -->
     </div>
-    <!-- /#wrapper -->
+    <!-- /.modal-dialog -->
+</div>
+<!-- /#wrapper -->
 
 <!-- Modal boilerplate code: will get customised when it is loaded.  -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Delete <span id="myModalLabel">Spot Name</span> </h4><small id="deleteSpotAddress">Address Unknown</small>
-                </div>
-                <div class="modal-body">
-                  Are you sure that you want to delete this sensor? All data it has collected will also be deleted.
-
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-default" data-dismiss="modal"> Cancel </button>
-                    <button class="btn btn-danger" data-dismiss="modal" onclick="deleteSubmit()"> Yes, delete this spot. </button>
-
-                </div>
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Delete <span id="myModalLabel">Spot Name</span> </h4><small id="deleteSpotAddress">Address Unknown</small>
+            </div>
+            <div class="modal-body">
+                Are you sure that you want to delete this sensor? All data it has collected will also be deleted.
 
             </div>
-            <!-- /.modal-content -->
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"> Cancel </button>
+                <button class="btn btn-danger" data-dismiss="modal" onclick="deleteSubmit()"> Yes, delete this spot. </button>
+
+            </div>
+
         </div>
-        <!-- /.modal-dialog -->
+        <!-- /.modal-content -->
     </div>
-    <!-- /#wrapper -->
+    <!-- /.modal-dialog -->
 
 
     <div id="sensorTemplate" class="col-xs-12 hidden">
@@ -245,218 +163,5 @@
 
         </div>
         <!-- /.panel -->
-      </div>
-        <!-- /.col -->
-
-
-    <script>
-    // Get a reference to our logs
-    var ref = new Firebase("https://sunsspot.firebaseio.com/testObjects");
-    var sensors = null;
-
-
-    $(document).on("click", "#modalLink", function(){ //when you open the Edit modal
-      var name = $(this).data('name'); //populate variables from data-attributes
-      var task = $(this).data('task');
-      var address = $(this).data('address');
-
-      var modal = $(".modal"); //get the modal element
-      modal.find("#myModalLabel")[0].innerHTML = name; //insert variables to the element
-      modal.find("#spotAddress")[0].innerHTML = address;
-      modal.find("input#name")[0].value = name;
-      modal.find("input#" + task).prop("checked", true);
-
-    });
-
-    $(document).on("click", "#deleteLink", function(){
-
-      var name = $(this).data('name');
-      var task = $(this).data('task');
-      var address = $(this).data('address');
-
-
-      var modal = $("#deleteModal");
-      modal.find("#myModalLabel")[0].innerHTML = name;
-      modal.find("#deleteSpotAddress")[0].innerHTML = address;
-
-
-    });
-
-    function deleteSubmit(){
-      var address = document.getElementById('deleteSpotAddress').innerHTML; //read in the address
-      console.log("Deleting "+ address); //log the delete address just in case
-
-      var delRef = new Firebase("https://sunsspot.firebaseio.com/testObjects/"+address); //programatically generate the reference url
-
-      delRef.remove(); //call the remove function to remove the data from Firebase
-      $("#"+address).remove(); //remove th element from the DOM
-    }
-
-  function modalSubmit(){ //triggered when you submit the Edit form
-
-      var address = document.getElementById('spotAddress').innerHTML; //populate variables based off of form values
-      var newName = document.getElementById('name').value;
-      var newTask = $('input[name="optradio"]:checked').val();
-
-      var updateRef = new Firebase("https://sunsspot.firebaseio.com/testObjects/"); //create reference
-
-      updateRef.child(address).set({ name: newName, task: newTask}); //update the record with the new data
-
-  }
-
-    var changedRef = new Firebase("https://sunsspot.firebaseio.com/testObjects");
-
-    changedRef.on("child_changed", function(snapshot){ //listen for when a child is edited
-
-        var changedSensor = snapshot.val();
-
-        var changedElement = $('#'+snapshot.key().replace(/ /g,"_"))[0] //element ID's are the MAC address with underscores instead of spaces
-
-        $(changedElement).find("#spot-name")[0].innerHTML = changedSensor.name; //populate element name
-
-        var link =  $(changedElement).find("#modalLink")[0];  //find the link to Edit modal
-
-        var oldTask = $(link).data('task'); //get the old task from the data attribute on the link
-
-        $(link).data('name', changedSensor.name); //update the data attributes to the new data
-        $(link).data('task', changedSensor.task);
-
-        var deleteLink = $(changedElement).find("#deleteLink")[0]; //get the link to Remove
-        $(deleteLink).data('name',changedSensor.name); //update data attributes on Remove link
-        $(deleteLink).data('task',changedSensor.task);
-
-        if(oldTask != changedSensor.task){ //if the task has changed, the element needs to move to a different sub-heading
-          $(changedElement).find('#dataOutput').remove() //if task has changed, then the Readings must have been deleted : remove the graph from the DOM
-
-          if(changedSensor.task == "idle"){ //sensor is idle
-
-            $("#idle-sensor-list").append(changedElement); //append element to the correct section
-
-          }else if(changedSensor.task == "sm"){ //sensor is motion sensor
-
-            $("#motion-sensor-list").append(changedElement);
-
-          }else if(changedSensor.task == "sl"){ //sensor is light sensor
-            console.log("light");
-
-            $("#light-sensor-list").append(changedElement);
-
-          }else if(changedSensor.task == "st"){ //sensor is temp sensor
-            console.log("temp");
-
-            $("#temp-sensor-list").append(changedElement);
-
-          }else { //sensor is zone sensor, or unknown
-            console.log("SENSOR NOT: idle, temp, light or motion");
-
-            $("#unknownTasks").append(changedElement);
-
-          }
-        }
-
-    });
-
-    ref.on("child_added", function(snapshot){ //listen for when a child is added : also triggers once for each child in database on page load.
-      //  console.log(snapshot.key());
-
-        newSensor = snapshot.val();
-
-
-        var sensorElement = $("#sensorTemplate").clone(); //create an instance of the template
-
-        $(sensorElement).attr('id', snapshot.key().replace(/ /g,"_")); //set the id of the element to the MAC address, with underscores instead of spaces
-
-
-        $(sensorElement).find("#spot-name")[0].innerHTML = newSensor.name; //insert the spot name
-
-        if(newSensor.Readings){ //if the sensor has data to display
-
-            var readings = newSensor.Readings //extract the readings
-
-            var dt = new google.visualization.DataTable //construct a DataTable
-            dt.addColumn({ type: 'string', id: 'Role' });
-            dt.addColumn({ type: 'datetime', id: 'Start' });
-            dt.addColumn({ type: 'datetime', id: 'End' });
-
-            for(x in readings){
-            //  console.log(readings[x]);
-
-              dt.addRow(
-                [newSensor.name, new Date(readings[x]), new Date(readings[x] + 100)] //add a row for each reading
-              );
-
-            }
-
-            var options = {
-              width: 800,
-              chartArea: {left: 100}
-
-            }
-          //  $(sensorElement).find("#dataOutput").css();
-            var chart = new google.visualization.Timeline($(sensorElement).find("#dataOutput")[0]); //assign the chart container to be the dataOutput div within this element
-            chart.draw(dt, options); //draw the chart
-
-
-        }
-
-        var link =  $(sensorElement).find("#modalLink")[0]; //set up the links as seen in child_changed listener
-        $(link).data('name', newSensor.name);
-        $(link).data('task', newSensor.task);
-        $(link).data('address', snapshot.key());
-
-        var deleteLink = $(sensorElement).find("#deleteLink")[0];
-        $(deleteLink).data('name', newSensor.name);
-        $(deleteLink).data('task', newSensor.task);
-        $(deleteLink).data('address', snapshot.key());
-
-        if(newSensor.task == "idle"){ //sensor is idle
-
-          $("#idle-sensor-list").append(sensorElement);
-
-
-          sensorElement.removeClass('hidden');
-
-        }else if(newSensor.task == "sm"){ //sensor is motion sensor
-
-          $("#motion-sensor-list").append(sensorElement);
-          sensorElement.removeClass('hidden');
-        }else if(newSensor.task == "sl"){ //sensor is light sensor
-        //  console.log("light");
-
-          $("#light-sensor-list").append(sensorElement);
-          sensorElement.removeClass('hidden');
-        }else if(newSensor.task == "st"){ //sensor is temp sensor
-        //  console.log("temp");
-
-          $("#temp-sensor-list").append(sensorElement);
-          sensorElement.removeClass('hidden');
-        }else { //sensor is zone sensor
-          console.log("SENSOR NOT: idle, temp, light or motion");
-
-          $("#unknownTasks").append(sensorElement);
-          sensorElement.removeClass('hidden');
-        }
-    });
-
-  </script>
-
-    <!-- jQuery -->
-    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="../bower_components/metisMenu/dist/metisMenu.min.js"></script>
-
-    <!-- Morris Charts JavaScript -->
-    <script src="../bower_components/raphael/raphael-min.js"></script>
-    <script src="../bower_components/morrisjs/morris.min.js"></script>
-    <script src="../js/morris-data.js"></script>
-
-    <!-- Custom Theme JavaScript -->
-    <script src="../dist/js/sb-admin-2.js"></script>
-
-</body>
-
-</html>
+    </div>
+    <!-- /.col -->
