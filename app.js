@@ -2,7 +2,7 @@
  * SCC330 Network Studio - Team 2 - JALP SmartLab
  *
  *************************************************************************
- * 
+ *
  * @author
  * Anson Cheung
  *
@@ -15,20 +15,13 @@ var ref = new Firebase("https://sunsspot.firebaseio.com");
 //Routes
 spotApp.config(function($routeProvider, $locationProvider) {
     $routeProvider
-        .when('/livedata', {
-            templateUrl: 'pages/livedata.html',
-            controller: 'liveController'
-        })
-        .when('/history', {
-            templateUrl: 'pages/history.html',
-            controller: 'historyController'
-        })
-        .when('/sensors', {
-            templateUrl: 'pages/sensors.html',
-            controller: 'sensorsController'
+
+        .when('/', {
+            templateUrl: 'pages/smartlab.html',
+            controller: 'smartlabController'
         })
         .otherwise({
-            redirectTo: '/livedata'
+            redirectTo: '/'
         });
 
     // $locationProvider.html5Mode(true).hashPrefix('!');
@@ -423,7 +416,7 @@ spotApp.controller('sensorsController', ['$scope',
 
 /**
  * Adds two numbers
- * @param {Number} a 
+ * @param {Number} a
  * @param {Number} b
  * @return {Number} sum
  */
@@ -468,7 +461,7 @@ function setChart(chartType, object, type) {
 
 /**
  * Adds two numbers
- * @param {Number} a 
+ * @param {Number} a
  * @param {Number} b
  * @return {Number} sum
  */
@@ -493,7 +486,7 @@ function listenLive(childName, object, type) {
 }
 /**
  * Adds two numbers
- * @param {Number} a 
+ * @param {Number} a
  * @param {Number} b
  * @return {Number} sum
  */
