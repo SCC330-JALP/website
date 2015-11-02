@@ -27,6 +27,10 @@ spotApp.config(function($routeProvider, $locationProvider) {
             templateUrl: 'pages/sensors.html',
             controller: 'sensorsController'
         })
+        .when('/map', {
+            templateUrl: 'pages/map.html',
+            controller: 'mapController'
+        })
         .otherwise({
             redirectTo: '/livedata'
         });
