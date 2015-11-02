@@ -1,0 +1,38 @@
+.box{
+    position:absolute;
+    width: 20%;
+    height: 20%;
+    background-color: #9bc9c7;
+    border: 1px solid white;
+    box-shadow: 0 0 0 1px #9bc9c7;
+    text-align:center;
+}
+.box0-0{top:0;left:0;}
+.box0-1{top:0%;left:20%;}
+.box0-2{top:0%;left:40% ;}
+.box0-3{top:0%;left:60%;}
+.box0-4{top:0%;left:80%;}
+
+.box1-0{top:20%;left:0;}
+.box1-1{top:20%;left:20%;}
+.box1-2{top:20%;left:40%;}
+.box1-3{top:20%;left:60%;}
+.box1-4{top:20%;left:80%;}
+
+.box2-0{top:40%;left:0;}
+.box2-1{top:40%;left:20%;}
+.box2-2{top:40%;left:40%;}
+.box2-3{top:40%;left:60%;}
+.box2-4{top:40%;left:80%;}
+
+.box3-0{top:60%;left:0;}
+.box3-1{top:60%;left:20%;}
+.box3-2{top:60%;left:40%;}
+.box3-3{top:60%;left:60%;}
+.box3-4{top:60%;left:80%;}
+
+.box4-0{top:80%;left:0;}
+.box4-1{top:80%;left:20%;}
+.box4-2{top:80%;left:40%;}
+.box4-3{top:80%;left:60%;}
+.box4-4{top:80%;left:80%;}

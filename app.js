@@ -204,6 +204,12 @@ function($scope, $firebaseObject) {
 
 }]);
 
+//Map Controller
+spotApp.controller('mapController', ['$scope','$firebaseObject',
+function($scope, $firebaseObject) {
+    
+}]);
+
 
 
 //Sensors Controller
