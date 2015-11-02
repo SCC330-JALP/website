@@ -208,9 +208,36 @@ function($scope, $firebaseObject) {
 spotApp.controller('mapController', ['$scope','$firebaseObject',
 function($scope, $firebaseObject) {
     
+    $scope.data = [];
+    $scope.boxWidth = 7.69;
+    $scope.boxHeight = 3.025;
+    $scope.zone1 = "zone1";
+    $scope.zone2 = "zone2";
+    $scope.zone3 = "zone3";
+
+    for(i=0;i<13;i++)
+        for(y=0;y<33;y++)
+            $scope.data.push({x: i, y: y});
+
 }]);
 
+//Map Directive
+spotApp.directive('box', function(){
 
+    return {
+        restrict: 'E',
+        scope: {
+            data: '=',
+            x: '=',
+            y: '=',
+            zone: '=',
+        },
+        template: '<div class="box {{zone}} box-{{x}}-{{y}}" style="top:{{x}}%;left:{{y}}%"></div>',
+        controller: function($scope){
+            console.log($scope.data);
+        }
+    };
+});
 
 //Sensors Controller
 spotApp.controller('sensorsController', ['$scope',
