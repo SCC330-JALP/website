@@ -31,7 +31,7 @@ spotApp.config(function($routeProvider, $locationProvider) {
             redirectTo: '/livedata'
         });
 
-    $locationProvider.html5Mode(true).hashPrefix('!');
+    // $locationProvider.html5Mode(true).hashPrefix('!');
 });
 
 //Think it as global variables
