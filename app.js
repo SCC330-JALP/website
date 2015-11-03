@@ -208,9 +208,11 @@ function($scope, $firebaseObject) {
 spotApp.controller('mapController', ['$scope','$firebaseObject',
 function($scope, $firebaseObject) {
     
+    var ref = new Firebase("https://sunsspot.firebaseio.com/testObjects/UpdateTest");
+
     $scope.data = [];
-    $scope.boxWidth = 7.69;
-    $scope.boxHeight = 3.025;
+    $scope.x = 7.69;
+    $scope.y = 3.025;
     $scope.zone1 = "zone1";
     $scope.zone2 = "zone2";
     $scope.zone3 = "zone3";
@@ -218,6 +220,12 @@ function($scope, $firebaseObject) {
     for(i=0;i<13;i++)
         for(y=0;y<33;y++)
             $scope.data.push({x: i, y: y});
+    
+    // download the data into a local object
+    var syncObject = $firebaseObject(ref);
+
+    // synchronize the object with a three-way data binding
+    syncObject.$bindTo($scope, "testObject");
 
 }]);
 
@@ -234,7 +242,7 @@ spotApp.directive('box', function(){
         },
         template: '<div class="box {{zone}} box-{{x}}-{{y}}" style="top:{{x}}%;left:{{y}}%"></div>',
         controller: function($scope){
-            console.log($scope.data);
+            // console.log($scope.data);
         }
     };
 });
