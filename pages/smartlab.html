@@ -43,7 +43,8 @@
 
     <h1 class="centered">Smart lab</h1>
 
-<div class="centered">
+<div class="centered" id="zoneContainer">
+
   <div id="zone1" class="col-xs-12 col-sm-6 col-md-4 zone">
     <h2>Zone 1</h2>
 
@@ -58,7 +59,7 @@
             </div>
 
             <div class="card-footer">
-              Motion Sensor <Br><br><br>
+              <div id="sparkline1Temp" style="width:100%; height:50px;"></div>
             </div>
 
           </div> <!-- card -->
@@ -72,7 +73,7 @@
             </div>
 
             <div class="card-footer">
-              Motion Sensor <Br><br><br>
+
             </div>
 
           </div> <!-- card -->
@@ -85,40 +86,114 @@
 
     <div class="container-fluid">
       <h3>Sensors</h3>
+      <div class="row" id="zone1Sensors">
+
+
+      </div>
+
+
+    </div><!-- //container -->
+
+    <div class="container-fluid">
+
+      <h3>People</h3>
       <div class="row">
-        <div class="col-md-12 col-lg-6 object-card">
+        <div class="col-md-6 col-sm-12 object-card">
           <div class="card">
 
-            <div class="status-light">  </div>
-
-            <p>Example really long Name</p>
+          <p>Example really long Name</p>
 
 
-            <div class="card-footer">
-                Motion Sensor
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-md-8">
+                Josh <br>
+                 Developer
+              </div>
+              <div class="col-md-4">
+                <button class="btn btn-primary pull-right"type="button" name="button">View</button>
+              </div>
             </div>
 
 
-          </div>
-
-         </div>
-
-         <div class="col-md-12 col-lg-6 object-card">
-           <div class="card">
-
-             <div class="status-light">  </div>
-
-             <p>Example really long Name</p>
-
-
-             <div class="card-footer">
-                 Motion Sensor
-             </div>
-
-
-           </div>
 
           </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-sm-12 object-card">
+        <div class="card">
+
+        <p>Example really long Name</p>
+
+
+        <div class="card-footer">
+          <div class="row">
+            <div class="col-md-8">
+              Josh <br>
+               Developer
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-primary pull-right"type="button" name="button">View</button>
+            </div>
+          </div>
+
+
+
+        </div>
+      </div>
+    </div>
+
+      </div>
+
+    </div>
+
+  </div> <!-- zone -->
+
+
+
+  <div id="zone2" class="col-xs-12 col-sm-6 col-md-4 zone">
+    <h2>Zone 2</h2>
+
+    <div class="container-fluid">
+
+      <div class="row">
+        <div class="col-xs-12 col-sm-6 object-card">
+          <div class="card">
+
+            <div class="card-content">
+                  <div class="gauge-container" google-chart chart="liveLight2"></div>
+            </div>
+
+            <div class="card-footer">
+              <div id="sparklineTemp2" style="width:100%; height:50px;"></div>
+            </div>
+
+          </div> <!-- card -->
+        </div>
+
+        <div class="col-xs-12 col-sm-6 object-card">
+          <div class="card">
+
+            <div class="card-content">
+                <div class="gauge-container" google-chart chart="liveTemp2"></div>
+            </div>
+
+            <div class="card-footer">
+
+            </div>
+
+          </div> <!-- card -->
+        </div>
+
+      </div> <!-- row -->
+
+
+    </div><!-- //container -->
+
+    <div class="container-fluid">
+      <h3>Sensors</h3>
+      <div class="row" id="zone2Sensors">
 
 
       </div>
@@ -183,11 +258,243 @@
   </div>
 
 
+  <div id="zone3" class="col-xs-12 col-sm-6 col-md-4 zone">
+    <h2>Zone 3</h2>
+
+    <div class="container-fluid">
+
+      <div class="row">
+        <div class="col-xs-12 col-sm-6 object-card">
+          <div class="card">
+
+            <div class="card-content">
+                  <div class="gauge-container" google-chart chart="liveLight3"></div>
+            </div>
+
+            <div class="card-footer">
+              <div id="sparklineTemp3" style="width:100%; height:50px;"></div>
+            </div>
+
+          </div> <!-- card -->
+        </div>
+
+        <div class="col-xs-12 col-sm-6 object-card">
+          <div class="card">
+
+            <div class="card-content">
+                <div class="gauge-container" google-chart chart="liveTemp3"></div>
+            </div>
+
+            <div class="card-footer">
+
+            </div>
+
+          </div> <!-- card -->
+        </div>
+
+      </div> <!-- row -->
+
+
+    </div><!-- //container -->
+
+    <div class="container-fluid">
+      <h3>Sensors</h3>
+      <div class="row" id="zone3Sensors">
+
+
+      </div>
+
+
+    </div><!-- //container -->
+
+    <div class="container-fluid">
+
+      <h3>People</h3>
+      <div class="row">
+        <div class="col-md-6 col-sm-12 object-card">
+          <div class="card">
+
+          <p>Example really long Name</p>
+
+
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-md-8">
+                Josh <br>
+                 Developer
+              </div>
+              <div class="col-md-4">
+                <button class="btn btn-primary pull-right"type="button" name="button">View</button>
+              </div>
+            </div>
+
+
+
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-sm-12 object-card">
+        <div class="card">
+
+        <p>Example really long Name</p>
+
+
+        <div class="card-footer">
+          <div class="row">
+            <div class="col-md-8">
+              Josh <br>
+               Developer
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-primary pull-right"type="button" name="button">View</button>
+            </div>
+          </div>
+
+
+
+        </div>
+      </div>
+    </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
 </div>
 
+<!--
+
+  SENSOR TEMPLATE
+
+ -->
+<div id="sensorTemplate" class="col-md-12 col-lg-6 object-card hidden">
+  <div class="card">
+    <div class="status-light">  </div>
+
+    <span id="spotName"> Spot name </span>
+
+    <div style="width: 200px; height: 200px;"> Insert picture here</div>
+
+    <div class="card-footer">
+
+        <div class=" col-xs-9">
+          <span id="spotTask">Spot type</span> <br>
+          <small id="spotMAC"> Spot MAC</small>
+        </div>
+        <div class="col-xs-3">
+          <button id="editSensorBtn" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal" data-name="" data-task="" data-address="" data-zone="">Edit</button>
+        </div>
+
+    </div>
 
 
-<script>console.log("hello world");</script>
+  </div>
+
+</div><!-- end template -->
+
+
+<!--
+
+  EDIT MODAL
+
+ -->
+<!-- Modal boilerplate code: will get customised when it is loaded.  -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Spot Name</h4><small id="spotAddress">Address Unknown</small> <small> Zone : <span id="sensorZone">N/A </span> </small>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="email">Name:</label>
+                        <div class="col-sm-10">
+                            <input type="name" class="form-control" id="name" placeholder="Enter Name" value=>
+                        </div>
+                    </div>
+
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="email">Sensor Type:</label>
+                            Warning: changing the sensor type will remove any data stored currently.
+                            <div class="col-sm-10">
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" id="sm" value="sm" name="optradio">Motion</label>
+                                    <br>
+
+                                    <label>
+                                        <input type="radio" id="sl" value="sl" name="optradio">Light</label>
+                                    <br>
+
+                                    <label>
+                                        <input type="radio" id="st" value="st" name="optradio">Temperature</label>
+                                    <br>
+
+
+
+                                    <!--  <label><input type="radio" id="zone" value="zone" name="optradio" >Zone</label><br> -->
+
+                                    <label>
+                                        <input type="radio" id="idle" value="idle" name="optradio">Idle</label>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10 modal-footer">
+                                <!-- <button type="submit" class="btn btn-default" data-dismiss="modal" -->
+                                <button class="btn btn-danger pull-left" data-toggle="modal" data-target="#deleteModal" data-name="">Delete spot</button>
+                                <div class="pull-right">
+                                  <button class="btn btn-default" data-dismiss="modal"> Cancel </button>
+                                  <button type="submit" class="btn btn-default" data-dismiss="modal" ng-click="modalSubmit()">Save changes</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /#wrapper -->
+
+<!--
+
+DELETE MODAL
+
+ -->
+<!-- Modal boilerplate code: will get customised when it is loaded.  -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Delete <span id="myModalLabel">Spot Name</span> </h4><small id="deleteSpotAddress">Address Unknown</small>
+            </div>
+            <div class="modal-body">
+                Are you sure that you want to delete this sensor? All data it has collected will also be deleted.
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"> Cancel </button>
+                <button class="btn btn-danger" data-dismiss="modal" ng-click="deleteSubmit()"> Yes, delete this spot. </button>
+
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
 
   <!-- jQuery -->
   <script src="../bower_components/jquery/dist/jquery.min.js"></script>

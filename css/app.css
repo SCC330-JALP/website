@@ -1,47 +1,57 @@
-.debug{
-  background-color: grey;
-  border: 1px solid darkgrey;
-  min-height: 100px;
+.debug
+{
+    min-height: 100px;
+
+    border: 1px solid darkgrey;
+    background-color: grey;
 }
 
-.centered{
-  margin: 0 auto;
-  text-align: center;
+.centered
+{
+    margin: 0 auto;
 
+    text-align: center;
 }
 
 /*
 *    Zone
 */
-.zone{
-  border-right: 1px solid grey;
-  min-width: 500px;
+.zone
+{
+    min-width: 500px;
 
+    border-right: 1px solid grey;
 }
 
 /*
 *    Cards
 */
-.card{
-  background-color: white;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  min-height: 100px;
+.card
+{
+    min-height: 100px;
+    margin-bottom: 10px;
+    padding: 10px 15px;
 
-  padding: 10px 15px;
-  margin-bottom: 10px;
-  display: ;
+    text-align: left;
+
+    background-color: white;
+    box-shadow: 0 3px 6px rgba(0,0,0,.16), 0 3px 6px rgba(0,0,0,.23);
 }
-.card-content{
-  /* do nothing for now  but might want this later*/
+.card-content
+{
+    /* do nothing for now  but might want this later*/
 }
 
-.card-footer{
-  width: 100%;
-  max-height: 40%;
+.card-footer
+{
+    display: -webkit-box;
 
+    width: 100%;
+    min-height: 50px;
+    max-height: 40%;
+    padding-top: 10px;
 
-  border-top: 1px solid grey;
-
+    border-top: 1px solid grey;
 }
 
 
@@ -49,38 +59,46 @@
 /*
 *    Typography
 */
-h1{
-  width:50%;
-  font-weight: 400;
+h1
+{
+    font-weight: 400;
+
+    width: 50%;
 }
 
-h2{
-  font-weight: 300;
+h2
+{
+    font-weight: 300;
 }
 
-h3{
-  margin-top: 50px;
-  font-weight: 200;
+h3
+{
+    font-weight: 200;
+
+    margin-top: 50px;
 }
 
 /*
 *    Sensors
 */
-.status-light{
-  height: 10px;
-  width: 10px;
-  background-color: green;
-  border-radius: 5px;
+.status-light
+{
+    position: absolute;
+    top: 5px;
+    right: 20px;
 
-  position: absolute;
-  top: 5px;
-  right: 20px;
+    width: 10px;
+    height: 10px;
+
+    border-radius: 5px;
+    background-color: green;
 }
 
 /*
 *    Guages
 */
-.gauge-container{
-  margin: 0 auto;
-  max-width: 120px;
+.gauge-container
+{
+    max-width: 120px;
+    margin: 0 auto;
 }
