@@ -1,0 +1,16 @@
+.box{
+    position:absolute;
+    width: 3.125%;
+    height: 7.69%;
+    border: 1px solid white;
+    box-shadow: 0 0 0 1px #9bc9c7;
+    text-align:center;
+    line-height:450%;
+    z-index:-1;
+}
+.objects{
+    position:absolute;
+}
+.zone1{background-color:#4FC3F7;}
+.zone2{background-color:#4DD0E1;}
+.zone3{background-color:#4DB6AC;}

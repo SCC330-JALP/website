@@ -1,0 +1,31 @@
+<!-- ZONE 1-->
+<box 
+    ng-repeat="box in data"
+    data='box' 
+    x='box.x * x' 
+    y='box.y * y'
+    zone="zone1">
+</box>
+
+<!-- ZONE 2 -->
+<box 
+    ng-repeat="box in data"
+    ng-if="box.y>=11"
+    data='box' 
+    x='box.x * x' 
+    y='box.y * y'
+    zone="zone2">
+</box>
+
+
+<!-- ZONE 3 -->
+<box 
+    ng-repeat="box in data"
+    ng-if="box.y>=22"
+    data='box' 
+    x='box.x * x' 
+    y='box.y * y'
+    zone="zone3">
+</box>
+
+<img src="images/spot.png" style="position:absolute;width:{{y}}%;top:{{testObject.x * x}}%;left:{{testObject.y * y}}%"/>
