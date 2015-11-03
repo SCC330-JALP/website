@@ -1,0 +1,86 @@
+.debug{
+  background-color: grey;
+  border: 1px solid darkgrey;
+  min-height: 100px;
+}
+
+.centered{
+  margin: 0 auto;
+  text-align: center;
+
+}
+
+/*
+*    Zone
+*/
+.zone{
+  border-right: 1px solid grey;
+  min-width: 500px;
+
+}
+
+/*
+*    Cards
+*/
+.card{
+  background-color: white;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  min-height: 100px;
+
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  display: ;
+}
+.card-content{
+  /* do nothing for now  but might want this later*/
+}
+
+.card-footer{
+  width: 100%;
+  max-height: 40%;
+
+
+  border-top: 1px solid grey;
+
+}
+
+
+
+/*
+*    Typography
+*/
+h1{
+  width:50%;
+  font-weight: 400;
+}
+
+h2{
+  font-weight: 300;
+}
+
+h3{
+  margin-top: 50px;
+  font-weight: 200;
+}
+
+/*
+*    Sensors
+*/
+.status-light{
+  height: 10px;
+  width: 10px;
+  background-color: green;
+  border-radius: 5px;
+
+  position: absolute;
+  top: 5px;
+  right: 20px;
+}
+
+/*
+*    Guages
+*/
+.gauge-container{
+  margin: 0 auto;
+  max-width: 120px;
+}

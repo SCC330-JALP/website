@@ -198,10 +198,14 @@ function($scope, $firebaseArray){
 
 
 
-//History Controller
-spotApp.controller('historyController', ['$scope','$firebaseObject',
+//smart lab Controller
+spotApp.controller('smartlabController', ['$scope','$firebaseObject',
 function($scope, $firebaseObject) {
+  $scope.init = function() {
+    console.log("Shit works yo");
+  }
 
+    $scope.init();
 }]);
 
 
