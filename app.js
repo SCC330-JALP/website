@@ -203,6 +203,51 @@ function($scope, $firebaseArray){
 spotApp.controller('smartlabController', ['$scope','$firebaseObject',
 function($scope, $firebaseObject) {
   $scope.init = function() {
+
+    google.load("visualization", "1", {packages:["annotationchart"]});
+    google.setOnLoadCallback(drawChart);
+    var data = new google.visualization.DataTable();
+    data.addColumn('date', 'Date');
+    data.addColumn('number','Light');
+    function drawChart() {
+
+      var chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
+
+      var options = {
+        displayAnnotations: true
+      };
+
+      chart.draw(data, options);
+    }
+    // Get a reference to our logs
+    var ref = new Firebase("https://sunsspot.firebaseio.com/zone1hourly");
+
+    // Retrieve new logs as they are added to our database
+    ref.on("child_added", function(snapshot, prevChildKey) {
+        var newLog = snapshot.val();
+
+        google.setOnLoadCallback(drawChart);
+        data.addRow([new Date(newLog.timestamp),newLog.light]);
+        drawChart();
+    });
+
+    var ref2 = new Firebase("https://sunsspot.firebaseio.com/zone1");
+    ref2.limitToLast(180).once("value", function(snapshot, prevChildKey) {
+        var newLog = snapshot.val();
+        for (var log in newLog){
+          data.addRow([new Date(newLog[log].timestamp),newLog[log].light]);
+        }
+        drawChart();
+    });
+
+
+
+
+
+
+
+
+
     var settingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
 
     settingsRef.on("child_added", function(snapshot) { //listen for when a child is added : also triggers once for each child in database on page load.
@@ -220,6 +265,8 @@ function($scope, $firebaseObject) {
 
 
           var spotTask = $(sensorElement).find("#spotTask")[0];
+          var status = $(sensorElement).find("#status")[0]
+
 
           if(newSensor.task == 'sl'){
             spotTask.innerHTML = 'Light sensor';
@@ -231,6 +278,11 @@ function($scope, $firebaseObject) {
             spotTask.innerHTML = 'Zone sensor';
           }else if(newSensor.task == "idle"){
             spotTask.innerHTML = 'Idle sensor';
+            $(status).css('background-color','darkred');
+
+
+          }else{
+            spotTask.innerHTML = 'Unknown Type';
           }
 
           $(sensorElement).find("#spotMAC")[0].innerHTML = newSensor.address; //insert the spot name
@@ -239,7 +291,6 @@ function($scope, $firebaseObject) {
           $(editButton).data('name', newSensor.name);
           $(editButton).data('task', newSensor.task);
           $(editButton).data('address', newSensor.address);
-
           $(editButton).data('zone', newSensor.zone);
 
 
@@ -262,6 +313,43 @@ function($scope, $firebaseObject) {
           }
         }else{ //sensor is a person tracker
 
+          newSensor.address = snapshot.key();
+
+          var personElement = $("#personTemplate").clone();
+          $(personElement).attr('id', newSensor.address.replace(/ /g, "_"));
+
+          $(personElement).find("#personName")[0].innerHTML = newSensor.name; //insert the spot name
+
+
+          $(personElement).find("#spotMAC")[0].innerHTML = newSensor.address; //insert the spot name
+
+          var viewButton = $(personElement).find("#viewPersonBtn")[0]; //set up the links as seen in child_changed listener
+          $(viewButton).data('name', newSensor.name);
+          $(viewButton).data('task', newSensor.task);
+          $(viewButton).data('address', newSensor.address);
+
+
+          $(viewButton).data('zone', newSensor.zone);
+
+
+          if (newSensor.zone == 1) { //sensor is idle
+
+              $("#zone1people").append(personElement);
+
+              personElement.removeClass('hidden');
+
+          } else if(newSensor.zone == 2){
+            $("#zone2people").append(personElement);
+
+            personElement.removeClass('hidden');
+          } else if(newSensor.zone == 3){
+            $("#zone3people").append(personElement);
+
+            personElement.removeClass('hidden');
+          } else {
+            $("zoneContainer").append(personElement); //FALLBACK : if the sensor doesnt have a zone, still display it to the screen. ugly but.. better than not showing it?
+          }
+
         }
 
 
@@ -271,32 +359,92 @@ function($scope, $firebaseObject) {
 
 
     settingsRef.on("child_changed", function(snapshot) { //listen for when a child is edited
+        console.log('child changed');
 
         var changedSensor = snapshot.val();
-
         var changedElement = $('#' + snapshot.key().replace(/ /g, "_"))[0] //element ID's are the MAC address with underscores instead of spaces
 
-        $(changedElement).find("#spotName")[0].innerHTML = changedSensor.name; //populate element name
+        changedSensor.address = snapshot.key();
 
-        var link = $(changedElement).find("#editSensorBtn")[0]; //find the link to Edit modal
+        if(changedSensor.task == "person"){
+          $(changedElement).find("#personName")[0].innerHTML = changedSensor.name;
 
-        var oldZone = $(link).data('zone'); //get the old task from the data attribute on the link
+          $(changedElement).find("#spotMAC")[0].innerHTML = changedSensor.address;
 
-        $(link).data('name', changedSensor.name); //update the data attributes to the new data
-        $(link).data('task', changedSensor.task);
-        $(link).data('zone', changedSensor.zone);
+          var link = $(changedElement).find("#viewPersonBtn")[0]; //find the link to Edit modal
+
+          var oldZone = $(link).data('zone'); //get the old task from the data attribute on the link
+
+          $(link).data('name', changedSensor.name); //update the data attributes to the new data
+          $(link).data('task', changedSensor.task);
+          $(link).data('zone', changedSensor.zone);
 
 
-        if (oldZone != changedSensor.zone) { //if the task has changed, the element needs to move to a different sub-heading
 
-          if (changedSensor.zone == 1) {
-            $("#zone1Sensors").append(changedElement);
-          } else if(changedSensor.zone == 2){
-            $("#zone2Sensors").append(changedElement);
-          } else if(changedSensor.zone == 3){
-            $("#zone3Sensors").append(changedElement);
-          } else {
-            $("zoneContainer").append(changedElement); //FALLBACK : if the sensor doesnt have a zone, still display it to the screen. ugly but.. better than not showing it?
+          if (oldZone != changedSensor.zone) { //if the zone has changed, the element needs to move to a different sub-heading
+              dataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings" + changedSensor.address);
+              dataRef.remove()
+            if (changedSensor.zone == 1) {
+              $("#zone1people").append(changedElement);
+            } else if(changedSensor.zone == 2){
+              $("#zone2people").append(changedElement);
+            } else if(changedSensor.zone == 3){
+              $("#zone3people").append(changedElement);
+            } else {
+              $("zoneContainer").append(changedElement); //FALLBACK : if the sensor doesnt have a zone, still display it to the screen. ugly but.. better than not showing it?
+            }
+
+          }
+
+        }else{
+          $(changedElement).find("#spotName")[0].innerHTML = changedSensor.name; //populate element name
+
+          var spotTask = $(changedElement).find("#spotTask")[0];
+
+          var status = $(changedElement).find("#status")[0]
+          $(status).css('background-color','green');
+
+          if(changedSensor.task == 'sl'){
+            spotTask.innerHTML = 'Light sensor';
+          }else if(changedSensor.task == "sm"){
+            spotTask.innerHTML = 'Motion sensor';
+          }else if(changedSensor.task == "st"){
+            spotTask.innerHTML = 'Temperature sensor';
+          }else if(changedSensor.task == "zone"){
+            spotTask.innerHTML = 'Zone sensor';
+          }else if(changedSensor.task == "idle"){
+            spotTask.innerHTML = 'Idle sensor';
+          }else{
+            spotTask.innerHTML = 'Unknown Type';
+          }
+
+
+          if(changedSensor.task == 'idle'){
+
+            $(status).css('background-color','darkred');
+          }
+
+          var link = $(changedElement).find("#editSensorBtn")[0]; //find the link to Edit modal
+
+          var oldZone = $(link).data('zone'); //get the old task from the data attribute on the link
+
+          $(link).data('name', changedSensor.name); //update the data attributes to the new data
+          $(link).data('task', changedSensor.task);
+          $(link).data('zone', changedSensor.zone);
+
+
+          if (oldZone != changedSensor.zone) { //if the task has changed, the element needs to move to a different sub-heading
+
+            if (changedSensor.zone == 1) {
+              $("#zone1Sensors").append(changedElement);
+            } else if(changedSensor.zone == 2){
+              $("#zone2Sensors").append(changedElement);
+            } else if(changedSensor.zone == 3){
+              $("#zone3Sensors").append(changedElement);
+            } else {
+              $("zoneContainer").append(changedElement); //FALLBACK : if the sensor doesnt have a zone, still display it to the screen. ugly but.. better than not showing it?
+            }
+
           }
 
         }
@@ -306,14 +454,37 @@ function($scope, $firebaseObject) {
     $(document).on("click", "#editSensorBtn", function() { //when you open the Edit modal
         var name = $(this).data('name'); //populate variables from data-attributes
         var task = $(this).data('task');
+        console.log(task);
         var address = $(this).data('address');
         var zone = $(this).data('zone');
-        console.log(zone);
 
-        var modal = $(".modal"); //get the modal element
+
+        var modal = $("#myModal"); //get the modal element
         modal.find("#myModalLabel")[0].innerHTML = name; //insert variables to the element
+
         modal.find("#spotAddress")[0].innerHTML = address;
         modal.find("input#name")[0].value = name;
+        modal.find("input#" + task).prop("checked", true);
+        modal.find("#sensorZone")[0].innerHTML = zone
+
+        var modal = $("#deleteModal");
+        modal.find("#myModalLabel")[0].innerHTML = name;
+        modal.find("#deleteSpotAddress")[0].innerHTML = address;
+    });
+
+    $(document).on("click", "#viewPersonBtn", function() { //when you open the Edit modal
+        var name = $(this).data('name'); //populate variables from data-attributes
+        var task = $(this).data('task');
+        var address = $(this).data('address');
+        var zone = $(this).data('zone');
+
+
+
+        var modal = $("#viewPerson");
+        modal.find("#myModalLabel")[0].innerHTML = name;
+        modal.find("#spotAddress")[0].innerHTML = address;
+        modal.find("input#name")[0].value = name;
+
         modal.find("input#" + task).prop("checked", true);
         modal.find("#sensorZone")[0].innerHTML = zone
 
@@ -342,6 +513,21 @@ function($scope, $firebaseObject) {
       var newName = document.getElementById('name').value;
       var newTask = $('input[name="optradio"]:checked').val();
       var newZone = parseInt(document.getElementById('sensorZone').innerHTML);
+      var updateRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings/"); //create reference
+
+      updateRef.child(address).set({
+          name: newName,
+          task: newTask,
+          zone: newZone
+      }); //update the record with the new data
+  };
+
+  $scope.personSubmit = function() {
+      var address = document.getElementById('spotAddress').innerHTML; //populate variables based off of form values
+      var newName = document.getElementById('name').value;
+      var newTask = $('input[name="optradio"]:checked').val();
+      var newZone = parseInt(document.getElementById('sensorZone').innerHTML);
+
       var updateRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings/"); //create reference
 
       updateRef.child(address).set({

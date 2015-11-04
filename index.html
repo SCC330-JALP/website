@@ -69,6 +69,21 @@
     }
     </style>
 
+    <script type="text/javascript"
+          src="https://www.google.com/jsapi?autoload={
+            'modules':[{
+              'name':'visualization',
+              'version':'1',
+              'packages':['corechart']
+            }]
+          }"></script>
+          <script>
+          google.load("visualization", "1", {packages:["annotationchart"]});
+          google.setOnLoadCallback(drawChart);
+          var data = new google.visualization.DataTable();
+          data.addColumn('date', 'Date');
+          data.addColumn('number','Light');
+          </script>
 
 
 </head>
