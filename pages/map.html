@@ -30,10 +30,43 @@
 
 <!-- All Sensors -->
 <div ng-repeat="sensor in sensors">
-    <sensor 
-        task='sensor.task'
-        x='sensor.x * x'
-        y='sensor.y * y'
-        >
-    </sensor>
+    
+    <div ng-if="sensor.task == 'sl'">
+		<sensor 
+	        x='sensor.x * x'
+	        y='sensor.y * y'
+	        name='sensor.name'
+	        zone='sensor.zone'
+	        task='sensor.task'
+	        >
+    	</sensor>
+    </div>
+    
+	
+	<div ng-if='sensor.task == "person"'>
+		<sensor 
+			ng-if="sensor.zone == 1"
+			x="1 * x"
+			y="5 * y"
+			name='sensor.name'
+			task="sensor.task">
+		</sensor>
+
+		<sensor 
+			ng-if="sensor.zone == 2"
+			x="1 * x"
+			y="16 * y"
+			name='sensor.name'
+			task="sensor.task">
+		</sensor>
+
+		<sensor 
+			ng-if="sensor.zone == 3"
+			x="1 * x"
+			y="27 * y"
+			name='sensor.name'
+			task="sensor.task">
+		</sensor>
+	</div>
+
 </div>

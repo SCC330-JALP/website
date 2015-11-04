@@ -25,6 +25,10 @@ spotApp.config(function($routeProvider, $locationProvider) {
             templateUrl: 'pages/map.html',
             controller: 'mapController'
         })
+        .when('/history', {
+            templateUrl: 'pages/history.html',
+            controller: 'historyController'
+        })
         .otherwise({
             redirectTo: '/'
         });
@@ -371,21 +375,24 @@ function($scope, $firebaseObject) {
         
         $scope.ref[$scope.i] = new Firebase("https://sunsspot.firebaseio.com/spotSettings/" + key);
 
+        var localObject = $scope.syncObject[$scope.i];
+        
         // download the data into a local object
-        $scope.syncObject[$scope.i] = $firebaseObject($scope.ref[$scope.i]);
+        localObject = $firebaseObject($scope.ref[$scope.i]);
 
         // synchronize the object with a three-way data binding
-        $scope.syncObject[$scope.i].$bindTo($scope, "sensor_" + $scope.i);
+        localObject.$bindTo($scope, "sensor_" + $scope.i);
 
-        $scope.sensors[$scope.i] = $scope.syncObject[$scope.i];
+        $scope.sensors[$scope.i] = localObject;
 
         $scope.i++;
     }); 
 
-
+    //Generate Grid Table
     $scope.data = [];
-    $scope.x = 7.69;
-    $scope.y = 3.025;
+    $scope.x = 7.69; // height of a sqaure in %
+    $scope.y = 3.025; // Width of a square in %
+    
     $scope.zone1 = "zone1";
     $scope.zone2 = "zone2";
     $scope.zone3 = "zone3";
@@ -394,15 +401,9 @@ function($scope, $firebaseObject) {
         for(y=0;y<33;y++)
             $scope.data.push({x: i, y: y});
 
-    // download the data into a local object
-    // $scope.syncObject[0] = $firebaseObject($scope.ref[0]);
-
-    // synchronize the object with a three-way data binding
-    // $scope.syncObject[0].$bindTo($scope, "sensor" + 0);
-
 }]);
 
-//Map Directive
+//Map - Box directive
 spotApp.directive('box', function(){
 
     return {
@@ -420,19 +421,18 @@ spotApp.directive('box', function(){
     };
 });
 
-// Map - Sensor Directive
+// Map - Sensor directive
 spotApp.directive('sensor', function(){
     return{
         restrict:'E',
         scope:{
+            zone : '=',
             task : '=',
+            name : '=',
             x: '=',
             y: '='
         },
-        template: '<img class="sensor" src="images/spot.png" style="top:{{x}}%;left:{{y}}%">',
-        controller: function($scope){
-
-        }
+        template: '<div class="sensor" style="top:{{x}}%;left:{{y}}%"><img style="width:100%;" src="images/{{task}}.png" ><p>{{name}}</p></div>'
     };
     
 });
