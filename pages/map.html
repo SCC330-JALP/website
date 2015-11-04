@@ -28,16 +28,12 @@
     zone="zone3">
 </box>
 
-<img src="images/spot.png" style="position:absolute;width:{{y}}%;top:{{sensor0.x * x}}%;left:{{sensor0.y * y}}%"/>
-<img src="images/spot.png" style="position:absolute;width:{{y}}%;top:{{sensor1.x * x}}%;left:{{sensor1.y * y}}%"/>
-<img src="images/spot.png" style="position:absolute;width:{{y}}%;top:{{sensor2.x * x}}%;left:{{sensor2.y * y}}%"/>
-<img src="images/spot.png" style="position:absolute;width:{{y}}%;top:{{sensor3.x * x}}%;left:{{sensor3.y * y}}%"/>
-
-<!-- <div ng-repeat="sensor in sensors">
+<!-- All Sensors -->
+<div ng-repeat="sensor in sensors">
     <sensor 
         task='sensor.task'
         x='sensor.x * x'
         y='sensor.y * y'
         >
     </sensor>
-</div> -->
+</div>

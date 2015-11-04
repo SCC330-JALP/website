@@ -361,41 +361,28 @@ function($scope, $firebaseObject) {
 
     $scope.ref = [];
     $scope.syncObject = [];
-    $scope.keyName = [];
-    $scope.ref[0] = new Firebase("https://sunsspot.firebaseio.com/spotSettings/A000%20E000%20I000%20M001");
-    $scope.ref[1] = new Firebase("https://sunsspot.firebaseio.com/spotSettings/B000%20F000%20J000%20N002");
-    $scope.ref[2] = new Firebase("https://sunsspot.firebaseio.com/spotSettings/C000%20G000%20K000%20O003");
-    $scope.ref[3] = new Firebase("https://sunsspot.firebaseio.com/spotSettings/D000%20H000%20L000%20P004");
-
     $scope.sensors = [];
     
     $scope.i = 0;
 
     // Retrieve new sensors as they are added to our database
-    // spotSettingsRef.on("child_added", function(snapshot) {
-      // var data = snapshot.val();
-      // var key = snapshot.key().replace(/\s+/g, '%20');
-
-    //   $scope.sensors[$scope.i] = {};
-    //   $scope.sensors[$scope.i] = snapshot.val();
-      // console.log(key);
-      // $scope.ref[i] = new Firebase("https://sunsspot.firebaseio.com/spotSettings" + key);
-      // console.log($scope.ref[i]);
-    //   $scope.syncObject[i] = $firebaseObject($scope.ref[i]);
-    //   $scope.syncObject[i].$bindTo($scope, "sensor" + i);
-
-    // $scope.i++;
-    // });
-
-// spotSettingsRef.on("value", function(snapshot) {
-//     snapshot.forEach(function(data) {
-//         var key = data.key().replace(/\s+/g, '%20');
-//         $scope.ref[i] = new Firebase("https://sunsspot.firebaseio.com/spotSettings" + key);
-//         $scope.syncObject[i] = $firebaseObject($scope.ref[i]);
+    spotSettingsRef.on("child_added", function(snapshot) {
+        var key = snapshot.key().replace(/\s+/g, '%20');
         
-//         $scope.i++;
-//     });
-// });
+        $scope.ref[$scope.i] = new Firebase("https://sunsspot.firebaseio.com/spotSettings/" + key);
+
+        // download the data into a local object
+        $scope.syncObject[$scope.i] = $firebaseObject($scope.ref[$scope.i]);
+
+        // synchronize the object with a three-way data binding
+        $scope.syncObject[$scope.i].$bindTo($scope, "sensor_" + $scope.i);
+
+        $scope.sensors[$scope.i] = $scope.syncObject[$scope.i];
+
+        $scope.i++;
+    }); 
+
+
     $scope.data = [];
     $scope.x = 7.69;
     $scope.y = 3.025;
@@ -408,16 +395,10 @@ function($scope, $firebaseObject) {
             $scope.data.push({x: i, y: y});
 
     // download the data into a local object
-    $scope.syncObject[0] = $firebaseObject($scope.ref[0]);
-    $scope.syncObject[1] = $firebaseObject($scope.ref[1]);
-    $scope.syncObject[2] = $firebaseObject($scope.ref[2]);
-    $scope.syncObject[3] = $firebaseObject($scope.ref[3]);
+    // $scope.syncObject[0] = $firebaseObject($scope.ref[0]);
 
     // synchronize the object with a three-way data binding
-    $scope.syncObject[0].$bindTo($scope, "sensor" + 0);
-    $scope.syncObject[1].$bindTo($scope, "sensor" + 1);
-    $scope.syncObject[2].$bindTo($scope, "sensor" + 2);
-    $scope.syncObject[3].$bindTo($scope, "sensor" + 3);
+    // $scope.syncObject[0].$bindTo($scope, "sensor" + 0);
 
 }]);
 
