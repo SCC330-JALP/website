@@ -11,6 +11,7 @@
 //modules
 var spotApp = angular.module('spotApp', ['ngRoute', 'ngResource', 'firebase', 'googlechart']);
 var ref = new Firebase("https://sunsspot.firebaseio.com");
+var spotSettingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
 
 //Routes
 spotApp.config(function($routeProvider, $locationProvider) {
@@ -23,6 +24,10 @@ spotApp.config(function($routeProvider, $locationProvider) {
         .when('/map', {
             templateUrl: 'pages/map.html',
             controller: 'mapController'
+        })
+        .when('/history', {
+            templateUrl: 'pages/history.html',
+            controller: 'historyController'
         })
         .otherwise({
             redirectTo: '/'
@@ -158,7 +163,7 @@ spotApp.run(function($rootScope, $firebaseObject) {
                 type: "date"
             }, {
                 id: "temp-data",
-                label: "Temp (°C)",
+                label: "Temp (?)",
                 type: "number"
             }],
             "rows": []
@@ -544,11 +549,36 @@ function($scope, $firebaseObject) {
 spotApp.controller('mapController', ['$scope','$firebaseObject',
 function($scope, $firebaseObject) {
 
-    var ref = new Firebase("https://sunsspot.firebaseio.com/testObjects/UpdateTest");
+    $scope.ref = [];
+    $scope.syncObject = [];
+    $scope.sensors = [];
+    
+    $scope.i = 0;
 
+    // Retrieve new sensors as they are added to our database
+    spotSettingsRef.on("child_added", function(snapshot) {
+        var key = snapshot.key().replace(/\s+/g, '%20');
+        
+        $scope.ref[$scope.i] = new Firebase("https://sunsspot.firebaseio.com/spotSettings/" + key);
+
+        var localObject = $scope.syncObject[$scope.i];
+        
+        // download the data into a local object
+        localObject = $firebaseObject($scope.ref[$scope.i]);
+
+        // synchronize the object with a three-way data binding
+        localObject.$bindTo($scope, "sensor_" + $scope.i);
+
+        $scope.sensors[$scope.i] = localObject;
+
+        $scope.i++;
+    }); 
+
+    //Generate Grid Table
     $scope.data = [];
-    $scope.x = 7.69;
-    $scope.y = 3.025;
+    $scope.x = 7.69; // height of a sqaure in %
+    $scope.y = 3.025; // Width of a square in %
+    
     $scope.zone1 = "zone1";
     $scope.zone2 = "zone2";
     $scope.zone3 = "zone3";
@@ -557,15 +587,9 @@ function($scope, $firebaseObject) {
         for(y=0;y<33;y++)
             $scope.data.push({x: i, y: y});
 
-    // download the data into a local object
-    var syncObject = $firebaseObject(ref);
-
-    // synchronize the object with a three-way data binding
-    syncObject.$bindTo($scope, "testObject");
-
 }]);
 
-//Map Directive
+//Map - Box directive
 spotApp.directive('box', function(){
 
     return {
@@ -582,6 +606,23 @@ spotApp.directive('box', function(){
         }
     };
 });
+
+// Map - Sensor directive
+spotApp.directive('sensor', function(){
+    return{
+        restrict:'E',
+        scope:{
+            zone : '=',
+            task : '=',
+            name : '=',
+            x: '=',
+            y: '='
+        },
+        template: '<div class="sensor" style="top:{{x}}%;left:{{y}}%"><img style="width:100%;" src="images/{{task}}.png" ><p>{{name}}</p></div>'
+    };
+    
+});
+
 
 //Sensors Controller
 spotApp.controller('sensorsController', ['$scope',
@@ -860,7 +901,7 @@ function listenLive(childName, object, type) {
         if (type === 'temp') {
             object.data = [
                 ['Label', 'Value'],
-                ['Temp (°C)', temp]
+                ['Temp (?)', temp]
             ];
         }
     });
@@ -897,5 +938,12 @@ function pushData(childName, object, type) {
             }
 
         });
+    });
+}
+
+function listen(object){
+    var ref = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
+    ref.orderByKey().on('child_added', function(snapshot){
+        object = snapshot.val();
     });
 }

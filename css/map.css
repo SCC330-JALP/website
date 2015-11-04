@@ -2,7 +2,7 @@
     position:absolute;
     width: 3.125%;
     height: 7.69%;
-    border: 1px solid white;
+    /*border: 1px solid white;*/
     box-shadow: 0 0 0 1px #9bc9c7;
     text-align:center;
     line-height:450%;
@@ -11,6 +11,18 @@
 .objects{
     position:absolute;
 }
-.zone1{background-color:#4FC3F7;}
+.zone1{background-color:#8FC5F9;}
 .zone2{background-color:#4DD0E1;}
 .zone3{background-color:#4DB6AC;}
+
+.sensor{
+    background-color:white;
+    padding:5px;
+    font-size:11px;
+    position:absolute;
+    width:3.125%;
+    border-radius:5px;
+}
+.sensor span{
+    display:block;
+}
