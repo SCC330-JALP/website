@@ -14,3 +14,8 @@
 .zone1{background-color:#4FC3F7;}
 .zone2{background-color:#4DD0E1;}
 .zone3{background-color:#4DB6AC;}
+
+.sensor{
+    position:absolute;
+    width: 3.125%;
+}
