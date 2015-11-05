@@ -1,238 +1,249 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="">
-  <meta name="author" content="">
-
-  <title>JALP SmartLab</title>
-
-  <!-- Bootstrap Core CSS -->
-  <link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- MetisMenu CSS -->
-  <link href="../bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
-
-  <!-- Timeline CSS -->
-  <link href="../dist/css/timeline.css" rel="stylesheet">
-
-  <!-- Custom CSS -->
-  <link href="../dist/css/sb-admin-2.css" rel="stylesheet">
-
-  <!-- Morris Charts CSS -->
-  <link href="../bower_components/morrisjs/morris.css" rel="stylesheet">
-
-  <!-- Custom Fonts -->
-  <link href="../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-
-  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-  <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-</head>
-
-<body>
-
-
-    <h1 class="centered">Smart lab</h1>
+<h1 class="centered">Smart lab</h1>
 
 <div class="centered" id="zoneContainer">
 
-  <div id="zone1" class="col-xs-12 col-sm-6 col-md-4 zone">
-    <h2>Zone 1</h2>
+    <div id="zone1" class="col-xs-12 col-sm-6 col-md-4 zone">
+        <h2>Zone 1</h2>
 
-    <div class="container-fluid">
+        <div class="container-fluid">
 
-      <div class="row">
-        <div class="col-xs-12 col-sm-6 object-card">
-          <div class="card">
+            <div class="row">
+                <div class="col-xs-12 col-sm-6 object-card">
+                    <div class="card">
 
-            <div class="card-content">
-                  <div class="gauge-container" google-chart chart="liveLight1"></div>
+                        <div class="card-content">
+                            <div class="gauge-container" google-chart chart="liveLight1"></div>
+                        </div>
+
+                        <div class="card-footer">
+                        
+                            <div id="sparkline1Temp" style="width:100%; height:50px;"></div>
+                        </div>
+
+                    </div>
+                    <!-- card -->
+                </div>
+                
+                <div class="col-xs-12 col-sm-6 object-card">
+                    <div class="card">
+
+                        <div class="card-content">
+                            <div class="gauge-container" google-chart chart="liveTemp1"></div>
+                        </div>
+
+                        <div class="card-footer">
+                            
+                        </div>
+
+                    </div>
+                    <!-- card -->
+                </div>
+
+                <!-- Light -->
+                <div class="col-xs-12 col-md-12 object-card">
+                    <div class="card">
+                        <div id="zone1light" style="width: 100%; height: 120px;"></div>
+                    </div>
+                </div>
+
+                <!-- Temperature -->
+                <div class="col-xs-12 col-md-12 object-card">
+                    <div class="card">
+                        <div id="zone1temp" style="width: 100%; height: 120px;"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- row -->
+
+
+        </div>
+        <!-- //container -->
+
+        <div class="container-fluid">
+            <h3>Sensors</h3>
+            <div class="row" id="zone1Sensors">
+
+
             </div>
 
-            <div class="card-footer">
-              <div id="sparkline1Temp" style="width:100%; height:50px;"></div>
-            </div>
 
-          </div> <!-- card -->
         </div>
+        <!-- //container -->
 
-        <div class="col-xs-12 col-sm-6 object-card">
-          <div class="card">
+        <div class="container-fluid">
 
-            <div class="card-content">
-                <div class="gauge-container" google-chart chart="liveTemp1"></div>
-            </div>
+            <h3>People</h3>
+            <div class="row" id="zone1people">
 
-            <div class="card-footer">
 
             </div>
 
-          </div> <!-- card -->
         </div>
-          <div class="col-xs-12 col-md-6 object-card">
-        <div class="card">
-            <div id="chart_div" style="width: 400px; height: 120px;"></div>
-        </div>
-        </div>
-      </div> <!-- row -->
-
-
-    </div><!-- //container -->
-
-    <div class="container-fluid">
-      <h3>Sensors</h3>
-      <div class="row" id="zone1Sensors">
-
-
-      </div>
-
-
-    </div><!-- //container -->
-
-    <div class="container-fluid">
-
-      <h3>People</h3>
-      <div class="row" id="zone1people">
-
-
-      </div>
 
     </div>
-
-  </div> <!-- zone -->
-
+    <!-- zone -->
 
 
-  <div id="zone2" class="col-xs-12 col-sm-6 col-md-4 zone">
-    <h2>Zone 2</h2>
 
-    <div class="container-fluid">
+    <div id="zone2" class="col-xs-12 col-sm-6 col-md-4 zone">
+        <h2>Zone 2</h2>
 
-      <div class="row">
-        <div class="col-xs-12 col-sm-6 object-card">
-          <div class="card">
+        <div class="container-fluid">
 
-            <div class="card-content">
-                  <div class="gauge-container" google-chart chart="liveLight2"></div>
+            <div class="row">
+                <div class="col-xs-12 col-sm-6 object-card">
+                    <div class="card">
+
+                        <div class="card-content">
+                            <div class="gauge-container" google-chart chart="liveLight2"></div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div id="sparklineTemp2" style="width:100%; height:50px;"></div>
+                        </div>
+
+                    </div>
+                    <!-- card -->
+                </div>
+
+                <div class="col-xs-12 col-sm-6 object-card">
+                    <div class="card">
+
+                        <div class="card-content">
+                            <div class="gauge-container" google-chart chart="liveTemp2"></div>
+                        </div>
+
+                        <div class="card-footer">
+
+                        </div>
+
+                    </div>
+                    <!-- card -->
+
+
+                </div>
+                <!-- Light -->
+                <div class="col-xs-12 col-md-12 object-card">
+                    <div class="card">
+                        <div id="zone2light" style="width: 100%; height: 120px;"></div>
+                    </div>
+                </div>
+
+                <!-- Temperature -->
+                <div class="col-xs-12 col-md-12 object-card">
+                    <div class="card">
+                        <div id="zone2temp" style="width: 100%; height: 120px;"></div>
+                    </div>
+                </div>
             </div>
+            <!-- row -->
 
-            <div class="card-footer">
-              <div id="sparklineTemp2" style="width:100%; height:50px;"></div>
-            </div>
 
-          </div> <!-- card -->
         </div>
+        <!-- //container -->
 
-        <div class="col-xs-12 col-sm-6 object-card">
-          <div class="card">
+        <div class="container-fluid">
+            <h3>Sensors</h3>
+            <div class="row" id="zone2Sensors">
 
-            <div class="card-content">
-                <div class="gauge-container" google-chart chart="liveTemp2"></div>
-            </div>
-
-            <div class="card-footer">
 
             </div>
 
-          </div> <!-- card -->
+
         </div>
+        <!-- //container -->
 
-      </div> <!-- row -->
+        <div class="container-fluid">
 
+            <h3>People</h3>
+            <div class="row" id="zone2people">
 
-    </div><!-- //container -->
-
-    <div class="container-fluid">
-      <h3>Sensors</h3>
-      <div class="row" id="zone2Sensors">
-
-
-      </div>
-
-
-    </div><!-- //container -->
-
-    <div class="container-fluid">
-
-      <h3>People</h3>
-      <div class="row" id="zone2people">
-
-      </div>
-    </div>
-
-  </div> <!-- zone -->
-
-
-  <div id="zone3" class="col-xs-12 col-sm-6 col-md-4 zone">
-    <h2>Zone 3</h2>
-
-    <div class="container-fluid">
-
-      <div class="row">
-        <div class="col-xs-12 col-sm-6 object-card">
-          <div class="card">
-
-            <div class="card-content">
-                  <div class="gauge-container" google-chart chart="liveLight3"></div>
             </div>
-
-            <div class="card-footer">
-              <div id="sparklineTemp3" style="width:100%; height:50px;"></div>
-            </div>
-
-          </div> <!-- card -->
         </div>
-
-        <div class="col-xs-12 col-sm-6 object-card">
-          <div class="card">
-
-            <div class="card-content">
-                <div class="gauge-container" google-chart chart="liveTemp3"></div>
-            </div>
-
-            <div class="card-footer">
-
-            </div>
-
-          </div> <!-- card -->
-        </div>
-
-      </div> <!-- row -->
-
-
-    </div><!-- //container -->
-
-    <div class="container-fluid">
-      <h3>Sensors</h3>
-      <div class="row" id="zone3Sensors">
-
-
-      </div>
-
-
-    </div><!-- //container -->
-
-    <div class="container-fluid">
-
-      <h3>People</h3>
-      <div class="row" id="zone3people">
-
-
-
-      </div>
 
     </div>
+    <!-- zone -->
 
-  </div><!-- zone -->
+
+    <div id="zone3" class="col-xs-12 col-sm-6 col-md-4 zone">
+        <h2>Zone 3</h2>
+
+        <div class="container-fluid">
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-6 object-card">
+                    <div class="card">
+
+                        <div class="card-content">
+                            <div class="gauge-container" google-chart chart="liveLight3"></div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div id="sparklineTemp3" style="width:100%; height:50px;"></div>
+                        </div>
+
+                    </div>
+                    <!-- card -->
+                </div>
+
+                <div class="col-xs-12 col-sm-6 object-card">
+                    <div class="card">
+
+                        <div class="card-content">
+                            <div class="gauge-container" google-chart chart="liveTemp3"></div>
+                        </div>
+
+                        <div class="card-footer">
+
+                        </div>
+
+                    </div>
+                    <!-- card -->
+                </div>
+                <!-- Light -->
+                <div class="col-xs-12 col-md-12 object-card">
+                    <div class="card">
+                        <div id="zone3light" style="width: 100%; height: 120px;"></div>
+                    </div>
+                </div>
+
+                <!-- Temperature -->
+                <div class="col-xs-12 col-md-12 object-card">
+                    <div class="card">
+                        <div id="zone3temp" style="width: 100%; height: 120px;"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- row -->
+
+
+        </div>
+        <!-- //container -->
+
+        <div class="container-fluid">
+            <h3>Sensors</h3>
+            <div class="row" id="zone3Sensors">
+
+
+            </div>
+
+
+        </div>
+        <!-- //container -->
+
+        <div class="container-fluid">
+
+            <h3>People</h3>
+            <div class="row" id="zone3people">
+
+
+
+            </div>
+
+        </div>
+
+    </div>
+    <!-- zone -->
 
 </div>
 
@@ -243,25 +254,26 @@
   PERSON TEMPLATE
 
  -->
- <div id="personTemplate" class="col-md-6 col-sm-12 object-card hidden">
-   <div class="card">
-     <div class="row">
-         <span id="personName">Unassigned</span>
-       <div class="card-footer">
-         <div class="col-md-8">
+<div id="personTemplate" class="col-md-6 col-sm-12 object-card hidden">
+    <div class="card">
+        <div class="row">
+            <span id="personName">Unassigned</span>
+            <div class="card-footer">
+                <div class="col-md-8">
 
 
-           <small id="spotMAC">Unknown Address</small>
-         </div>
-         <div class="col-md-4">
-           <button id="viewPersonBtn" class="btn btn-primary pull-right" type="button" name="button" data-toggle="modal" data-target="#viewPerson" data-name="" data-address="" data-zone="" data-task="">View</button>
-         </div>
+                    <small id="spotMAC">Unknown Address</small>
+                </div>
+                <div class="col-md-4">
+                    <button id="viewPersonBtn" class="btn btn-primary pull-right" type="button" name="button" data-toggle="modal" data-target="#viewPerson" data-name="" data-address="" data-zone="" data-task="">View</button>
+                </div>
 
-       </div>
+            </div>
 
-     </div>
- </div>
-</div><!-- end template -->
+        </div>
+    </div>
+</div>
+<!-- end template -->
 
 <!--
 
@@ -269,29 +281,31 @@
 
  -->
 <div id="sensorTemplate" class="col-md-12 col-lg-6 object-card hidden">
-  <div class="card">
-    <div id="status" class="status-light">  </div>
+    <div class="card">
+        <div id="status" class="status-light"> </div>
 
-    <span id="spotName"> Spot name </span>
+        <span id="spotName"> Spot name </span>
 
-    <div style="width: 200px; height: 200px;"> Insert picture here</div>
+        <div style="width: 200px; height: 200px;"> Insert picture here</div>
 
-    <div class="card-footer">
+        <div class="card-footer">
 
-        <div class=" col-xs-9">
-          <span id="spotTask">Spot type</span> <br>
-          <small id="spotMAC"> Spot MAC</small>
+            <div class=" col-xs-9">
+                <span id="spotTask">Spot type</span>
+                <br>
+                <small id="spotMAC"> Spot MAC</small>
+            </div>
+            <div class="col-xs-3">
+                <button id="editSensorBtn" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal" data-name="" data-task="" data-address="" data-zone="">Edit</button>
+            </div>
+
         </div>
-        <div class="col-xs-3">
-          <button id="editSensorBtn" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal" data-name="" data-task="" data-address="" data-zone="">Edit</button>
-        </div>
+
 
     </div>
 
-
-  </div>
-
-</div><!-- end template -->
+</div>
+<!-- end template -->
 
 
 <!--
@@ -355,8 +369,8 @@
                                 <!-- <button type="submit" class="btn btn-default" data-dismiss="modal" -->
                                 <button class="btn btn-danger pull-left" data-toggle="modal" data-target="#deleteModal" data-name="">Delete spot</button>
                                 <div class="pull-right">
-                                  <button class="btn btn-default" data-dismiss="modal"> Cancel </button>
-                                  <button type="submit" class="btn btn-default" data-dismiss="modal" ng-click="personSubmit()">Save changes</button>
+                                    <button class="btn btn-default" data-dismiss="modal"> Cancel </button>
+                                    <button type="submit" class="btn btn-default" data-dismiss="modal" ng-click="personSubmit()">Save changes</button>
                                 </div>
 
                             </div>
@@ -436,8 +450,8 @@
                                 <!-- <button type="submit" class="btn btn-default" data-dismiss="modal" -->
                                 <button class="btn btn-danger pull-left" data-toggle="modal" data-target="#deleteModal" data-name="">Delete spot</button>
                                 <div class="pull-right">
-                                  <button class="btn btn-default" data-dismiss="modal"> Cancel </button>
-                                  <button type="submit" class="btn btn-default" data-dismiss="modal" ng-click="modalSubmit()">Save changes</button>
+                                    <button class="btn btn-default" data-dismiss="modal"> Cancel </button>
+                                    <button type="submit" class="btn btn-default" data-dismiss="modal" ng-click="modalSubmit()">Save changes</button>
                                 </div>
 
                             </div>
@@ -479,24 +493,3 @@ DELETE MODAL
         <!-- /.modal-content -->
     </div>
     <!-- /.modal-dialog -->
-
-  <!-- jQuery -->
-  <script src="../bower_components/jquery/dist/jquery.min.js"></script>
-
-  <!-- Bootstrap Core JavaScript -->
-  <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-
-  <!-- Metis Menu Plugin JavaScript -->
-  <script src="../bower_components/metisMenu/dist/metisMenu.min.js"></script>
-
-  <!-- Morris Charts JavaScript -->
-  <script src="../bower_components/raphael/raphael-min.js"></script>
-  <script src="../bower_components/morrisjs/morris.min.js"></script>
-  <script src="../js/morris-data.js"></script>
-
-  <!-- Custom Theme JavaScript -->
-  <script src="../dist/js/sb-admin-2.js"></script>
-
-</body>
-
-</html>

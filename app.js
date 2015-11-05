@@ -163,7 +163,7 @@ spotApp.run(function($rootScope, $firebaseObject) {
                 type: "date"
             }, {
                 id: "temp-data",
-                label: "Temp (?)",
+                label: "Temp (℃)",
                 type: "number"
             }],
             "rows": []
@@ -187,66 +187,103 @@ spotApp.run(function($rootScope, $firebaseObject) {
     $rootScope.zone3temp = zoneTemp[2];
 
 })
+
 //Live Data Controller
-spotApp.controller('liveController', ['$scope','$firebaseArray',
-function($scope, $firebaseArray){
-
-    $scope.initSlider = function(){
-        $("p").click(function(){
-            $(this).hide();
-        });
-    }
-
-    $scope.initSlider();
+// spotApp.controller('liveController', ['$scope','$firebaseArray',
+// function($scope, $firebaseArray){
 
 
-}]);
+// }]);
 
 
 
 //smart lab Controller
 spotApp.controller('smartlabController', ['$scope','$firebaseObject',
 function($scope, $firebaseObject) {
+
+    /**
+     * Generate a annotation graph and set it to a <div>
+     * @constructor
+     * @param {int} zoneNumber - Zone number.
+     * @param {String} graphType - Either 'light' or 'temp'.
+     * @param {string} bindDivName - The author of the book.
+     */
+    $scope.setHistoryChart = function(zoneNumber, graphType, bindDivName){
+        google.load("visualization", "1", {packages:["annotationchart"]});
+        google.setOnLoadCallback(drawChart);
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'Date');
+
+        if(graphType==='light'){
+            data.addColumn('number','Light');
+        }else{
+            data.addColumn('number', 'Temperature');
+        }
+        
+        // Get a reference to our logs
+        var ref = new Firebase("https://sunsspot.firebaseio.com/zone" + zoneNumber +"hourly");
+
+        // Retrieve new logs as they are added to our database
+        ref.on("child_added", function(snapshot, prevChildKey) {
+            var newLog = snapshot.val();
+
+            if(graphType==='light'){
+                data.addRow([new Date(newLog.timestamp),newLog.light]);
+            }else{
+                data.addRow([new Date(newLog.timestamp),newLog.temp]);
+            }
+
+            google.setOnLoadCallback(drawChart);
+            
+            drawChart();
+        });
+
+        var ref2 = new Firebase("https://sunsspot.firebaseio.com/zone" + zoneNumber);
+        ref2.limitToLast(180).once("value", function(snapshot, prevChildKey) {
+            var newLog = snapshot.val();
+            for (var log in newLog){
+                if(graphType==='light'){
+                    data.addRow([new Date(newLog[log].timestamp),newLog[log].light]);
+                }else{
+                    data.addRow([new Date(newLog[log].timestamp),newLog[log].temp]);
+                }
+            }
+
+
+            drawChart(bindDivName);
+        });
+
+        function drawChart(bindDivName) {
+
+          var chart = new google.visualization.AnnotationChart(document.getElementById(bindDivName));
+
+          var options = {
+            displayAnnotations: true,
+            zoomButtons:{
+                  '1m': { 'label': '1m', 'offset': [0, 1, 0] },
+                  '15m': { 'label': '15m', 'offset': [0, 15, 0] },
+                  '1h': { 'label': '1h', 'offset': [1, 0, 0] },
+                  '6hs': { 'label': '6h', 'offset': [6, 0, 0] },
+                  '1d': { 'label': '1d', 'offset': [1, 0, 0, 0, 0]},
+                  '5d': { 'label': '5d', 'offset': [5, 0, 0, 0, 0] },
+                  '1w': { 'label': '1w', 'offset': [7, 0, 0, 0, 0] },
+            },
+            zoomButtonsOrder: ['1m', '15m', '1h', '6h', '1d', '5d', '1w', 'max'],
+          };
+
+          options.colors = graphType=='light' ? ['#0D47A1', '#0D47A1', '#0D47A1'] : ['#880E4F', '#AD1457', '#C2185B'];
+
+          chart.draw(data, options);
+        }
+    }
+
   $scope.init = function() {
 
-    google.load("visualization", "1", {packages:["annotationchart"]});
-    google.setOnLoadCallback(drawChart);
-    var data = new google.visualization.DataTable();
-    data.addColumn('date', 'Date');
-    data.addColumn('number','Light');
-    function drawChart() {
-
-      var chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
-
-      var options = {
-        displayAnnotations: true
-      };
-
-      chart.draw(data, options);
+    //Bind graphs to zone(zoneNumber)light/temp.
+    for(i=1;i<=3;i++){
+        $scope.setHistoryChart(i, 'light', 'zone' + i + 'light');
+        $scope.setHistoryChart(i, 'temp', 'zone' + i + 'temp');
     }
-    // Get a reference to our logs
-    var ref = new Firebase("https://sunsspot.firebaseio.com/zone1hourly");
-
-    // Retrieve new logs as they are added to our database
-    ref.on("child_added", function(snapshot, prevChildKey) {
-        var newLog = snapshot.val();
-
-        google.setOnLoadCallback(drawChart);
-        data.addRow([new Date(newLog.timestamp),newLog.light]);
-        drawChart();
-    });
-
-    var ref2 = new Firebase("https://sunsspot.firebaseio.com/zone1");
-    ref2.limitToLast(180).once("value", function(snapshot, prevChildKey) {
-        var newLog = snapshot.val();
-        for (var log in newLog){
-          data.addRow([new Date(newLog[log].timestamp),newLog[log].light]);
-        }
-        drawChart();
-    });
-
-
-
 
 
 
@@ -901,7 +938,7 @@ function listenLive(childName, object, type) {
         if (type === 'temp') {
             object.data = [
                 ['Label', 'Value'],
-                ['Temp (?)', temp]
+                ['Temp (℃)', temp]
             ];
         }
     });
