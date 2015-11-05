@@ -16,8 +16,8 @@
                         </div>
 
                         <div class="card-footer">
-                          <span class="sparkline"></span>
-                            <div id="sparkline1Temp" style="width:100%; height:50px;"></div>
+                          <button ng-click="openHistory('zone1light')" class="btn btn-default btn-block">View History</button>
+                           <div id="sparklineTemp1" style="width:100%; height:50px;"></div>
                         </div>
 
                     </div>
@@ -32,7 +32,7 @@
                         </div>
 
                         <div class="card-footer">
-                            
+                            <button ng-click="openHistory('zone1temp')" class="btn btn-default btn-block">View History</button>
                         </div>
 
                     </div>
@@ -99,7 +99,9 @@
                         </div>
 
                         <div class="card-footer">
+                        <button ng-click="openHistory('zone2light')" class="btn btn-default btn-block">View History</button>
                             <div id="sparklineTemp2" style="width:100%; height:50px;"></div>
+                            
                         </div>
 
                     </div>
@@ -114,7 +116,7 @@
                         </div>
 
                         <div class="card-footer">
-
+                        <button ng-click="openHistory('zone2temp')" class="btn btn-default btn-block">View History</button>
                         </div>
 
                     </div>
@@ -179,6 +181,7 @@
                         </div>
 
                         <div class="card-footer">
+                        <button ng-click="openHistory('zone3light')" class="btn btn-default btn-block">View History</button>
                             <div id="sparklineTemp3" style="width:100%; height:50px;"></div>
                         </div>
 
@@ -194,7 +197,7 @@
                         </div>
 
                         <div class="card-footer">
-
+                        <button ng-click="openHistory('zone3temp')" class="btn btn-default btn-block">View History</button>
                         </div>
 
                     </div>

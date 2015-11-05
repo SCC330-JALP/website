@@ -9,7 +9,7 @@
  *************************************************************************/
 
 //modules
-var spotApp = angular.module('spotApp', ['ngRoute', 'ngResource', 'firebase', 'googlechart']);
+var spotApp = angular.module('spotApp', ['ngRoute', 'ngResource', 'firebase', 'googlechart', 'ngDialog']);
 var ref = new Firebase("https://sunsspot.firebaseio.com");
 var spotSettingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
 
@@ -147,8 +147,9 @@ spotApp.run(function($rootScope, $firebaseObject) {
         pushData('zone' + (i + 1) + 'hourly', zoneLight[i], 'light');
 
         zoneLight[i].options = {
-            displayAnnotations: false,
+            displayAnnotations: true,
             zoomButtonsOrder: ['1-hour', 'max'],
+            height:400
         };
 
         //Zone's Temperature
@@ -172,9 +173,10 @@ spotApp.run(function($rootScope, $firebaseObject) {
         pushData('zone' + (i + 1) + 'hourly', zoneTemp[i], 'temp');
 
         zoneTemp[i].options = {
-            displayAnnotations: false,
+            displayAnnotations: true,
             zoomButtonsOrder: ['1-hour', 'max'],
-            colors: ['#FF0000', '#FF0000', '#FF0000']
+            colors: ['#FF0000', '#FF0000', '#FF0000'],
+            height:400
         };
     }
 
@@ -198,8 +200,8 @@ function($scope, $firebaseArray){
 
 
 //smart lab Controller
-spotApp.controller('smartlabController', ['$scope','$firebaseObject',
-function($scope, $firebaseObject) {
+spotApp.controller('smartlabController', ['$scope','$firebaseObject', 'ngDialog', 
+function($scope, $firebaseObject, ngDialog) {
 
     /**
      * Generate a annotation graph and set it to a <div>
@@ -278,6 +280,16 @@ function($scope, $firebaseObject) {
         }
     }
 
+    $scope.openHistory = function(zone1light){
+        ngDialog.open({
+            template: '<div google-chart chart="' + zone1light + '" class="history-chart"></div>',
+            plain: true
+        });
+    };
+
+
+
+    //Initilization
   $scope.init = function() {
 
     //Bind graphs to zone(zoneNumber)light/temp.
@@ -578,6 +590,9 @@ function($scope, $firebaseObject) {
     $scope.init();
 }]);
 
+
+
+
 //Map Controller
 spotApp.controller('mapController', ['$scope','$firebaseObject',
 function($scope, $firebaseObject) {
@@ -664,7 +679,7 @@ spotApp.controller('sensorsController', ['$scope',
         var sensors = null;
         var changedRef = new Firebase("https://sunsspot.firebaseio.com/testObjects");
 
-        $scope.initSlider = function() {
+        $scope.init = function() {
 
             $(document).on("click", "#modalLink", function() { //when you open the Edit modal
                 var name = $(this).data('name'); //populate variables from data-attributes
@@ -864,7 +879,7 @@ spotApp.controller('sensorsController', ['$scope',
 
         }
 
-        $scope.initSlider();
+        $scope.init();
     }
 ]);
 
