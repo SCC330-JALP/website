@@ -11,6 +11,7 @@
 //modules
 var spotApp = angular.module('spotApp', ['ngRoute', 'ngResource', 'firebase', 'googlechart', 'ngDialog']);
 var ref = new Firebase("https://sunsspot.firebaseio.com");
+var spotTest = new Firebase("https://sunsspot.firebaseio.com/spotReadings/0014%204F01%200000%2076D3");
 var spotSettingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
 
 //Routes
@@ -47,7 +48,6 @@ spotApp.run(function($rootScope, $firebaseObject) {
     $rootScope.zone1hourly = $firebaseObject(ref.child('zone1hourly'));
     $rootScope.zone2hourly = $firebaseObject(ref.child('zone2hourly'));
     $rootScope.zone3hourly = $firebaseObject(ref.child('zone3hourly'));
-
 
 
     /*----- LIVE DATA PAGE -----*/
@@ -91,14 +91,14 @@ spotApp.run(function($rootScope, $firebaseObject) {
             label: "Week",
             type: "date"
         }, {
-            id: "light-data",
-            label: "Light (lm)",
+            id: "value-data",
+            label: "Value",
             type: "number"
         }],
         "rows": []
     };
 
-    ref.child('zone1').limitToLast(7).on('child_added', function(snapshot) {
+    spotTest.on('child_added', function(snapshot) {
         var data = snapshot.val();
         var timestamp = new Date(data.timestamp);
 
@@ -106,7 +106,7 @@ spotApp.run(function($rootScope, $firebaseObject) {
             c: [{
                 v: new Date(timestamp)
             }, {
-                v: data.light
+                v: data.newVal
             }, ]
         });
 
@@ -178,7 +178,7 @@ spotApp.run(function($rootScope, $firebaseObject) {
             colors: ['#FF0000', '#FF0000', '#FF0000'],
             height:400
         };
-    }
+    }    
 
     $rootScope.zone1light = zoneLight[0];
     $rootScope.zone2light = zoneLight[1];
@@ -280,14 +280,12 @@ function($scope, $firebaseObject, ngDialog) {
         }
     }
 
-    $scope.openHistory = function(zone1light){
+    $scope.openHistory = function(historyName){
         ngDialog.open({
-            template: '<div google-chart chart="' + zone1light + '" class="history-chart"></div>',
+            template: '<div google-chart chart="' + historyName + '" class="history-chart"></div>',
             plain: true
         });
     };
-
-
 
     //Initilization
   $scope.init = function() {
@@ -343,6 +341,8 @@ function($scope, $firebaseObject, ngDialog) {
           $(editButton).data('address', newSensor.address);
           $(editButton).data('zone', newSensor.zone);
 
+          var historySensorBtn = $(sensorElement).find("#historySensorBtn")[0]; //set up the links as seen in child_changed listener
+          $(historySensorBtn).data('address', newSensor.address);
 
           if (newSensor.zone == 1) { //sensor is idle
 
@@ -494,6 +494,9 @@ function($scope, $firebaseObject, ngDialog) {
           $(editButton).data('address', changedSensor.address);
           $(editButton).data('zone', changedSensor.zone);
 
+          var historySensorBtn = $(sensorElement).find("#historySensorBtn")[0]; //set up the links as seen in child_changed listener
+          $(historySensorBtn).data('address', changedSensor.address);
+
 
           if (changedSensor.zone == 1) { //sensor is idle
 
@@ -635,6 +638,14 @@ function($scope, $firebaseObject, ngDialog) {
         var modal = $("#deleteModal");
         modal.find("#myModalLabel")[0].innerHTML = name;
         modal.find("#deleteSpotAddress")[0].innerHTML = address;
+
+        console.log(name);
+    });
+
+    $(document).on("click", "#historySensorBtn", function() {
+        // console.log('testing');
+        var address = $(this).data('address');
+        $scope.openHistory('liveLightTest');
     });
 
     $(document).on("click", "#viewPersonBtn", function() { //when you open the Edit modal
