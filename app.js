@@ -188,12 +188,12 @@ spotApp.run(function($rootScope, $firebaseObject) {
 
 })
 
-//Live Data Controller
-// spotApp.controller('liveController', ['$scope','$firebaseArray',
-// function($scope, $firebaseArray){
+//History Controller
+spotApp.controller('historyController', ['$scope','$firebaseArray',
+function($scope, $firebaseArray){
 
 
-// }]);
+}]);
 
 
 
@@ -209,19 +209,20 @@ function($scope, $firebaseObject) {
      * @param {string} bindDivName - The author of the book.
      */
     $scope.setHistoryChart = function(zoneNumber, graphType, bindDivName){
+
         google.load("visualization", "1", {packages:["annotationchart"]});
         google.setOnLoadCallback(drawChart);
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'Date');
 
         if(graphType==='light'){
-            data.addColumn('number','Light');
+            data.addColumn('number','Light (lm)');
         }else{
-            data.addColumn('number', 'Temperature');
+            data.addColumn('number', 'Temperature (℃)');
         }
         
         // Get a reference to our logs
-        var ref = new Firebase("https://sunsspot.firebaseio.com/zone" + zoneNumber +"hourly");
+        var ref = new Firebase("https://sunsspot.firebaseio.com/zone" + zoneNumber + "hourly");
 
         // Retrieve new logs as they are added to our database
         ref.on("child_added", function(snapshot, prevChildKey) {
@@ -284,11 +285,6 @@ function($scope, $firebaseObject) {
         $scope.setHistoryChart(i, 'light', 'zone' + i + 'light');
         $scope.setHistoryChart(i, 'temp', 'zone' + i + 'temp');
     }
-
-
-
-
-
 
     var settingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
 
