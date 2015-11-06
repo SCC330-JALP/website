@@ -11,7 +11,6 @@
 //modules
 var spotApp = angular.module('spotApp', ['ngRoute', 'ngResource', 'firebase', 'googlechart', 'ngDialog']);
 var ref = new Firebase("https://sunsspot.firebaseio.com");
-var spotTest = new Firebase("https://sunsspot.firebaseio.com/spotReadings/0014%204F01%200000%2076D3");
 var spotSettingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
 
 //Routes
@@ -49,6 +48,114 @@ spotApp.run(function($rootScope, $firebaseObject) {
     $rootScope.zone2hourly = $firebaseObject(ref.child('zone2hourly'));
     $rootScope.zone3hourly = $firebaseObject(ref.child('zone3hourly'));
 
+    /**
+     * Set chart options
+     * @param {String} chartType - Could be Gauge or {..haven't implemented other graph options}
+     * @param {object} chartObject 
+     * @param {String} type = Could be either 'light' or 'temp'(Temperature) 
+     * @author Anson Cheung
+     */
+    $rootScope.setChart = function(chartType, chartObject, type) {
+
+        chartObject.type = chartType;
+
+        if (type === 'light') {
+            chartObject.options = {
+                max: 3000,
+                width: 400,
+                height: 120,
+                yellowFrom: 1000,
+                yellowTo: 1500,
+                redFrom: 1500,
+                redTo: 3000,
+                minorTicks: 5,
+                animation: {
+                    duration: 1000,
+                    easing: 'out',
+                }
+            };
+        }
+        if (type === 'temp') {
+            chartObject.options = {
+                max: 60,
+                width: 400,
+                height: 120,
+                yellowFrom: 20,
+                yellowTo: 40,
+                redFrom: 40,
+                redTo: 60,
+                minorTicks: 5,
+                animation: {
+                    duration: 1000,
+                    easing: 'out',
+                }
+            };
+        }
+
+    }
+
+    /**
+       * Listens to the objects 
+       * @param {type} paramName - Description. 
+       * @author Anson Cheung
+       */
+    $rootScope.listenLive = function(childName, object, type) {
+        ref.child(childName).limitToLast(1).on('child_added', function(snapshot) {
+            var data = snapshot.val();
+            var light = Math.round(data.light * 100) / 100; //Round up to 2 decimal places
+            var temp = Math.round(data.temp * 100) / 100; //Round up to 2 decimal places
+            
+            if (type === 'light') {
+                object.data = [
+                    ['Label', 'Value'],
+                    ['Light (lm)', light]
+                ];
+            }
+            
+            if (type === 'temp') {
+                object.data = [
+                    ['Label', 'Value'],
+                    ['Temp (℃)', temp]
+                ];
+            }
+        });
+    }
+
+    /**
+       * DESCRIPTION
+       * @param {type} paramName - Description. 
+       * @author Anson Cheung
+       */
+    $rootScope.pushData = function(childName, object, type) {
+        ref.child(childName).on("value", function(snapshot) {
+            snapshot.forEach(function(data) {
+                var timestamp = new Date(data.val().timestamp);
+
+                if (type === 'light') {
+                    object.data.rows.push({
+                        c: [{
+                            v: new Date(timestamp)
+                        }, {
+                            v: data.val().light
+                        }, ]
+                    });
+                }
+
+                if (type === 'temp') {
+                    object.data.rows.push({
+                        c: [{
+                            v: new Date(timestamp)
+                        }, {
+                            v: data.val().temp
+                        }, ]
+                    });
+                }
+
+            });
+        });
+    }
+
+
 
     /*----- LIVE DATA PAGE -----*/
     var liveZoneLight = [];
@@ -58,13 +165,13 @@ spotApp.run(function($rootScope, $firebaseObject) {
 
         //Light
         liveZoneLight[i] = {};
-        setChart('Gauge', liveZoneLight[i], 'light');
-        listenLive('zone' + (i + 1), liveZoneLight[i], 'light');
+        $rootScope.setChart('Gauge', liveZoneLight[i], 'light');
+        $rootScope.listenLive('zone' + (i + 1), liveZoneLight[i], 'light');
 
         //Temperature
         liveZoneTemp[i] = {};
-        setChart('Gauge', liveZoneTemp[i], 'temp');
-        listenLive('zone' + (i + 1), liveZoneTemp[i], 'temp');
+        $rootScope.setChart('Gauge', liveZoneTemp[i], 'temp');
+        $rootScope.listenLive('zone' + (i + 1), liveZoneTemp[i], 'temp');
 
     }
 
@@ -80,46 +187,6 @@ spotApp.run(function($rootScope, $firebaseObject) {
     $rootScope.liveLight3 = liveZoneLight[2];
     $rootScope.liveTemp3 = liveZoneTemp[2];
 
-
-    //----------TESTING----------//
-    var liveLightTest = {};
-    liveLightTest.type = "AnnotationChart";
-
-    liveLightTest.data = {
-        "cols": [{
-            id: "week",
-            label: "Week",
-            type: "date"
-        }, {
-            id: "value-data",
-            label: "Value",
-            type: "number"
-        }],
-        "rows": []
-    };
-
-    spotTest.on('child_added', function(snapshot) {
-        var data = snapshot.val();
-        var timestamp = new Date(data.timestamp);
-
-        liveLightTest.data.rows.push({
-            c: [{
-                v: new Date(timestamp)
-            }, {
-                v: data.newVal
-            }, ]
-        });
-
-
-    });
-
-    liveLightTest.options = {
-        displayAnnotations: false,
-        zoomButtonsOrder: ['1-hour', 'max'],
-        colors: ['#00FF00', '#00FF00', '#00FF00']
-    };
-
-    $rootScope.liveLightTest = liveLightTest;
 
     /*----- HISTORY PAGE -----*/
     var zoneLight = [];
@@ -144,7 +211,7 @@ spotApp.run(function($rootScope, $firebaseObject) {
             "rows": []
         };
 
-        pushData('zone' + (i + 1) + 'hourly', zoneLight[i], 'light');
+        $rootScope.pushData('zone' + (i + 1) + 'hourly', zoneLight[i], 'light');
 
         zoneLight[i].options = {
             displayAnnotations: true,
@@ -170,7 +237,7 @@ spotApp.run(function($rootScope, $firebaseObject) {
             "rows": []
         };
 
-        pushData('zone' + (i + 1) + 'hourly', zoneTemp[i], 'temp');
+        $rootScope.pushData('zone' + (i + 1) + 'hourly', zoneTemp[i], 'temp');
 
         zoneTemp[i].options = {
             displayAnnotations: true,
@@ -187,21 +254,60 @@ spotApp.run(function($rootScope, $firebaseObject) {
     $rootScope.zone1temp = zoneTemp[0];
     $rootScope.zone2temp = zoneTemp[1];
     $rootScope.zone3temp = zoneTemp[2];
+    
+    //-----------------------------------//
+    //############# TESTING #############//
+    //########## DONT DELETE ############//
+    //-----------------------------------//
+    // var liveLightTest = {};
+    // liveLightTest.type = "AnnotationChart";
+
+    // liveLightTest.data = {
+    //     "cols": [{
+    //         id: "week",
+    //         label: "Week",
+    //         type: "date"
+    //     }, {
+    //         id: "value-data",
+    //         label: "Value",
+    //         type: "number"
+    //     }],
+    //     "rows": []
+    // };
+
+    // spotTest.on('child_added', function(snapshot) {
+    //     var data = snapshot.val();
+    //     var timestamp = new Date(data.timestamp);
+
+    //     liveLightTest.data.rows.push({
+    //         c: [{
+    //             v: new Date(timestamp)
+    //         }, {
+    //             v: data.newVal
+    //         }, ]
+    //     });
+
+
+    // });
+
+    // liveLightTest.options = {
+    //     displayAnnotations: false,
+    //     zoomButtonsOrder: ['1-hour', 'max'],
+    //     colors: ['#00FF00', '#00FF00', '#00FF00']
+    // };
+
+    // $rootScope.liveLightTest = liveLightTest;
+    //-----------------------------------//
+    //########### TESTING END ###########//
+    //########## DONT DELETE ############//
+    //-----------------------------------//
 
 })
 
-//History Controller
-spotApp.controller('historyController', ['$scope','$firebaseArray',
-function($scope, $firebaseArray){
-
-
-}]);
-
-
 
 //smart lab Controller
-spotApp.controller('smartlabController', ['$scope','$firebaseObject', 'ngDialog',
-function($scope, $firebaseObject, ngDialog) {
+spotApp.controller('smartlabController', ['$rootScope', '$scope','$firebaseObject', '$parse', 'ngDialog',
+function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
     /**
      * Generate a annotation graph and set it to a <div>
@@ -209,6 +315,7 @@ function($scope, $firebaseObject, ngDialog) {
      * @param {int} zoneNumber - Zone number.
      * @param {String} graphType - Either 'light' or 'temp'.
      * @param {string} bindDivName - The author of the book.
+     * @author Anson Cheung & Josh Stennett
      */
     $scope.setHistoryChart = function(zoneNumber, graphType, bindDivName){
 
@@ -280,14 +387,11 @@ function($scope, $firebaseObject, ngDialog) {
         }
     }
 
-    $scope.openHistory = function(historyName){
-        ngDialog.open({
-            template: '<div google-chart chart="' + historyName + '" class="history-chart"></div>',
-            plain: true
-        });
-    };
-
-    //Initilization
+  /**
+   * DESCRIPTION
+   * @param {type} paramName - Description. 
+   * @author Anson Cheung & Josh Stennett
+   */
   $scope.init = function() {
 
     //Bind graphs to zone(zoneNumber)light/temp.
@@ -642,10 +746,23 @@ function($scope, $firebaseObject, ngDialog) {
         console.log(name);
     });
 
+    /**
+   * When #historySensorBtn is clicked, it opens a dialog and sets spotId to its <div> 
+   * to allow setSensorHistoryChart to plot graph on the div
+   * @author Anson Cheung
+   */
     $(document).on("click", "#historySensorBtn", function() {
-        // console.log('testing');
+        
         var address = $(this).data('address');
-        $scope.openHistory('liveLightTest');
+        var spotId = address.slice(-4);
+
+        ngDialog.open({
+            template: '<div id="' + spotId + '" class="history-chart""></div>',
+            plain: true
+        });
+
+        $scope.setSensorHistoryChart(address, spotId);
+
     });
 
     $(document).on("click", "#viewPersonBtn", function() { //when you open the Edit modal
@@ -671,7 +788,11 @@ function($scope, $firebaseObject, ngDialog) {
 
   }
 
-  // function deleteSubmit(){
+  /**
+   * DESCRIPTION
+   * @param {type} paramName - Description. 
+   * @author Josh Stennett
+   */
   $scope.deleteSubmit = function() {
     console.log("in func");
       var address = document.getElementById('deleteSpotAddress').innerHTML; //read in the address
@@ -684,6 +805,11 @@ function($scope, $firebaseObject, ngDialog) {
       $('.modal').modal('hide');
   };
 
+  /**
+   * DESCRIPTION
+   * @param {type} paramName - Description. 
+   * @author Josh Stennett
+   */
   $scope.modalSubmit = function() {
       var modal = $("#myModal")
       var address = modal.find("#spotAddress")[0].innerHTML //populate variables based off of form values
@@ -704,6 +830,11 @@ function($scope, $firebaseObject, ngDialog) {
       }); //update the record with the new data
   };
 
+  /**
+   * DESCRIPTION
+   * @param {type} paramName - Description. 
+   * @author Josh Stennett
+   */
   $scope.personSubmit = function() {
 
     var modal = $("#viewPerson")
@@ -724,6 +855,79 @@ function($scope, $firebaseObject, ngDialog) {
           zone: newZone
       }); //update the record with the new data
   };
+
+    
+    /**
+   * Pop up light & temp history graphs for the 3 zones. 
+   * Developer note: It uses ngDialog directive
+   * @param {String} zoneHistory - For example zone 1 light would be 'zone1light', zone 2 temp 'zone2temp' etc. 
+   * @author Anson Cheung
+   */
+    $scope.openHistory = function(zoneHistory){
+        ngDialog.open({
+            template: '<div google-chart chart="' + zoneHistory + '" class="history-chart"></div>',
+            plain: true
+        });
+    };
+
+    /**
+     * Generate a annotation graph and set it to a <div>
+     * @param {String} address - Either 'light' or 'temp'.
+     * @param {String} spotId - The last 4 letters of the spot's ID. Example: '76D3', '797D'.
+     * @author Anson Cheung
+     */
+    $scope.setSensorHistoryChart = function(address, spotId){
+
+        var address = address.replace(/\s+/g, '%20'); //Replace spaces with %20% 
+        var spotRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + address);
+
+        google.load("visualization", "1", {packages:["annotationchart"]});
+        google.setOnLoadCallback(drawChart);
+        
+        var data = new google.visualization.DataTable();
+        
+        data.addColumn('date', 'Date');
+        data.addColumn('number','Value');
+
+        spotRef.once("value", function(snapshot, prevChildKey) {
+            var newLog = snapshot.val();
+            for (var log in newLog){
+                data.addRow([new Date(newLog[log].timestamp),newLog[log].newVal]);
+            }
+
+            drawChart(data, spotId, ['#004D40', '#00695C', '#00796B']);
+        });
+    }
+
+    /**
+     * Draw Chart to <div> with the given data
+     * @param {data} data - Google chart object
+     * @param {String} bindDivName - <div> name you want to bind your graph to
+     * @param {colors} 
+     * @author Anson Cheung
+     */
+    function drawChart(data, bindDivName, colors) {
+
+          var chart = new google.visualization.AnnotationChart(document.getElementById(bindDivName));
+
+          var options = {
+            displayAnnotations: true,
+            zoomButtons:{
+                  '1m': { 'label': '1m', 'offset': [0, 1, 0] },
+                  '15m': { 'label': '15m', 'offset': [0, 15, 0] },
+                  '1h': { 'label': '1h', 'offset': [1, 0, 0] },
+                  '6hs': { 'label': '6h', 'offset': [6, 0, 0] },
+                  '1d': { 'label': '1d', 'offset': [1, 0, 0, 0, 0]},
+                  '5d': { 'label': '5d', 'offset': [5, 0, 0, 0, 0] },
+                  '1w': { 'label': '1w', 'offset': [7, 0, 0, 0, 0] },
+            },
+            zoomButtonsOrder: ['1m', '15m', '1h', '6h', '1d', '5d', '1w', 'max'],
+          };
+
+          options.colors = colors;
+
+          chart.draw(data, options);
+        }
 
     $scope.init();
 }]);
@@ -807,117 +1011,3 @@ spotApp.directive('sensor', function(){
         template: '<div class="sensor" style="top:{{x}}%;left:{{y}}%"><img style="width:100%;" src="images/{{task}}.png" ><p>{{name}}</p></div>'
     };
 });
-
-
-
-/**
- * Adds two numbers
- * @param {Number} a
- * @param {Number} b
- * @return {Number} sum
- */
-function setChart(chartType, object, type) {
-
-    object.type = chartType;
-
-    if (type === 'light') {
-        object.options = {
-            max: 3000,
-            width: 400,
-            height: 120,
-            yellowFrom: 1000,
-            yellowTo: 1500,
-            redFrom: 1500,
-            redTo: 3000,
-            minorTicks: 5,
-            animation: {
-                duration: 1000,
-                easing: 'out',
-            }
-        };
-    }
-    if (type === 'temp') {
-        object.options = {
-            max: 60,
-            width: 400,
-            height: 120,
-            yellowFrom: 20,
-            yellowTo: 40,
-            redFrom: 40,
-            redTo: 60,
-            minorTicks: 5,
-            animation: {
-                duration: 1000,
-                easing: 'out',
-            }
-        };
-    }
-
-}
-
-/**
- * Adds two numbers
- * @param {Number} a
- * @param {Number} b
- * @return {Number} sum
- */
-function listenLive(childName, object, type) {
-    ref.child(childName).limitToLast(1).on('child_added', function(snapshot) {
-        var data = snapshot.val();
-        var light = Math.round(data.light * 100) / 100; //Round up to 2 decimal places
-        var temp = Math.round(data.temp * 100) / 100; //Round up to 2 decimal places
-        if (type === 'light') {
-            object.data = [
-                ['Label', 'Value'],
-                ['Light (lm)', light]
-            ];
-        }
-        if (type === 'temp') {
-            object.data = [
-                ['Label', 'Value'],
-                ['Temp (℃)', temp]
-            ];
-        }
-    });
-}
-/**
- * Adds two numbers
- * @param {Number} a
- * @param {Number} b
- * @return {Number} sum
- */
-function pushData(childName, object, type) {
-    ref.child(childName).on("value", function(snapshot) {
-        snapshot.forEach(function(data) {
-            var timestamp = new Date(data.val().timestamp);
-
-            if (type === 'light') {
-                object.data.rows.push({
-                    c: [{
-                        v: new Date(timestamp)
-                    }, {
-                        v: data.val().light
-                    }, ]
-                });
-            }
-
-            if (type === 'temp') {
-                object.data.rows.push({
-                    c: [{
-                        v: new Date(timestamp)
-                    }, {
-                        v: data.val().temp
-                    }, ]
-                });
-            }
-
-        });
-    });
-}
-
-function listen(object){
-    var ref = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
-    ref.orderByKey().on('child_added', function(snapshot){
-        object = snapshot.val();
-    });
-}
