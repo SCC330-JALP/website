@@ -51,8 +51,8 @@ spotApp.run(function($rootScope, $firebaseObject) {
     /**
      * Set chart options
      * @param {String} chartType - Could be Gauge or {..haven't implemented other graph options}
-     * @param {object} chartObject 
-     * @param {String} type = Could be either 'light' or 'temp'(Temperature) 
+     * @param {object} chartObject
+     * @param {String} type = Could be either 'light' or 'temp'(Temperature)
      * @author Anson Cheung
      */
     $rootScope.setChart = function(chartType, chartObject, type) {
@@ -95,8 +95,8 @@ spotApp.run(function($rootScope, $firebaseObject) {
     }
 
     /**
-       * Listens to the objects 
-       * @param {type} paramName - Description. 
+       * Listens to the objects
+       * @param {type} paramName - Description.
        * @author Anson Cheung
        */
     $rootScope.listenLive = function(childName, object, type) {
@@ -104,14 +104,14 @@ spotApp.run(function($rootScope, $firebaseObject) {
             var data = snapshot.val();
             var light = Math.round(data.light * 100) / 100; //Round up to 2 decimal places
             var temp = Math.round(data.temp * 100) / 100; //Round up to 2 decimal places
-            
+
             if (type === 'light') {
                 object.data = [
                     ['Label', 'Value'],
                     ['Light (lm)', light]
                 ];
             }
-            
+
             if (type === 'temp') {
                 object.data = [
                     ['Label', 'Value'],
@@ -123,7 +123,7 @@ spotApp.run(function($rootScope, $firebaseObject) {
 
     /**
        * DESCRIPTION
-       * @param {type} paramName - Description. 
+       * @param {type} paramName - Description.
        * @author Anson Cheung
        */
     $rootScope.pushData = function(childName, object, type) {
@@ -245,7 +245,7 @@ spotApp.run(function($rootScope, $firebaseObject) {
             colors: ['#FF0000', '#FF0000', '#FF0000'],
             height:400
         };
-    }    
+    }
 
     $rootScope.zone1light = zoneLight[0];
     $rootScope.zone2light = zoneLight[1];
@@ -254,7 +254,7 @@ spotApp.run(function($rootScope, $firebaseObject) {
     $rootScope.zone1temp = zoneTemp[0];
     $rootScope.zone2temp = zoneTemp[1];
     $rootScope.zone3temp = zoneTemp[2];
-    
+
     //-----------------------------------//
     //############# TESTING #############//
     //########## DONT DELETE ############//
@@ -318,9 +318,9 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
      * @author Anson Cheung & Josh Stennett
      */
     $scope.setHistoryChart = function(zoneNumber, graphType, bindDivName){
-
+      console.log("setHistoryChart received bindDivName as: " + bindDivName);
         google.load("visualization", "1", {packages:["annotationchart"]});
-        google.setOnLoadCallback(drawChart);
+        //google.setOnLoadCallback(drawChart);
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'Date');
 
@@ -343,9 +343,9 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
                 data.addRow([new Date(newLog.timestamp),newLog.temp]);
             }
 
-            google.setOnLoadCallback(drawChart);
+            //google.setOnLoadCallback(drawChart);
 
-            drawChart();
+            drawChart(bindDivName);
         });
 
         var ref2 = new Firebase("https://sunsspot.firebaseio.com/zone" + zoneNumber);
@@ -364,8 +364,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         });
 
         function drawChart(bindDivName) {
-
-          var chart = new google.visualization.AnnotationChart(document.getElementById(bindDivName));
+                  console.log("drawing chart to : " + bindDivName);
+                  console.log($("#"+bindDivName)[0]);
+                  console.log(document.getElementById(bindDivName));
+          var chart = new google.visualization.AnnotationChart($("#"+bindDivName)[0]);
 
           var options = {
             displayAnnotations: true,
@@ -389,17 +391,153 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
   /**
    * DESCRIPTION
-   * @param {type} paramName - Description. 
+   * @param {type} paramName - Description.
    * @author Anson Cheung & Josh Stennett
    */
   $scope.init = function() {
 
     //Bind graphs to zone(zoneNumber)light/temp.
-    for(i=1;i<=3;i++){
+    //  $scope.setHistoryChart(i, 'light', 'zone1light');
+
+  /*  for(i=1;i<=3;i++){
         $scope.setHistoryChart(i, 'light', 'zone' + i + 'light');
         $scope.setHistoryChart(i, 'temp', 'zone' + i + 'temp');
+
+
+    }*/
+
+    function createSensor(snapshot, pageElement){
+      console.log("Creating new sensor!");
+      console.log(snapshot);
+
+
+      //all of this applies to both person sensors && non-person sensors
+
+      $(pageElement).find("#spotName")[0].innerHTML = snapshot.name; //insert the spot name
+      $(pageElement).find("#spotMAC")[0].innerHTML = snapshot.address; //insert the spot name
+
+      if(snapshot.task != "person"){ //new sensor is not a person sensor
+        var spotTask = $(pageElement).find("#spotTask")[0];
+        setTask(spotTask, snapshot.task); //set the task
+
+        if(snapshot.task == "idle"){ //set the status light to red if the sensor is idle.
+          var status = $(pageElement).find("#status");
+          $(status).css('background-color','darkred');
+        }
+
+        var editButton = $(pageElement).find("#editSensorBtn")[0]; //set up the links as seen in child_changed listener
+        $(editButton).data('name', snapshot.name);
+        $(editButton).data('task', snapshot.task);
+        $(editButton).data('address', snapshot.address);
+        $(editButton).data('zone', snapshot.zone);
+        //???????????????????????????????????????????????????????????????
+        var historySensorBtn = $(pageElement).find("#historySensorBtn")[0]; //set up the links as seen in child_changed listener
+        $(historySensorBtn).data('address', snapshot.address);
+        //???????????????????????????????????????????????????????????????
+
+
+        appendSensor("Sensors",snapshot.zone,pageElement);
+
+      }else{ //new sensor is a person sensor
+
+        var viewButton = $(pageElement).find("#viewPersonBtn")[0]; //set up the links as seen in child_changed listener
+        $(viewButton).data('name', snapshot.name);
+        $(viewButton).data('task', snapshot.task);
+        $(viewButton).data('address', snapshot.address);
+        $(viewButton).data('zone', snapshot.zone);
+
+
+        appendSensor("people",snapshot.zone,pageElement);
+
+      }
+
+      $(pageElement).removeClass('hidden'); //element created, so display it.
     }
 
+    function setTask(element, task){
+      if(task == 'sl'){
+        element.innerHTML = 'Light sensor';
+      }else if(task == "sm"){
+        element.innerHTML = 'Motion sensor';
+      }else if(task == "st"){
+        element.innerHTML = 'Temperature sensor';
+      }else if(task == "zone"){
+        element.innerHTML = 'Zone sensor';
+      }else if(task == "idle"){
+        element.innerHTML = 'Idle sensor';
+      }else{
+        element.innerHTML = 'Unknown Type';
+      }
+
+    }
+
+    function updatePersonSensor(snapshot, changedElement){
+      $(changedElement).find("#spotName")[0].innerHTML = snapshot.name;
+
+      $(changedElement).find("#spotMAC")[0].innerHTML = snapshot.address;
+
+      var link = $(changedElement).find("#viewPersonBtn")[0]; //find the link to Edit modal
+
+      var oldZone = $(link).data('zone'); //get the old task from the data attribute on the link
+      var oldTask = $(link).data('task');
+
+      $(link).data('name', snapshot.name); //update the data attributes to the new data
+      $(link).data('task', snapshot.task);
+      $(link).data('zone', snapshot.zone);
+
+      if(oldTask != snapshot.task){
+
+        dataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings" + changedSensor.address);
+        dataRef.remove()
+      }
+
+      if (oldZone != snapshot.zone) { //if the zone has changed, the element needs to move to a different sub-heading
+
+        appendSensor("people",snapshot.zone,changedElement);
+
+      }
+    }
+
+    function updateSensor(snapshot, changedElement){
+      $(changedElement).find("#spotName")[0].innerHTML = snapshot.name; //populate element name
+
+      var spotTask = $(changedElement).find("#spotTask")[0];
+      setTask(spotTask, snapshot.task); //set the task
+
+      var status = $(changedElement).find("#status")[0]
+      $(status).css('background-color','green');
+
+      if(snapshot.task == 'idle'){
+        $(status).css('background-color','darkred');
+      }
+
+      var link = $(changedElement).find("#editSensorBtn")[0]; //find the link to Edit modal
+
+      var oldZone = $(link).data('zone'); //get the old task from the data attribute on the link
+      var oldTask = $(link).data('task');
+
+      $(link).data('name', snapshot.name); //update the data attributes to the new data
+      $(link).data('task', snapshot.task);
+      $(link).data('zone', snapshot.zone);
+
+      if(oldTask != snapshot.task){
+        dataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address);
+        dataRef.remove()
+      }
+
+      if (oldZone != snapshot.zone) { //if the task has changed, the element needs to move to a different sub-heading
+        appendSensor("Sensors",snapshot.zone,changedElement);
+      }
+    }
+
+    function appendSensor(location, zone, element){
+      if(zone == 1 || zone == 2 || zone == 3){
+        $("#zone"+zone+location).append(element)
+      }else{
+        $("#zoneContainer").append(element)
+      }
+
+    }
     var settingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
 
     settingsRef.on("child_added", function(snapshot) { //listen for when a child is added : also triggers once for each child in database on page load.
@@ -413,58 +551,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
           var sensorElement = $("#sensorTemplate").clone(); //create an instance of the template
           $(sensorElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
-          $(sensorElement).find("#spotName")[0].innerHTML = newSensor.name; //insert the spot name
+
+          createSensor(newSensor, sensorElement);
 
 
-          var spotTask = $(sensorElement).find("#spotTask")[0];
-          var status = $(sensorElement).find("#status")[0]
-
-
-          if(newSensor.task == 'sl'){
-            spotTask.innerHTML = 'Light sensor';
-          }else if(newSensor.task == "sm"){
-            spotTask.innerHTML = 'Motion sensor';
-          }else if(newSensor.task == "st"){
-            spotTask.innerHTML = 'Temperature sensor';
-          }else if(newSensor.task == "zone"){
-            spotTask.innerHTML = 'Zone sensor';
-          }else if(newSensor.task == "idle"){
-            spotTask.innerHTML = 'Idle sensor';
-            $(status).css('background-color','darkred');
-
-
-          }else{
-            spotTask.innerHTML = 'Unknown Type';
-          }
-
-          $(sensorElement).find("#spotMAC")[0].innerHTML = newSensor.address; //insert the spot name
-
-          var editButton = $(sensorElement).find("#editSensorBtn")[0]; //set up the links as seen in child_changed listener
-          $(editButton).data('name', newSensor.name);
-          $(editButton).data('task', newSensor.task);
-          $(editButton).data('address', newSensor.address);
-          $(editButton).data('zone', newSensor.zone);
-
-          var historySensorBtn = $(sensorElement).find("#historySensorBtn")[0]; //set up the links as seen in child_changed listener
-          $(historySensorBtn).data('address', newSensor.address);
-
-          if (newSensor.zone == 1) { //sensor is idle
-
-              $("#zone1Sensors").append(sensorElement);
-
-              sensorElement.removeClass('hidden');
-
-          } else if(newSensor.zone == 2){
-            $("#zone2Sensors").append(sensorElement);
-
-            sensorElement.removeClass('hidden');
-          } else if(newSensor.zone == 3){
-            $("#zone3Sensors").append(sensorElement);
-
-            sensorElement.removeClass('hidden');
-          } else {
-            $("zoneContainer").append(sensorElement); //FALLBACK : if the sensor doesnt have a zone, still display it to the screen. ugly but.. better than not showing it?
-          }
         }else{ //sensor is a person tracker
 
           newSensor.address = snapshot.key();
@@ -472,252 +562,58 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
           var personElement = $("#personTemplate").clone();
           $(personElement).attr('id', newSensor.address.replace(/ /g, "_"));
 
-          $(personElement).find("#personName")[0].innerHTML = newSensor.name; //insert the spot name
-
-
-          $(personElement).find("#spotMAC")[0].innerHTML = newSensor.address; //insert the spot name
-
-          var viewButton = $(personElement).find("#viewPersonBtn")[0]; //set up the links as seen in child_changed listener
-          $(viewButton).data('name', newSensor.name);
-          $(viewButton).data('task', newSensor.task);
-          $(viewButton).data('address', newSensor.address);
-
-
-          $(viewButton).data('zone', newSensor.zone);
-
-
-          if (newSensor.zone == 1) { //sensor is idle
-
-              $("#zone1people").append(personElement);
-
-              personElement.removeClass('hidden');
-
-          } else if(newSensor.zone == 2){
-            $("#zone2people").append(personElement);
-
-            personElement.removeClass('hidden');
-          } else if(newSensor.zone == 3){
-            $("#zone3people").append(personElement);
-
-            personElement.removeClass('hidden');
-          } else {
-            $("zoneContainer").append(personElement); //FALLBACK : if the sensor doesnt have a zone, still display it to the screen. ugly but.. better than not showing it?
-          }
-
+            createSensor(newSensor, personElement);
         }
 
 
     });
 
-
-
-
     settingsRef.on("child_changed", function(snapshot) { //listen for when a child is edited
         console.log('child changed');
 
         var changedSensor = snapshot.val();
+        changedSensor.address = snapshot.key();
+
+
         var changedElement = $('#' + snapshot.key().replace(/ /g, "_"))[0] //element ID's are the MAC address with underscores instead of spaces
+
         var link = $(changedElement).find(".data-button")[0]; //find the link to Edit modal
         var oldTask = $(link).data('task');
+
         var newTask = changedSensor.task;
-        changedSensor.address = snapshot.key();
 
         if(oldTask == "person" && newTask == "person"){
             //person stayed a person
-
-                $(changedElement).find("#personName")[0].innerHTML = changedSensor.name;
-
-                $(changedElement).find("#spotMAC")[0].innerHTML = changedSensor.address;
-
-                var link = $(changedElement).find("#viewPersonBtn")[0]; //find the link to Edit modal
-
-                var oldZone = $(link).data('zone'); //get the old task from the data attribute on the link
-                var oldTask = $(link).data('task');
-
-                $(link).data('name', changedSensor.name); //update the data attributes to the new data
-                $(link).data('task', changedSensor.task);
-                $(link).data('zone', changedSensor.zone);
-
-                if(oldTask != changedSensor.task){
-                  console.log("TASK HAS CHANGED");
-                  dataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings" + changedSensor.address);
-                  dataRef.remove()
-                }
+          updatePersonSensor(changedSensor, changedElement);
 
 
-                if (oldZone != changedSensor.zone) { //if the zone has changed, the element needs to move to a different sub-heading
-
-                  if (changedSensor.zone == 1) {
-                    $("#zone1people").append(changedElement);
-                  } else if(changedSensor.zone == 2){
-                    $("#zone2people").append(changedElement);
-                  } else if(changedSensor.zone == 3){
-                    $("#zone3people").append(changedElement);
-                  } else {
-                    $("zoneContainer").append(changedElement); //FALLBACK : if the sensor doesnt have a zone, still display it to the screen. ugly but.. better than not showing it?
-                  }
-
-                }
-        }else if(oldTask == "person" && newTask != "person"){
+        }
+        else if(oldTask == "person" && newTask != "person"){
+          console.log("Triggered");
           //person became sensor
-          $(changedElement).remove();
-          var sensorElement = $("#sensorTemplate").clone();
+          $(changedElement).remove(); //remove the old sensor, as it's type has changed.
+
           changedSensor.address = snapshot.key();
 
-          var sensorElement = $("#sensorTemplate").clone(); //create an instance of the template
+          var sensorElement = $("#sensorTemplate").clone(); //create an instance of the new template
           $(sensorElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
-          $(sensorElement).find("#spotName")[0].innerHTML = changedSensor.name; //insert the spot name
+
+          createSensor(changedSensor, sensorElement);
 
 
-          var spotTask = $(sensorElement).find("#spotTask")[0];
-          var status = $(sensorElement).find("#status")[0]
-
-
-          if(changedSensor.task == 'sl'){
-            spotTask.innerHTML = 'Light sensor';
-          }else if(changedSensor.task == "sm"){
-            spotTask.innerHTML = 'Motion sensor';
-          }else if(changedSensor.task == "st"){
-            spotTask.innerHTML = 'Temperature sensor';
-          }else if(changedSensor.task == "zone"){
-            spotTask.innerHTML = 'Zone sensor';
-          }else if(changedSensor.task == "idle"){
-            spotTask.innerHTML = 'Idle sensor';
-            $(status).css('background-color','darkred');
-
-
-          }else{
-            spotTask.innerHTML = 'Unknown Type';
-          }
-
-          $(sensorElement).find("#spotMAC")[0].innerHTML = changedSensor.address; //insert the spot name
-
-          var editButton = $(sensorElement).find("#editSensorBtn")[0]; //set up the links as seen in child_changed listener
-          $(editButton).data('name', changedSensor.name);
-          $(editButton).data('task', changedSensor.task);
-          $(editButton).data('address', changedSensor.address);
-          $(editButton).data('zone', changedSensor.zone);
-
-          var historySensorBtn = $(sensorElement).find("#historySensorBtn")[0]; //set up the links as seen in child_changed listener
-          $(historySensorBtn).data('address', changedSensor.address);
-
-
-          if (changedSensor.zone == 1) { //sensor is idle
-
-              $("#zone1Sensors").append(sensorElement);
-
-              sensorElement.removeClass('hidden');
-
-          } else if(changedSensor.zone == 2){
-            $("#zone2Sensors").append(sensorElement);
-
-            sensorElement.removeClass('hidden');
-          } else if(changedSensor.zone == 3){
-            $("#zone3Sensors").append(sensorElement);
-
-            sensorElement.removeClass('hidden');
-          } else {
-            $("zoneContainer").append(sensorElement); //FALLBACK : if the sensor doesnt have a zone, still display it to the screen. ugly but.. better than not showing it?
-          }
-
-
-        }else if(oldTask != "person" && newTask == "person"){
+        }
+        else if(oldTask != "person" && newTask == "person"){
           //sensor became person
                     $(changedElement).remove();
                     var personElement = $("#personTemplate").clone();
                     $(personElement).attr('id', changedSensor.address.replace(/ /g, "_"));
 
-                    $(personElement).find("#personName")[0].innerHTML = changedSensor.name; //insert the spot name
+                    createSensor(changedSensor, personElement);
 
-
-                    $(personElement).find("#spotMAC")[0].innerHTML = changedSensor.address; //insert the spot name
-
-                    var viewButton = $(personElement).find("#viewPersonBtn")[0]; //set up the links as seen in child_changed listener
-                    $(viewButton).data('name', changedSensor.name);
-                    $(viewButton).data('task', changedSensor.task);
-                    $(viewButton).data('address', changedSensor.address);
-
-
-                    $(viewButton).data('zone', changedSensor.zone);
-
-
-                    if (changedSensor.zone == 1) { //sensor is idle
-
-                        $("#zone1people").append(personElement);
-
-                        personElement.removeClass('hidden');
-
-                    } else if(changedSensor.zone == 2){
-                      $("#zone2people").append(personElement);
-
-                      personElement.removeClass('hidden');
-                    } else if(changedSensor.zone == 3){
-                      $("#zone3people").append(personElement);
-
-                      personElement.removeClass('hidden');
-                    } else {
-                      $("zoneContainer").append(personElement); //FALLBACK : if the sensor doesnt have a zone, still display it to the screen. ugly but.. better than not showing it?
-                    }
-
-        }else if(oldTask != "person" && newTask != "person"){
+        }
+        else if(oldTask != "person" && newTask != "person"){
           //sensor stayed sensor
-          $(changedElement).find("#spotName")[0].innerHTML = changedSensor.name; //populate element name
-
-          var spotTask = $(changedElement).find("#spotTask")[0];
-
-          var status = $(changedElement).find("#status")[0]
-          $(status).css('background-color','green');
-
-          if(changedSensor.task == 'sl'){
-            spotTask.innerHTML = 'Light sensor';
-          }else if(changedSensor.task == "sm"){
-            spotTask.innerHTML = 'Motion sensor';
-          }else if(changedSensor.task == "st"){
-            spotTask.innerHTML = 'Temperature sensor';
-          }else if(changedSensor.task == "zone"){
-            spotTask.innerHTML = 'Zone sensor';
-          }else if(changedSensor.task == "idle"){
-            spotTask.innerHTML = 'Idle sensor';
-          }else{
-            spotTask.innerHTML = 'Unknown Type';
-          }
-
-
-          if(changedSensor.task == 'idle'){
-
-            $(status).css('background-color','darkred');
-          }
-
-          var link = $(changedElement).find("#editSensorBtn")[0]; //find the link to Edit modal
-
-          var oldZone = $(link).data('zone'); //get the old task from the data attribute on the link
-          var oldTask = $(link).data('task');
-          console.log(oldTask);
-          console.log(changedSensor.task);
-          $(link).data('name', changedSensor.name); //update the data attributes to the new data
-          $(link).data('task', changedSensor.task);
-          $(link).data('zone', changedSensor.zone);
-
-
-          if(oldTask != changedSensor.task){
-            console.log("TASK HAS CHANGED YO");
-            dataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + changedSensor.address);
-            dataRef.remove()
-          }
-
-          if (oldZone != changedSensor.zone) { //if the task has changed, the element needs to move to a different sub-heading
-
-            if (changedSensor.zone == 1) {
-              $("#zone1Sensors").append(changedElement);
-            } else if(changedSensor.zone == 2){
-              $("#zone2Sensors").append(changedElement);
-            } else if(changedSensor.zone == 3){
-              $("#zone3Sensors").append(changedElement);
-            } else {
-              $("zoneContainer").append(changedElement); //FALLBACK : if the sensor doesnt have a zone, still display it to the screen. ugly but.. better than not showing it?
-            }
-
-          }
+          updateSensor(changedSensor, changedElement);
 
         }
 
@@ -747,12 +643,12 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
     });
 
     /**
-   * When #historySensorBtn is clicked, it opens a dialog and sets spotId to its <div> 
+   * When #historySensorBtn is clicked, it opens a dialog and sets spotId to its <div>
    * to allow setSensorHistoryChart to plot graph on the div
    * @author Anson Cheung
    */
     $(document).on("click", "#historySensorBtn", function() {
-        
+
         var address = $(this).data('address');
         var spotId = address.slice(-4);
 
@@ -790,7 +686,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
   /**
    * DESCRIPTION
-   * @param {type} paramName - Description. 
+   * @param {type} paramName - Description.
    * @author Josh Stennett
    */
   $scope.deleteSubmit = function() {
@@ -807,7 +703,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
   /**
    * DESCRIPTION
-   * @param {type} paramName - Description. 
+   * @param {type} paramName - Description.
    * @author Josh Stennett
    */
   $scope.modalSubmit = function() {
@@ -832,7 +728,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
   /**
    * DESCRIPTION
-   * @param {type} paramName - Description. 
+   * @param {type} paramName - Description.
    * @author Josh Stennett
    */
   $scope.personSubmit = function() {
@@ -856,11 +752,11 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       }); //update the record with the new data
   };
 
-    
+
     /**
-   * Pop up light & temp history graphs for the 3 zones. 
+   * Pop up light & temp history graphs for the 3 zones.
    * Developer note: It uses ngDialog directive
-   * @param {String} zoneHistory - For example zone 1 light would be 'zone1light', zone 2 temp 'zone2temp' etc. 
+   * @param {String} zoneHistory - For example zone 1 light would be 'zone1light', zone 2 temp 'zone2temp' etc.
    * @author Anson Cheung
    */
     $scope.openHistory = function(zoneHistory){
@@ -878,14 +774,14 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
      */
     $scope.setSensorHistoryChart = function(address, spotId){
 
-        var address = address.replace(/\s+/g, '%20'); //Replace spaces with %20% 
+        var address = address.replace(/\s+/g, '%20'); //Replace spaces with %20%
         var spotRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + address);
 
         google.load("visualization", "1", {packages:["annotationchart"]});
-        google.setOnLoadCallback(drawChart);
-        
+        //google.setOnLoadCallback(drawChart);
+
         var data = new google.visualization.DataTable();
-        
+
         data.addColumn('date', 'Date');
         data.addColumn('number','Value');
 
@@ -903,7 +799,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
      * Draw Chart to <div> with the given data
      * @param {data} data - Google chart object
      * @param {String} bindDivName - <div> name you want to bind your graph to
-     * @param {colors} 
+     * @param {colors}
      * @author Anson Cheung
      */
     function drawChart(data, bindDivName, colors) {
