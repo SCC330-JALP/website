@@ -25,4 +25,54 @@
 }
 .sensor span{
     display:block;
-}   
+}
+
+[ng-drag] {
+    background: rgba(255, 0, 0, 0.5);
+    color: white;
+    text-align: center;
+    cursor: move;
+    margin:5px;
+}
+ul.draggable-objects:after {
+    display: block;
+    content: "";
+    clear: both;
+}
+.draggable-objects li {
+    float: left;
+    display: block;
+}
+[ng-drag].drag-over {
+    border: solid 1px red;
+}
+[ng-drag].dragging {
+    opacity: 0.5;
+}
+[ng-drop] {
+    background: rgba(0, 65, 255, 0.5);
+    text-align: center;
+    display: block;
+    /* margin: 1px auto; */
+    width: 3.025%;
+    height: 55px;
+    float: left;
+    border: 1px dashed rgb(136, 165, 249);
+}
+[ng-drop].drag-enter {
+    border: dashed 1px #000;
+}
+
+[ng-drop] div {
+    position: relative;
+    z-index: 2;
+}
+.unassigned {
+    clear: both !important;
+    width: 100% !important;
+    height: 100px !important;
+    padding-top: 0px !important;
+    float: none !important;
+    background: rgba(208, 210, 216, 0.5) !important;
+    border: dashed 1px #000 !important;
+}

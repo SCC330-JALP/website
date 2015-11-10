@@ -1,72 +1,25 @@
-<!-- ZONE 1-->
-<box 
-    ng-repeat="box in data"
-    data='box' 
-    x='box.x * x' 
-    y='box.y * y'
-    zone="zone1">
-</box>
-
-<!-- ZONE 2 -->
-<box 
-    ng-repeat="box in data"
-    ng-if="box.y>=11"
-    data='box' 
-    x='box.x * x' 
-    y='box.y * y'
-    zone="zone2">
-</box>
-
-
-<!-- ZONE 3 -->
-<box 
-    ng-repeat="box in data"
-    ng-if="box.y>=22"
-    data='box' 
-    x='box.x * x' 
-    y='box.y * y'
-    zone="zone3">
-</box>
-
-<!-- All Sensors -->
-<div ng-repeat="sensor in sensors">
-    
-    <div ng-if="sensor.task == 'sl'">
-		<sensor 
-	        x='sensor.x * x'
-	        y='sensor.y * y'
-	        name='sensor.name'
-	        zone='sensor.zone'
-	        task='sensor.task'
-	        >
-    	</sensor>
+<!-- LAB VIEW -->        
+<div ng-repeat="i in range(number) track by $index" ng-init="mainIndex = $index">
+    <div ng-drop="true" ng-drop-success="onDropCompleteArray[mainIndex]($data,$event)">
+        
+        <div ng-repeat="sensor in sensors" ng-if="sensor.mainIndex != null && sensor.mainIndex == mainIndex">
+            {{ sensor.name }}
+        </div>
+        
+        <div ng-repeat="obj in droppedObjectsArray[mainIndex]" ng-drag="true" ng-drag-data="obj"
+             ng-drag-success="onDragSuccessArray[mainIndex]($data,$event)">
+                {{$log.log(obj.mainIndex == mainIndex)}}
+                {{obj.name}}
+        </div>
     </div>
-    
-	
-	<div ng-if='sensor.task == "person"'>
-		<sensor 
-			ng-if="sensor.zone == 1"
-			x="1 * x"
-			y="5 * y"
-			name='sensor.name'
-			task="sensor.task">
-		</sensor>
-
-		<sensor 
-			ng-if="sensor.zone == 2"
-			x="1 * x"
-			y="16 * y"
-			name='sensor.name'
-			task="sensor.task">
-		</sensor>
-
-		<sensor 
-			ng-if="sensor.zone == 3"
-			x="1 * x"
-			y="27 * y"
-			name='sensor.name'
-			task="sensor.task">
-		</sensor>
-	</div>
-
 </div>
+
+<!-- UNASSIGNED -->
+<div ng-drop="true" ng-drop-success="onDropComplete($data,$event)" class="unassigned">
+    <div ng-repeat="sensor in sensors" ng-drag="true" ng-drag-data="sensor"
+         ng-drag-success="onDragSuccess($data,$event)">
+        <span ng-if="sensors.mainIndex == null">{{ sensor.name }} (NOT ASSIGNED)</span>
+    </div>
+</div>
+ <pre>{{droppedObjectsArray | json}}</pre>
+ <pre>{{sensors | json}}</pre>

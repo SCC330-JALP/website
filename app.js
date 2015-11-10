@@ -9,7 +9,7 @@
  *************************************************************************/
 
 //modules
-var spotApp = angular.module('spotApp', ['ngRoute', 'ngResource', 'firebase', 'googlechart', 'ngDialog']);
+var spotApp = angular.module('spotApp', ['ngRoute', 'ngResource', 'firebase', 'googlechart', 'ngDialog', 'ngDraggable']);
 var ref = new Firebase("https://sunsspot.firebaseio.com");
 var spotSettingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
 
@@ -33,7 +33,6 @@ spotApp.config(function($routeProvider, $locationProvider) {
             redirectTo: '/'
         });
 
-    // $locationProvider.html5Mode(true).hashPrefix('!');
 });
 
 //Think it as global variables
@@ -795,7 +794,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
     /**
      * Generate a annotation graph and set it to a <div>
-     * @param {String} address - Either 'light' or 'temp'.
+     * @param {String} address - Full address of a sensor.
      * @param {String} spotId - The last 4 letters of the spot's ID. Example: '76D3', '797D'.
      * @author Anson Cheung
      */
@@ -859,32 +858,91 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
 
 //Map Controller
-spotApp.controller('mapController', ['$scope','$firebaseObject',
-function($scope, $firebaseObject) {
+spotApp.controller('mapController', ['$scope','$firebaseObject', '$log',
+function($scope, $firebaseObject, $log) {
+
+    $scope.$log = $log;
+
+    /*-------------------------------*/
+    // $scope.draggableObjects = [{name:'one'}, {name:'two'}, {name:'three'}];
+    
+    // var onDraggableEvent = function (evt, data) {
+    //     console.log("128", "onDraggableEvent", evt, data);
+    // }
+   
+    // $scope.$on('draggable:start', onDraggableEvent);
+   // $scope.$on('draggable:move', onDraggableEvent);
+    // $scope.$on('draggable:end', onDraggableEvent);
+    
+    $scope.number = 33 * 11;
+
+    $scope.range = function(num) {
+        return new Array(num);   
+    }
+
+    $scope.onDropComplete = function (data, evt) {
+        var index = $scope.sensors.indexOf(data);
+        if (index == -1)
+            $scope.sensors.push(data);
+    }
+    
+    $scope.onDragSuccess = function (data, evt) {
+        var index = $scope.sensors.indexOf(data);
+        if (index > -1) 
+            $scope.sensors.splice(index, 1);
+    }
+
+    $scope.applyListener = function(i){
+        
+        $scope.droppedObjectsArray.push([]);
+        
+        $scope.onDropCompleteArray[i] = function (data, evt) {
+            var index = $scope.droppedObjectsArray[i].indexOf(data);
+            if (index == -1){
+                $scope.droppedObjectsArray[i].push(data);
+            }
+
+        }
+        
+        $scope.onDragSuccessArray[i] = function (data, evt) {
+            var index = $scope.droppedObjectsArray[i].indexOf(data);
+            if (index > -1){
+                $scope.droppedObjectsArray[i].splice(index, 1);
+            }
+        }
+    }
+    $scope.droppedObjectsArray = [];
+    $scope.onDropCompleteArray = [];
+    $scope.onDragSuccessArray = [];
+    
+    for(i=0;i<$scope.number;i++)
+      $scope.applyListener(i);
+
+    /*--------------------------------------------*/
 
     $scope.ref = [];
     $scope.syncObject = [];
     $scope.sensors = [];
-
-    $scope.i = 0;
+    
+    var j = 0;
 
     // Retrieve new sensors as they are added to our database
     spotSettingsRef.on("child_added", function(snapshot) {
         var key = snapshot.key().replace(/\s+/g, '%20');
 
-        $scope.ref[$scope.i] = new Firebase("https://sunsspot.firebaseio.com/spotSettings/" + key);
+        $scope.ref[j] = new Firebase("https://sunsspot.firebaseio.com/spotSettings/" + key);
 
-        var localObject = $scope.syncObject[$scope.i];
+        var localObject = $scope.syncObject[j];
 
         // download the data into a local object
-        localObject = $firebaseObject($scope.ref[$scope.i]);
+        localObject = $firebaseObject($scope.ref[j]);
 
         // synchronize the object with a three-way data binding
-        localObject.$bindTo($scope, "sensor_" + $scope.i);
+        localObject.$bindTo($scope, "sensor_" + j);
 
-        $scope.sensors[$scope.i] = localObject;
+        $scope.sensors[j] = localObject;
 
-        $scope.i++;
+        j++;
     });
 
     //Generate Grid Table
