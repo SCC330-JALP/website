@@ -773,7 +773,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
      */
     $scope.setSensorHistoryChart = function(address, spotId){
 
-        var address = address.replace(/\s+/g, '%20'); //Replace spaces with %20%
+        var address = trim(address); //Replace spaces with %20%
         var spotRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + address);
 
         google.load("visualization", "1", {packages:["annotationchart"]});
@@ -847,7 +847,7 @@ function($scope, $firebaseObject, $log) {
    // $scope.$on('draggable:move', onDraggableEvent);
     // $scope.$on('draggable:end', onDraggableEvent);
     
-    $scope.number = 33 * 11;
+    $scope.number = 33*11;
 
     $scope.range = function(num) {
         return new Array(num);   
@@ -873,6 +873,11 @@ function($scope, $firebaseObject, $log) {
             var index = $scope.droppedObjectsArray[i].indexOf(data);
             if (index == -1){
                 $scope.droppedObjectsArray[i].push(data);
+
+                //UPDATE SENSOR MAININDEX IN FIREBASE
+                // $scope.ref[0].update({"mainIndex" : i});
+                // console.log(mainIndex);
+                $scope.updateIndex(data, i);
             }
 
         }
@@ -884,10 +889,22 @@ function($scope, $firebaseObject, $log) {
             }
         }
     }
+    
+    $scope.updateIndex = function(data, i){
+      var key = trim(data.$id);
+      var ref = new Firebase("https://sunsspot.firebaseio.com/spotSettings/" + key);
+
+      ref.update({"mainIndex" : i});
+    }
+
+    $scope.addTo = function(sensorObj, mainIndex){
+      $scope.droppedObjectsArray[mainIndex] = sensorObj;
+    }
+
     $scope.droppedObjectsArray = [];
     $scope.onDropCompleteArray = [];
     $scope.onDragSuccessArray = [];
-    
+
     for(i=0;i<$scope.number;i++)
       $scope.applyListener(i);
 
@@ -901,7 +918,7 @@ function($scope, $firebaseObject, $log) {
 
     // Retrieve new sensors as they are added to our database
     spotSettingsRef.on("child_added", function(snapshot) {
-        var key = snapshot.key().replace(/\s+/g, '%20');
+        var key = trim(snapshot.key());
 
         $scope.ref[j] = new Firebase("https://sunsspot.firebaseio.com/spotSettings/" + key);
 
@@ -914,6 +931,10 @@ function($scope, $firebaseObject, $log) {
         localObject.$bindTo($scope, "sensor_" + j);
 
         $scope.sensors[j] = localObject;
+
+        if(snapshot.val().mainIndex != null){
+          $scope.droppedObjectsArray[snapshot.val().mainIndex].push($scope.sensors[j]);
+        }
 
         j++;
     });
@@ -965,3 +986,7 @@ spotApp.directive('sensor', function(){
         template: '<div class="sensor" style="top:{{x}}%;left:{{y}}%"><img style="width:100%;" src="images/{{task}}.png" ><p>{{name}}</p></div>'
     };
 });
+
+function trim(string){
+  return string.replace(/\s+/g, '%20');
+}
