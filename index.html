@@ -42,6 +42,8 @@
     <script src="//code.angularjs.org/1.4.0-rc.2/angular-resource.min.js"></script>
     <script src="//code.angularjs.org/1.4.0-rc.2/angular-route.min.js"></script>
     <script src="//code.angularjs.org/1.4.0-rc.2/angular-animate.min.js"></script>
+    <link href="../bower_components/ng-dialog/css/ngDialog.css" rel="stylesheet">
+    <script src="../bower_components/ng-dialog/js/ngDialog.min.js"></script>
     <script src="app.js"></script>
     <link href="css/app.css" rel="stylesheet">
 
@@ -54,16 +56,16 @@
     <script src="http://bouil.github.io/angular-google-chart/ng-google-chart.js"></script>
 
     <!-- Angular Files -->
+
     <link href="../css/map.css" rel="stylesheet">
 
     <!-- Highcharts -->
     <script src="../js/highcharts.js"></script>
-  
+    
     <!-- ngDialog -->
     <link href="../bower_components/ng-dialog/css/ngDialog.css" rel="stylesheet">
     <script src="../bower_components/ng-dialog/js/ngDialog.min.js"></script>
     
-
     <!-- ngDraggable -->
     <script src="../bower_components/ngDraggable/ngDraggable.js"></script>
 
@@ -72,7 +74,7 @@
       border:1px inset black;
       padding:0;
       width:100%;
-      margin-top:15%;
+      margin:10px;
     }
     </style>
 
@@ -85,11 +87,7 @@
             }]
           }"></script>
           <script>
-          google.load("visualization", "1", {packages:["annotationchart"]});
-          google.setOnLoadCallback(drawChart);
-          var data = new google.visualization.DataTable();
-          data.addColumn('date', 'Date');
-          data.addColumn('number','Light');
+
           </script>
 
 
@@ -120,7 +118,6 @@
 
   <!-- Custom Theme JavaScript -->
   <script src="../dist/js/sb-admin-2.js"></script>
-
 
 </body>
 

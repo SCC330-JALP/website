@@ -17,7 +17,7 @@
 
                         <div class="card-footer">
                           <button ng-click="openHistory('zone1light')" class="btn btn-default btn-block">View History</button>
-                           <div id="sparklineTemp1" style="width:100%; height:50px;"></div>
+
                         </div>
 
                     </div>
@@ -100,7 +100,6 @@
 
                         <div class="card-footer">
                         <button ng-click="openHistory('zone2light')" class="btn btn-default btn-block">View History</button>
-                            <div id="sparklineTemp2" style="width:100%; height:50px;"></div>
 
                         </div>
 
@@ -182,7 +181,7 @@
 
                         <div class="card-footer">
                         <button ng-click="openHistory('zone3light')" class="btn btn-default btn-block">View History</button>
-                            <div id="sparklineTemp3" style="width:100%; height:50px;"></div>
+
                         </div>
 
                     </div>
@@ -260,7 +259,7 @@
 <div id="personTemplate" class="col-md-4 col-sm-12 object-card hidden">
     <div class="card">
         <div class="row">
-            <span id="personName">Unassigned</span>
+            <span id="spotName">Unassigned</span>
             <div class="card-footer">
                 <div class="col-md-8">
 
@@ -291,17 +290,18 @@
         <div style="width: 100px; height: 100px;"> Insert picture here</div>
 
         <div class="card-footer">
-<span id="spotTask">Spot type</span> 
+<span id="spotTask">Spot type</span>
         <div class=" col-xs-9">
 
           <small id="spotMAC"> Spot MAC</small>
         </div>
         <div class="col-xs-3">
           <button id="editSensorBtn" class="btn btn-primary data-button pull-right" data-toggle="modal" data-target="#myModal" data-name="" data-task="" data-address="" data-zone="">Edit</button>
-          
           <button id="historySensorBtn" data-address="" class="btn btn-primary pull-right btn">History</button>
+
+
         </div>
-        
+
 
         </div>
 
