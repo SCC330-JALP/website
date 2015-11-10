@@ -16,7 +16,8 @@
                         </div>
 
                         <div class="card-footer">
-                          <button ng-click="openHistory('zone1light')" class="btn btn-default btn-block">View History</button>
+                          <div id="zone1light" style="height: 50px; width: 100%;" ng-click="openHistory('zone1light')"></div>
+                          
 
                         </div>
 
@@ -32,6 +33,7 @@
                         </div>
 
                         <div class="card-footer">
+
                             <button ng-click="openHistory('zone1temp')" class="btn btn-default btn-block">View History</button>
                         </div>
 
@@ -273,28 +275,29 @@
                             <label class="control-label col-sm-2" for="email">Sensor Type:</label>
                             Warning: changing the sensor type will remove any data stored currently.
                             <div class="col-sm-10">
-                                <div class="radio">
+                              <select id="viewSensorTypeSelect">
+                                <option value="zone">Zone</option>
+                                <option value="sp">Person tracker</option>
+                                <option value="multi">Multi-sensor</option>
+                                <option value="s">Idle</option>
+                              </select>
+
+                                <div id="viewSensorCheckbox" class="radio hidden">
                                     <label>
-                                        <input type="radio" id="sm" value="sm" name="optradio">Motion</label>
+                                        <input type="checkbox" id="vm" value="m" name="optradio">Motion</label>
                                     <br>
 
                                     <label>
-                                        <input type="radio" id="sl" value="sl" name="optradio">Light</label>
+                                        <input type="checkbox" id="vl" value="l" name="optradio">Light</label>
                                     <br>
 
                                     <label>
-                                        <input type="radio" id="st" value="st" name="optradio">Temperature</label>
+                                        <input type="checkbox" id="vt" value="t" name="optradio">Temperature</label>
                                     <br>
                                     <label>
-                                        <input type="radio" id="person" value="person" name="optradio">Person tracker</label>
+                                        <input type="checkbox" id="vb" value="b" name="optradio">Button</label>
                                     <br>
 
-
-
-                                    <!--  <label><input type="radio" id="zone" value="zone" name="optradio" >Zone</label><br> -->
-
-                                    <label>
-                                        <input type="radio" id="idle" value="idle" name="optradio">Idle</label>
                                 </div>
                             </div>
                         </div>
@@ -350,32 +353,31 @@
                         <div class="form-group">
                             <label class="control-label col-sm-2" for="email">Sensor Type:</label>
                             Warning: changing the sensor type will remove any data stored currently.
+
                             <div class="col-sm-10">
-                                <div class="radio">
+                              <select id="editSensorTypeSelect">
+                                <option value="zone">Zone</option>
+                                <option value="sp">Person tracker</option>
+                                <option value="multi">Multi-sensor</option>
+                                <option value="s">Idle</option>
+                              </select>
+
+                                <div id="editSensorCheckbox" class="radio hidden">
                                     <label>
-                                        <input type="radio" id="sm" value="sm" name="optradio">Motion</label>
+                                        <input type="checkbox" id="m" value="m" name="optradio">Motion</label>
                                     <br>
 
                                     <label>
-                                        <input type="radio" id="sl" value="sl" name="optradio">Light</label>
+                                        <input type="checkbox" id="l" value="l" name="optradio">Light</label>
                                     <br>
 
                                     <label>
-                                        <input type="radio" id="st" value="st" name="optradio">Temperature</label>
+                                        <input type="checkbox" id="t" value="t" name="optradio">Temperature</label>
                                     <br>
                                     <label>
-                                        <input type="radio" id="person" value="person" name="optradio">Person tracker</label>
-                                    <br>
-                                    <label>
-                                        <input type="radio" id="zone" value="zone" name="optradio">Zone hub</label>
+                                        <input type="checkbox" id="b" value="b" name="optradio">Button</label>
                                     <br>
 
-
-
-                                    <!--  <label><input type="radio" id="zone" value="zone" name="optradio" >Zone</label><br> -->
-
-                                    <label>
-                                        <input type="radio" id="idle" value="idle" name="optradio">Idle</label>
                                 </div>
                             </div>
                         </div>
