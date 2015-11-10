@@ -827,8 +827,9 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       console.log("Deleting " + address); //log the delete address just in case
 
       var delRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings/" + address); //programatically generate the reference url
-
+      var delMapRef = new Firebase("https://sunsspot.firebaseio.com/map/" + address);
       delRef.remove(); //call the remove function to remove the data from Firebase
+      delMapRef.remove() //delete the spot from the map, as well.
       $("#" + address.replace(/ /g, "_")).remove(); //remove th element from the DOM
       $('.modal').modal('hide');
   };
