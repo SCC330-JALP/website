@@ -405,6 +405,41 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
     }*/
 
+    //** SPARKLINE CODE START
+    var data = new google.visualization.DataTable();
+      data.addColumn('number', 'X');
+      data.addColumn('number', 'Dogs');
+
+      var zone1Ref = new Firebase("https://sunsspot.firebaseio.com/zone1");
+
+      zone1Ref.limitToLast(100).on("child_added", function(snapshot){
+
+        entry = snapshot.val();
+
+        var d = new Date(entry.timestamp)
+        console.log(d.getMinutes());
+        data.addRow([entry.timestamp, entry.light]);
+        chart.draw(data, options);
+
+      })
+
+
+      var options = {
+        hAxis: {
+          textPosition: 'none'
+        },
+        vAxis: {
+          textPosition: 'none'
+        },
+        legend: {position: 'none'},
+        lineWidth: 1,
+        enableInteractivity: false
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('zone1light'));
+
+//SPARKLINE CODE END
+
     function createSensor(snapshot, pageElement){
 
       //all of this applies to both person sensors && non-person sensors
@@ -879,7 +914,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       newTask = multiTask;
     }
 
-    
+
 
       var updateRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings/"); //create reference
 
