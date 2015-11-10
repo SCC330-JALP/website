@@ -924,6 +924,7 @@ function($scope, $firebaseObject, $log) {
       ref.update({"mainIndex" : i});
     }
 
+    
     $scope.addTo = function(sensorObj, mainIndex){
       $scope.droppedObjectsArray[mainIndex] = sensorObj;
     }
