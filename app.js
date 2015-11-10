@@ -407,14 +407,12 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
     function createSensor(snapshot, pageElement){
 
-
-
       //all of this applies to both person sensors && non-person sensors
 
       $(pageElement).find("#spotName")[0].innerHTML = snapshot.name; //insert the spot name
       $(pageElement).find("#spotMAC")[0].innerHTML = snapshot.address; //insert the spot name
 
-      if(newSensor.task.indexOf("p") === -1){ //new sensor is not a person sensor
+      if(snapshot.task.indexOf("p") === -1){ //new sensor is not a person sensor
         console.log("Creating new sensor!");
         console.log(snapshot);
         var spotTask = $(pageElement).find("#spotTask")[0];
@@ -608,13 +606,15 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
         var newTask = changedSensor.task;
 
-        if(oldTask == "person" && newTask == "person"){
+        console.log("newTask : " + newTask + " | oldTask : " + oldTask);
+
+        if(oldTask == "sp" && newTask == "sp"){
             //person stayed a person
           updatePersonSensor(changedSensor, changedElement);
 
 
         }
-        else if(oldTask == "person" && newTask != "person"){
+        else if(oldTask == "sp" && newTask != "sp"){
           console.log("Triggered");
           //person became sensor
           $(changedElement).remove(); //remove the old sensor, as it's type has changed.
@@ -628,7 +628,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
 
         }
-        else if(oldTask != "person" && newTask == "person"){
+        else if(oldTask != "sp" && newTask == "sp"){
           //sensor became person
                     $(changedElement).remove();
                     var personElement = $("#personTemplate").clone();
@@ -637,7 +637,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
                     createSensor(changedSensor, personElement);
 
         }
-        else if(oldTask != "person" && newTask != "person"){
+        else if(oldTask != "sp" && newTask != "sp"){
           //sensor stayed sensor
           updateSensor(changedSensor, changedElement);
 
@@ -652,8 +652,36 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         var address = $(this).data('address');
         var zone = $(this).data('zone');
 
-
         var modal = $("#myModal"); //get the modal element
+
+        if(task == "sp"){
+          //person sensor
+          modal.find("#editSensorTypeSelect").val("sp").change();
+        }else if(task == "zone"){
+          //zone sensor
+          modal.find("#editSensorTypeSelect").val("zone").change();
+        }else if(task == "s"){
+          //idle sensor
+          modal.find("#editSensorTypeSelect").val("s").change();
+        }else{
+          //multi sensor
+          modal.find("#editSensorTypeSelect").val("multi").change();
+          if(task.indexOf("m") !== -1){
+              $("input#m").prop("checked", true);
+          }
+          if(task.indexOf("l") !== -1){
+              $("input#l").prop("checked", true);
+          }
+          if(task.indexOf("t") !== -1){
+              $("input#t").prop("checked", true);
+          }
+          if(task.indexOf("b") !== -1){
+              $("input#b").prop("checked", true);
+          }
+
+        }
+
+
         modal.find("#myModalLabel")[0].innerHTML = name; //insert variables to the element
 
         modal.find("#spotAddress")[0].innerHTML = address;
@@ -693,14 +721,39 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         var address = $(this).data('address');
         var zone = $(this).data('zone');
 
-
-
         var modal = $("#viewPerson");
+        if(task == "sp"){
+          //person sensor
+          modal.find("#viewSensorTypeSelect").val("sp").change();
+        }else if(task == "zone"){
+          //zone sensor
+          modal.find("#viewSensorTypeSelect").val("zone").change();
+        }else if(task == "s"){
+          //idle sensor
+          modal.find("#viewSensorTypeSelect").val("s").change();
+        }else{
+          //multi sensor
+          modal.find("#viewSensorTypeSelect").val("multi").change();
+          if(task.indexOf("m") !== -1){
+              $("input#vm").prop("checked", true);
+          }
+          if(task.indexOf("l") !== -1){
+              $("input#vl").prop("checked", true);
+          }
+          if(task.indexOf("t") !== -1){
+              $("input#vt").prop("checked", true);
+          }
+          if(task.indexOf("b") !== -1){
+              $("input#vb").prop("checked", true);
+          }
+
+        }
+
         modal.find("#myModalLabel")[0].innerHTML = name;
         modal.find("#spotAddress")[0].innerHTML = address;
         modal.find("input#name")[0].value = name;
 
-        modal.find("input#" + task).prop("checked", true);
+
         modal.find("#personZone")[0].innerHTML = zone
 
         var modal = $("#deleteModal");
@@ -708,6 +761,24 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         modal.find("#deleteSpotAddress")[0].innerHTML = address;
     });
 
+    $("#editSensorTypeSelect").change(function(){
+
+      if($(this).val() == "multi"){
+        $("#editSensorCheckbox").removeClass("hidden");
+      }else{
+        $("#editSensorCheckbox").addClass("hidden");
+      }
+    })
+
+    $("#viewSensorTypeSelect").change(function(){
+      console.log("Select changed!");
+      console.log($(this).val());
+      if($(this).val() == "multi"){
+        $("#viewSensorCheckbox").removeClass("hidden");
+      }else{
+        $("#viewSensorCheckbox").addClass("hidden");
+      }
+    })
   }
 
   /**
@@ -733,16 +804,34 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
    * @author Josh Stennett
    */
   $scope.modalSubmit = function() {
+
       var modal = $("#myModal")
       var address = modal.find("#spotAddress")[0].innerHTML //populate variables based off of form values
-
       var newName = modal.find("#name")[0].value;
-
-      var newTask = modal.find('input[name="optradio"]:checked').val();
-
       var newZone = parseInt($("span#sensorZone")[0].innerHTML);
+      var newTask = modal.find('#editSensorTypeSelect').val();
 
-      console.log("new zone: " + newZone);
+      if(newTask == "multi"){
+        var multiTask = "s";
+        if($("input#m").is(':checked')){
+
+          multiTask += "m";
+        }
+        if($("input#l").is(':checked')){
+
+          multiTask += "l";
+        }
+        if($("input#t").is(':checked')){
+
+          multiTask += "t";
+        }
+        if($("input#b").is(':checked')){
+
+          multiTask += "b";
+        }
+        newTask = multiTask;
+      }
+
       var updateRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings/"); //create reference
 
       updateRef.child(address).set({
@@ -750,6 +839,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
           task: newTask,
           zone: newZone
       }); //update the record with the new data
+      $("input#m").prop("checked", false);
+      $("input#l").prop("checked", false);
+      $("input#t").prop("checked", false);
+      $("input#b").prop("checked", false);
   };
 
   /**
@@ -761,13 +854,32 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
     var modal = $("#viewPerson")
     var address = modal.find("#spotAddress")[0].innerHTML //populate variables based off of form values
-
     var newName = modal.find("#name")[0].value;
-
-    var newTask = modal.find('input[name="optradio"]:checked').val();
-
     var newZone = parseInt($("span#personZone")[0].innerHTML);
-    console.log("new zone: " + newZone);
+
+    var newTask = modal.find('#viewSensorTypeSelect').val();
+    if(newTask == "multi"){
+      var multiTask = "s";
+      if($("input#vm").is(':checked')){
+
+        multiTask += "m";
+      }
+      if($("input#vl").is(':checked')){
+
+        multiTask += "l";
+      }
+      if($("input#vt").is(':checked')){
+
+        multiTask += "t";
+      }
+      if($("input#vb").is(':checked')){
+
+        multiTask += "b";
+      }
+      newTask = multiTask;
+    }
+
+    
 
       var updateRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings/"); //create reference
 
@@ -776,6 +888,13 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
           task: newTask,
           zone: newZone
       }); //update the record with the new data
+
+
+          $("input#vm").prop("checked", false);
+          $("input#vl").prop("checked", false);
+          $("input#vt").prop("checked", false);
+          $("input#vb").prop("checked", false);
+
   };
 
 
@@ -865,19 +984,19 @@ function($scope, $firebaseObject, $log) {
 
     /*-------------------------------*/
     // $scope.draggableObjects = [{name:'one'}, {name:'two'}, {name:'three'}];
-    
+
     // var onDraggableEvent = function (evt, data) {
     //     console.log("128", "onDraggableEvent", evt, data);
     // }
-   
+
     // $scope.$on('draggable:start', onDraggableEvent);
    // $scope.$on('draggable:move', onDraggableEvent);
     // $scope.$on('draggable:end', onDraggableEvent);
-    
+
     $scope.number = 33 * 11;
 
     $scope.range = function(num) {
-        return new Array(num);   
+        return new Array(num);
     }
 
     $scope.onDropComplete = function (data, evt) {
@@ -885,17 +1004,17 @@ function($scope, $firebaseObject, $log) {
         if (index == -1)
             $scope.sensors.push(data);
     }
-    
+
     $scope.onDragSuccess = function (data, evt) {
         var index = $scope.sensors.indexOf(data);
-        if (index > -1) 
+        if (index > -1)
             $scope.sensors.splice(index, 1);
     }
 
     $scope.applyListener = function(i){
-        
+
         $scope.droppedObjectsArray.push([]);
-        
+
         $scope.onDropCompleteArray[i] = function (data, evt) {
             var index = $scope.droppedObjectsArray[i].indexOf(data);
             if (index == -1){
@@ -903,7 +1022,7 @@ function($scope, $firebaseObject, $log) {
             }
 
         }
-        
+
         $scope.onDragSuccessArray[i] = function (data, evt) {
             var index = $scope.droppedObjectsArray[i].indexOf(data);
             if (index > -1){
@@ -914,7 +1033,7 @@ function($scope, $firebaseObject, $log) {
     $scope.droppedObjectsArray = [];
     $scope.onDropCompleteArray = [];
     $scope.onDragSuccessArray = [];
-    
+
     for(i=0;i<$scope.number;i++)
       $scope.applyListener(i);
 
@@ -923,7 +1042,7 @@ function($scope, $firebaseObject, $log) {
     $scope.ref = [];
     $scope.syncObject = [];
     $scope.sensors = [];
-    
+
     var j = 0;
 
     // Retrieve new sensors as they are added to our database
