@@ -407,8 +407,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
     }*/
 
     function createSensor(snapshot, pageElement){
-      console.log("Creating new sensor!");
-      console.log(snapshot);
+
 
 
       //all of this applies to both person sensors && non-person sensors
@@ -416,7 +415,9 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       $(pageElement).find("#spotName")[0].innerHTML = snapshot.name; //insert the spot name
       $(pageElement).find("#spotMAC")[0].innerHTML = snapshot.address; //insert the spot name
 
-      if(snapshot.task != "person"){ //new sensor is not a person sensor
+      if(newSensor.task.indexOf("p") === -1){ //new sensor is not a person sensor
+        console.log("Creating new sensor!");
+        console.log(snapshot);
         var spotTask = $(pageElement).find("#spotTask")[0];
         setTask(spotTask, snapshot.task); //set the task
 
@@ -436,10 +437,11 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         //???????????????????????????????????????????????????????????????
 
 
-        appendSensor("Sensors",snapshot.zone,pageElement);
+        appendSensor(snapshot.zone,pageElement);
 
       }else{ //new sensor is a person sensor
-
+        console.log("Creating new person!");
+        console.log(snapshot);
         var viewButton = $(pageElement).find("#viewPersonBtn")[0]; //set up the links as seen in child_changed listener
         $(viewButton).data('name', snapshot.name);
         $(viewButton).data('task', snapshot.task);
@@ -447,7 +449,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         $(viewButton).data('zone', snapshot.zone);
 
 
-        appendSensor("people",snapshot.zone,pageElement);
+        appendSensor(snapshot.zone,pageElement);
 
       }
 
@@ -455,20 +457,45 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
     }
 
     function setTask(element, task){
-      if(task == 'sl'){
-        element.innerHTML = 'Light sensor';
-      }else if(task == "sm"){
-        element.innerHTML = 'Motion sensor';
-      }else if(task == "st"){
-        element.innerHTML = 'Temperature sensor';
-      }else if(task == "zone"){
-        element.innerHTML = 'Zone sensor';
-      }else if(task == "idle"){
-        element.innerHTML = 'Idle sensor';
+      taskLength = task.length; //get the length of the task string
+     if(task == "s"){ //if the task is just "s" it must be idle
+        element.innerHTML = "Idle Sensor";
       }else{
-        element.innerHTML = 'Unknown Type';
-      }
+        if(task == "zone"){ //if the task is just "zone", then it's a static zone sensor
+          element.innerHTML = "Zone sensor";
+        }else{
+          var elementString = ""; //initialise a string
+          var appendCommas = false;
+          for(var i = 0; i < taskLength; i++){ //loop through every letter
 
+          var char = task.charAt(i); //get the current character
+          if(char == "m"){ //if current char is m
+            elementString = elementString + "Motion"; //append motion to the string
+          }else if(char == "l"){
+            elementString = elementString + "Light"; // .. etc..
+          }else if(char == "t"){
+            elementString = elementString + "Temperature";
+          }else if(char == "b"){
+            elementString = elementString + "Button";
+          }else if(char == "s"){
+            //ignore it as we handle it above (but still need to identify it here)
+          }else{
+            elementString = elementString + "Unknown: " + char; //if an unknown character is found, output the char as unknown
+            console.log("Unkown char in task: " + task); //also log the task that contained the unkown char
+          }
+          if(i == taskLength-1){  //if we're at the last character in the string
+            appendCommas = false; //dont append a comma
+            elementString = elementString + " "; //but do append a speace
+          }
+          if(appendCommas){
+            elementString = elementString + ", "; //if we're not at the start, append commas in between sensor types
+          }
+          appendCommas = true; //enable commas
+
+        }
+        element.innerHTML = elementString + "Sensor"; //once the string has been  built, append sensor and then insert it to the DOM
+      }
+      }
     }
 
     function updatePersonSensor(snapshot, changedElement){
@@ -493,7 +520,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
       if (oldZone != snapshot.zone) { //if the zone has changed, the element needs to move to a different sub-heading
 
-        appendSensor("people",snapshot.zone,changedElement);
+        appendSensor(snapshot.zone,changedElement);
 
       }
     }
@@ -526,13 +553,13 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       }
 
       if (oldZone != snapshot.zone) { //if the task has changed, the element needs to move to a different sub-heading
-        appendSensor("Sensors",snapshot.zone,changedElement);
+        appendSensor(snapshot.zone,changedElement);
       }
     }
 
-    function appendSensor(location, zone, element){
+    function appendSensor(zone, element){
       if(zone == 1 || zone == 2 || zone == 3){
-        $("#zone"+zone+location).append(element)
+        $("#zone"+zone+"Sensors").append(element)
       }else{
         $("#zoneContainer").append(element)
       }
@@ -544,8 +571,8 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
           //console.log(snapshot.key());
 
         newSensor = snapshot.val();
-
-        if(newSensor.task != 'person'){ //sensor is not a person tracker
+        console.log(newSensor.task.indexOf("p"));
+        if(newSensor.task.indexOf("p") === -1){ //sensor is not a person tracker as p is not in the task string.
 
           newSensor.address = snapshot.key();
 
