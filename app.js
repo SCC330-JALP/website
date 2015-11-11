@@ -422,7 +422,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         var d = new Date(entry.timestamp)
         console.log(d.getMinutes());
         data.addRow([entry.timestamp, entry.light]);
-        chart.draw(data, options);
+        //chart.draw(data, options); <------ this actually draws the graph but is horrible inneficient.
 
       })
 
@@ -456,7 +456,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         var spotTask = $(pageElement).find("#spotTask")[0];
         setTask(spotTask, snapshot.task); //set the task
 
-        if(snapshot.task == "idle"){ //set the status light to red if the sensor is idle.
+        if(!snapshot.alive){ //set the status light to red if the sensor is not alive.
           var status = $(pageElement).find("#status");
           $(status).css('background-color','darkred');
         }
@@ -466,7 +466,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         $(editButton).data('task', snapshot.task);
         $(editButton).data('address', snapshot.address);
         $(editButton).data('zone', snapshot.zone);
-        
+
         //???????????????????????????????????????????????????????????????
         var historySensorBtn = $(pageElement).find("#historySensorBtn")[0]; //set up the links as seen in child_changed listener
         $(historySensorBtn).data('address', snapshot.address);
@@ -571,8 +571,9 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       var status = $(changedElement).find("#status")[0]
       $(status).css('background-color','green');
 
-      if(snapshot.task == 'idle'){
+      if(!snapshot.alive ){
         $(status).css('background-color','darkred');
+
       }
 
       var link = $(changedElement).find("#editSensorBtn")[0]; //find the link to Edit modal
@@ -602,6 +603,48 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       }
 
     }
+
+    function createDataListeners(snapshot, element){
+      console.log("LiveData Listener created");
+
+      if(newSensor.task.indexOf("b") !== -1){
+        var btnoutput = $(element).find("#liveDatabtn")[0]
+        var newDataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address + "/button")
+
+        newDataRef.limitToLast(1).on("child_added", function(snapshot){
+          var time = new Date(snapshot.val().timestamp)
+
+          btnoutput.innerHTML = "Button " + snapshot.val().newVal + " pressed at " + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
+        })
+      }
+
+      if(newSensor.task.indexOf("l") !== -1){
+          var lightoutput = $(element).find("#liveDatalight")[0]
+        var newDataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address + "/light")
+
+        newDataRef.limitToLast(1).on("child_added", function(snapshot){
+          var time = new Date(snapshot.val().timestamp)
+
+          lightoutput.innerHTML = "Light triggered to: " + snapshot.val().newVal + "  at :" + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
+        })
+      }
+
+      if(newSensor.task.indexOf("m") !== -1){
+          var motionoutput = $(element).find("#liveDatamotion")[0]
+        var newDataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address + "/motion")
+
+        newDataRef.limitToLast(1).on("child_added", function(snapshot){
+          var time = new Date(snapshot.val().timestamp)
+
+          motionoutput.innerHTML = "Motion detected at:  "  + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
+        })
+      }
+
+
+
+
+    }
+
     var settingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
 
     settingsRef.on("child_added", function(snapshot) { //listen for when a child is added : also triggers once for each child in database on page load.
@@ -618,6 +661,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
           createSensor(newSensor, sensorElement);
 
+          createDataListeners(newSensor, sensorElement);
 
         }else{ //sensor is a person tracker
 
@@ -748,7 +792,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         var sensorType = $(this).data('task');
 
         ngDialog.open({
-            template: '<div id="' + spotId + '_0" class="history-chart"></div>' + 
+            template: '<div id="' + spotId + '_0" class="history-chart"></div>' +
                       '<div id="' + spotId + '_1" class="history-chart"></div>' +
                       '<div id="' + spotId + '_2" class="history-chart"></div>' +
                       '<div id="' + spotId + '_3" class="history-chart"></div>',
@@ -968,24 +1012,24 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
         for(i in sensorType){
           switch(sensorType[i]){
-            
+
             case 'm':
               sensorTypeName[i] = "motion";
               break;
-            
+
             case 'l':
               sensorTypeName[i] = "light";
               break;
-            
+
             case 't':
               sensorTypeName[i] = "temperature";
               break;
-            
+
             case 'b':
               sensorTypeName[i] = "button";
               break;
-            
-            default: 
+
+            default:
               sensorTypeName[i] = sensorType[i];
           }
         }
@@ -1001,7 +1045,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
             $scope.populateChart(spotRef, spotId, i);
           }
         }
-        
+
     }
 
     $scope.populateChart = function(spotRef, spotId, i){
@@ -1124,7 +1168,7 @@ function($scope, $firebaseObject, $log) {
       ref.update({"mainIndex" : i});
     }
 
-    
+
     $scope.addTo = function(sensorObj, mainIndex){
       $scope.droppedObjectsArray[mainIndex] = sensorObj;
     }
