@@ -409,37 +409,37 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
     }*/
 
     //** SPARKLINE CODE START
-    var data = new google.visualization.DataTable();
-      data.addColumn('number', 'X');
-      data.addColumn('number', 'Dogs');
+    // var data = new google.visualization.DataTable();
+    //   data.addColumn('number', 'X');
+    //   data.addColumn('number', 'Dogs');
 
-      var zone1Ref = new Firebase("https://sunsspot.firebaseio.com/zone1");
+    //   var zone1Ref = new Firebase("https://sunsspot.firebaseio.com/zone1");
 
-      zone1Ref.limitToLast(100).on("child_added", function(snapshot){
+    //   zone1Ref.limitToLast(100).on("child_added", function(snapshot){
 
-        entry = snapshot.val();
+    //     entry = snapshot.val();
 
-        var d = new Date(entry.timestamp)
-        console.log(d.getMinutes());
-        data.addRow([entry.timestamp, entry.light]);
-        chart.draw(data, options);
+    //     var d = new Date(entry.timestamp)
+    //     console.log(d.getMinutes());
+    //     data.addRow([entry.timestamp, entry.light]);
+    //     chart.draw(data, options);
 
-      })
+    //   })
 
 
-      var options = {
-        hAxis: {
-          textPosition: 'none'
-        },
-        vAxis: {
-          textPosition: 'none'
-        },
-        legend: {position: 'none'},
-        lineWidth: 1,
-        enableInteractivity: false
-      };
+    //   var options = {
+    //     hAxis: {
+    //       textPosition: 'none'
+    //     },
+    //     vAxis: {
+    //       textPosition: 'none'
+    //     },
+    //     legend: {position: 'none'},
+    //     lineWidth: 1,
+    //     enableInteractivity: false
+    //   };
 
-      var chart = new google.visualization.LineChart(document.getElementById('zone1light'));
+    //   var chart = new google.visualization.LineChart(document.getElementById('zone1light'));
 
 //SPARKLINE CODE END
 
@@ -751,7 +751,9 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
             template: '<div id="' + spotId + '_0" class="history-chart"></div>' + 
                       '<div id="' + spotId + '_1" class="history-chart"></div>' +
                       '<div id="' + spotId + '_2" class="history-chart"></div>' +
-                      '<div id="' + spotId + '_3" class="history-chart"></div>',
+                      '<div id="' + spotId + '_3" class="history-chart"></div>' +
+                      '<div id="' + spotId + '_4" class="history-chart"></div>' +
+                      '<div id="' + spotId + '_5" class="history-chart"></div>',
             plain: true
         });
 
@@ -991,31 +993,41 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         }
 
         for(i in sensorTypeName){
+
+          //Only showing motion, light, temperature, button graphs
           if(sensorTypeName[i].length > 1){
+            
             var address = trim(address); //Replace spaces with %20%
+            
             var spotRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + address + "/" + sensorTypeName[i]);
 
-            // google.load("visualization", "1", {packages:["annotationchart"]});
-            // //google.setO nLoadCallback(drawChart);
-
-            $scope.populateChart(spotRef, spotId, i);
+            $scope.populateChart(spotRef, spotId, i, sensorTypeName[i]);
           }
         }
         
     }
 
-    $scope.populateChart = function(spotRef, spotId, i){
+    /**
+     * Populate data into chart 
+     * (Google visualization has been called in index.html so google.load("visualization") is redundant here
+     * @param {Object} spotRef - Full address of a sensor.
+     * @param {String} spotId - The last 4 letters of the spot's ID. Example: '76D3', '797D'.
+     * @param {int} i - Index of sensorTypeName[]
+     * @param {String} sensorTypeName - Name of the sensor.
+     * @author Anson Cheung
+     */
+    $scope.populateChart = function(spotRef, spotId, i, sensorTypeName){
 
       var data = new google.visualization.DataTable();
       data.addColumn('date', 'Date');
-      data.addColumn('number','Value');
+      data.addColumn('number', sensorTypeName);
 
       spotRef.once("value", function(snapshot) {
         var newLog = snapshot.val();
 
         for (var log in newLog)
             data.addRow([new Date(newLog[log].timestamp),newLog[log].newVal]);
-        console.log(spotId + '_' + i);
+        
         drawChart(data, spotId + '_' + i, ['#004D40', '#00695C', '#00796B']);
       });
 
