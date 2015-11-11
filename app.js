@@ -302,7 +302,6 @@ spotApp.run(function($rootScope, $firebaseObject) {
     //########### TESTING END ###########//
     //########## DONT DELETE ############//
     //-----------------------------------//
-
 })
 
 
@@ -409,6 +408,76 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
     }*/
 
     //** SPARKLINE CODE START
+
+
+    
+    /**
+     * Generate a sparkline and set it to a <div>
+     * @constructor
+     * @param {int} zoneNumber - Zone number.
+     * @param {String} sensorType - Name of the sensor Type.
+     * @return {sparkline Object} - This returns the line chart object and you can call it in HTML
+     * HTML: <div google-chart chart="sparkline(int ZoneNumber, String sensorType)" style="height:50px;cursor:pointer;"></div>
+     * @author Anson Cheung & Josh Stennett
+     */
+    $scope.sparkline = function(zoneNumber, sensorType, color){
+        var zone1Ref = new Firebase("https://sunsspot.firebaseio.com/zone" + zoneNumber);
+
+        var sparkline = {};
+        sparkline.type = "LineChart";
+
+        sparkline.data = {
+            "cols": [
+                {id: "number",label: "number", type: "date"}, 
+                {id: "value-data",label: "Value", type: "number"
+            }],
+            "rows": []
+        };
+
+        zone1Ref.limitToLast(100).on('child_added', function(snapshot) {
+            var data = snapshot.val();
+            var timestamp = new Date(data.timestamp);
+
+            switch(sensorType){
+                case 'light':
+                    sparkline.data.rows.push({c: [{v: new Date(timestamp)}, {v: data.light}]}); 
+                    break;
+                case 'temp':
+                    sparkline.data.rows.push({c: [{v: new Date(timestamp)}, {v: data.temp}, ]}); 
+                    break;
+                default:
+                    sparkline.data.rows.push({c: [{v: new Date(timestamp)}, {v: data.light}]});
+            }
+            
+        });
+
+        sparkline.options = {
+            hAxis: {
+              textPosition: 'none'
+            },
+            vAxis: {
+              textPosition: 'none'
+            },
+            legend: {position: 'none'},
+            lineWidth: 1,
+            lineHeight: 1,
+            enableInteractivity: false
+        };
+
+        switch(color){
+            case 'blue':
+                sparkline.options.colors = ['#0D47A1', '#0D47A1', '#0D47A1'];
+                break;
+            case 'red':
+                sparkline.options.colors = ['#880E4F', '#AD1457', '#C2185B'];
+                break;
+            default:
+                sparkline.options.colors = ['#000', '#000', '#000'];
+        }
+
+        return sparkline;
+    }
+
     // var data = new google.visualization.DataTable();
     //   data.addColumn('number', 'X');
     //   data.addColumn('number', 'Dogs');
@@ -420,7 +489,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
     //     entry = snapshot.val();
 
     //     var d = new Date(entry.timestamp)
-    //     console.log(d.getMinutes());
+    //     // console.log(d.getMinutes());
     //     data.addRow([entry.timestamp, entry.light]);
     //     chart.draw(data, options);
 
@@ -441,7 +510,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
     //   var chart = new google.visualization.LineChart(document.getElementById('zone1light'));
 
-//SPARKLINE CODE END
+    //SPARKLINE CODE END
 
     function createSensor(snapshot, pageElement){
 
