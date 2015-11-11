@@ -37,6 +37,8 @@ spotApp.config(function($routeProvider, $locationProvider) {
 
 //Think it as global variables
 spotApp.run(function($rootScope, $firebaseObject) {
+
+
     $rootScope.appName = 'JALP SmartLab';
 
     $rootScope.livedata = $firebaseObject(ref.child('zone1').limitToLast(1));
@@ -300,13 +302,13 @@ spotApp.run(function($rootScope, $firebaseObject) {
     //########### TESTING END ###########//
     //########## DONT DELETE ############//
     //-----------------------------------//
-
 })
 
 
 //smart lab Controller
 spotApp.controller('smartlabController', ['$rootScope', '$scope','$firebaseObject', '$parse', 'ngDialog',
 function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
+
 
     /**
      * Generate a annotation graph and set it to a <div>
@@ -318,7 +320,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
      */
     $scope.setHistoryChart = function(zoneNumber, graphType, bindDivName){
       console.log("setHistoryChart received bindDivName as: " + bindDivName);
-        google.load("visualization", "1", {packages:["annotationchart"]});
+        // google.load("visualization", "1", {packages:["annotationchart"]});
         //google.setOnLoadCallback(drawChart);
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'Date');
@@ -405,6 +407,118 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
     }*/
 
+    //** SPARKLINE CODE START
+
+
+    
+    /**
+     * Generate a sparkline and set it to a <div>
+     * @constructor
+     * @param {int} zoneNumber - Zone number.
+     * @param {String} sensorType - Name of the sensor Type.
+     * @return {sparkline Object} - This returns the line chart object and you can call it in HTML
+     * HTML: <div google-chart chart="sparkline(int ZoneNumber, String sensorType)" style="height:50px;cursor:pointer;"></div>
+     * @author Anson Cheung & Josh Stennett
+     */
+    $scope.sparkline = function(zoneNumber, sensorType, color){
+        var zone1Ref = new Firebase("https://sunsspot.firebaseio.com/zone" + zoneNumber);
+
+        var sparkline = {};
+        sparkline.type = "LineChart";
+
+<<<<<<< HEAD
+        var d = new Date(entry.timestamp)
+        console.log(d.getMinutes());
+        data.addRow([entry.timestamp, entry.light]);
+        //chart.draw(data, options); <------ this actually draws the graph but is horrible inneficient.
+=======
+        sparkline.data = {
+            "cols": [
+                {id: "number",label: "number", type: "date"}, 
+                {id: "value-data",label: "Value", type: "number"
+            }],
+            "rows": []
+        };
+>>>>>>> a7e1e1a16127a297e111f1e15378ce3089cc00a8
+
+        zone1Ref.limitToLast(100).on('child_added', function(snapshot) {
+            var data = snapshot.val();
+            var timestamp = new Date(data.timestamp);
+
+            switch(sensorType){
+                case 'light':
+                    sparkline.data.rows.push({c: [{v: new Date(timestamp)}, {v: data.light}]}); 
+                    break;
+                case 'temp':
+                    sparkline.data.rows.push({c: [{v: new Date(timestamp)}, {v: data.temp}, ]}); 
+                    break;
+                default:
+                    sparkline.data.rows.push({c: [{v: new Date(timestamp)}, {v: data.light}]});
+            }
+            
+        });
+
+        sparkline.options = {
+            hAxis: {
+              textPosition: 'none'
+            },
+            vAxis: {
+              textPosition: 'none'
+            },
+            legend: {position: 'none'},
+            lineWidth: 1,
+            lineHeight: 1,
+            enableInteractivity: false
+        };
+
+        switch(color){
+            case 'blue':
+                sparkline.options.colors = ['#0D47A1', '#0D47A1', '#0D47A1'];
+                break;
+            case 'red':
+                sparkline.options.colors = ['#880E4F', '#AD1457', '#C2185B'];
+                break;
+            default:
+                sparkline.options.colors = ['#000', '#000', '#000'];
+        }
+
+        return sparkline;
+    }
+
+    // var data = new google.visualization.DataTable();
+    //   data.addColumn('number', 'X');
+    //   data.addColumn('number', 'Dogs');
+
+    //   var zone1Ref = new Firebase("https://sunsspot.firebaseio.com/zone1");
+
+    //   zone1Ref.limitToLast(100).on("child_added", function(snapshot){
+
+    //     entry = snapshot.val();
+
+    //     var d = new Date(entry.timestamp)
+    //     // console.log(d.getMinutes());
+    //     data.addRow([entry.timestamp, entry.light]);
+    //     chart.draw(data, options);
+
+    //   })
+
+
+    //   var options = {
+    //     hAxis: {
+    //       textPosition: 'none'
+    //     },
+    //     vAxis: {
+    //       textPosition: 'none'
+    //     },
+    //     legend: {position: 'none'},
+    //     lineWidth: 1,
+    //     enableInteractivity: false
+    //   };
+
+    //   var chart = new google.visualization.LineChart(document.getElementById('zone1light'));
+
+    //SPARKLINE CODE END
+
     function createSensor(snapshot, pageElement){
 
       //all of this applies to both person sensors && non-person sensors
@@ -418,7 +532,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         var spotTask = $(pageElement).find("#spotTask")[0];
         setTask(spotTask, snapshot.task); //set the task
 
-        if(snapshot.task == "idle"){ //set the status light to red if the sensor is idle.
+        if(!snapshot.alive){ //set the status light to red if the sensor is not alive.
           var status = $(pageElement).find("#status");
           $(status).css('background-color','darkred');
         }
@@ -428,9 +542,11 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         $(editButton).data('task', snapshot.task);
         $(editButton).data('address', snapshot.address);
         $(editButton).data('zone', snapshot.zone);
+
         //???????????????????????????????????????????????????????????????
         var historySensorBtn = $(pageElement).find("#historySensorBtn")[0]; //set up the links as seen in child_changed listener
         $(historySensorBtn).data('address', snapshot.address);
+        $(historySensorBtn).data('task', snapshot.task);
         //???????????????????????????????????????????????????????????????
 
 
@@ -531,8 +647,9 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       var status = $(changedElement).find("#status")[0]
       $(status).css('background-color','green');
 
-      if(snapshot.task == 'idle'){
+      if(!snapshot.alive ){
         $(status).css('background-color','darkred');
+
       }
 
       var link = $(changedElement).find("#editSensorBtn")[0]; //find the link to Edit modal
@@ -562,6 +679,48 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       }
 
     }
+
+    function createDataListeners(snapshot, element){
+      console.log("LiveData Listener created");
+
+      if(newSensor.task.indexOf("b") !== -1){
+        var btnoutput = $(element).find("#liveDatabtn")[0]
+        var newDataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address + "/button")
+
+        newDataRef.limitToLast(1).on("child_added", function(snapshot){
+          var time = new Date(snapshot.val().timestamp)
+
+          btnoutput.innerHTML = "Button " + snapshot.val().newVal + " pressed at " + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
+        })
+      }
+
+      if(newSensor.task.indexOf("l") !== -1){
+          var lightoutput = $(element).find("#liveDatalight")[0]
+        var newDataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address + "/light")
+
+        newDataRef.limitToLast(1).on("child_added", function(snapshot){
+          var time = new Date(snapshot.val().timestamp)
+
+          lightoutput.innerHTML = "Light triggered to: " + snapshot.val().newVal + "  at :" + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
+        })
+      }
+
+      if(newSensor.task.indexOf("m") !== -1){
+          var motionoutput = $(element).find("#liveDatamotion")[0]
+        var newDataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address + "/motion")
+
+        newDataRef.limitToLast(1).on("child_added", function(snapshot){
+          var time = new Date(snapshot.val().timestamp)
+
+          motionoutput.innerHTML = "Motion detected at:  "  + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
+        })
+      }
+
+
+
+
+    }
+
     var settingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
 
     settingsRef.on("child_added", function(snapshot) { //listen for when a child is added : also triggers once for each child in database on page load.
@@ -578,6 +737,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
           createSensor(newSensor, sensorElement);
 
+          createDataListeners(newSensor, sensorElement);
 
         }else{ //sensor is a person tracker
 
@@ -705,13 +865,20 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
         var address = $(this).data('address');
         var spotId = address.slice(-4);
+        var sensorType = $(this).data('task');
 
         ngDialog.open({
-            template: '<div id="' + spotId + '" class="history-chart""></div>',
+            template: '<div id="' + spotId + '_0" class="history-chart"></div>' +
+                      '<div id="' + spotId + '_1" class="history-chart"></div>' +
+                      '<div id="' + spotId + '_2" class="history-chart"></div>' +
+                      '<div id="' + spotId + '_3" class="history-chart"></div>' +
+                      '<div id="' + spotId + '_4" class="history-chart"></div>' +
+                      '<div id="' + spotId + '_5" class="history-chart"></div>',
             plain: true
         });
 
-        $scope.setSensorHistoryChart(address, spotId);
+        console.log(sensorType);
+        $scope.setSensorHistoryChart(address, spotId, sensorType);
 
     });
 
@@ -792,8 +959,9 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       console.log("Deleting " + address); //log the delete address just in case
 
       var delRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings/" + address); //programatically generate the reference url
-
+      var delMapRef = new Firebase("https://sunsspot.firebaseio.com/map/" + address);
       delRef.remove(); //call the remove function to remove the data from Firebase
+      delMapRef.remove() //delete the spot from the map, as well.
       $("#" + address.replace(/ /g, "_")).remove(); //remove th element from the DOM
       $('.modal').modal('hide');
   };
@@ -879,7 +1047,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       newTask = multiTask;
     }
 
-    
+
 
       var updateRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings/"); //create reference
 
@@ -917,27 +1085,72 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
      * @param {String} spotId - The last 4 letters of the spot's ID. Example: '76D3', '797D'.
      * @author Anson Cheung
      */
-    $scope.setSensorHistoryChart = function(address, spotId){
+    $scope.setSensorHistoryChart = function(address, spotId, sensorType){
+        var sensorTypeName = [];
 
-        var address = trim(address); //Replace spaces with %20%
-        var spotRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + address);
+        for(i in sensorType){
+          switch(sensorType[i]){
 
-        google.load("visualization", "1", {packages:["annotationchart"]});
-        //google.setOnLoadCallback(drawChart);
+            case 'm':
+              sensorTypeName[i] = "motion";
+              break;
 
-        var data = new google.visualization.DataTable();
+            case 'l':
+              sensorTypeName[i] = "light";
+              break;
 
-        data.addColumn('date', 'Date');
-        data.addColumn('number','Value');
+            case 't':
+              sensorTypeName[i] = "temperature";
+              break;
 
-        spotRef.once("value", function(snapshot, prevChildKey) {
-            var newLog = snapshot.val();
-            for (var log in newLog){
-                data.addRow([new Date(newLog[log].timestamp),newLog[log].newVal]);
-            }
+            case 'b':
+              sensorTypeName[i] = "button";
+              break;
 
-            drawChart(data, spotId, ['#004D40', '#00695C', '#00796B']);
-        });
+            default:
+              sensorTypeName[i] = sensorType[i];
+          }
+        }
+
+        for(i in sensorTypeName){
+
+          //Only showing motion, light, temperature, button graphs
+          if(sensorTypeName[i].length > 1){
+            
+            var address = trim(address); //Replace spaces with %20%
+            
+            var spotRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + address + "/" + sensorTypeName[i]);
+
+            $scope.populateChart(spotRef, spotId, i, sensorTypeName[i]);
+          }
+        }
+
+    }
+
+    /**
+     * Populate data into chart 
+     * (Google visualization has been called in index.html so google.load("visualization") is redundant here
+     * @param {Object} spotRef - Full address of a sensor.
+     * @param {String} spotId - The last 4 letters of the spot's ID. Example: '76D3', '797D'.
+     * @param {int} i - Index of sensorTypeName[]
+     * @param {String} sensorTypeName - Name of the sensor.
+     * @author Anson Cheung
+     */
+    $scope.populateChart = function(spotRef, spotId, i, sensorTypeName){
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('date', 'Date');
+      data.addColumn('number', sensorTypeName);
+
+      spotRef.once("value", function(snapshot) {
+        var newLog = snapshot.val();
+
+        for (var log in newLog)
+            data.addRow([new Date(newLog[log].timestamp),newLog[log].newVal]);
+        
+        drawChart(data, spotId + '_' + i, ['#004D40', '#00695C', '#00796B']);
+      });
+
     }
 
     /**
@@ -992,13 +1205,8 @@ function($scope, $firebaseObject, $log) {
     // $scope.$on('draggable:start', onDraggableEvent);
    // $scope.$on('draggable:move', onDraggableEvent);
     // $scope.$on('draggable:end', onDraggableEvent);
-<<<<<<< HEAD
 
     $scope.number = 33 * 11;
-=======
-    
-    $scope.number = 33*11;
->>>>>>> c9ae3c9ff2c4d6a0857fe653e8a4517247f4fe99
 
     $scope.range = function(num) {
         return new Array(num);
@@ -1040,13 +1248,14 @@ function($scope, $firebaseObject, $log) {
             }
         }
     }
-    
+
     $scope.updateIndex = function(data, i){
       var key = trim(data.$id);
       var ref = new Firebase("https://sunsspot.firebaseio.com/spotSettings/" + key);
 
       ref.update({"mainIndex" : i});
     }
+
 
     $scope.addTo = function(sensorObj, mainIndex){
       $scope.droppedObjectsArray[mainIndex] = sensorObj;

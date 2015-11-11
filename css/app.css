@@ -103,3 +103,11 @@ h3
     max-width: 120px;
     margin: 0 auto;
 }
+
+/*
+*    Sparkline
+*/
+.sparkline{
+    height:50px;
+    cursor:pointer;
+}

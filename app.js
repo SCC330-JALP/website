@@ -409,39 +409,111 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
     }*/
 
     //** SPARKLINE CODE START
-    var data = new google.visualization.DataTable();
-      data.addColumn('number', 'X');
-      data.addColumn('number', 'Dogs');
-
-      var zone1Ref = new Firebase("https://sunsspot.firebaseio.com/zone1");
-
-      zone1Ref.limitToLast(100).on("child_added", function(snapshot){
-
-        entry = snapshot.val();
-
-        var d = new Date(entry.timestamp)
-        console.log(d.getMinutes());
-        data.addRow([entry.timestamp, entry.light]);
-        //chart.draw(data, options); <------ this actually draws the graph but is horrible inneficient.
-
-      })
 
 
-      var options = {
-        hAxis: {
-          textPosition: 'none'
-        },
-        vAxis: {
-          textPosition: 'none'
-        },
-        legend: {position: 'none'},
-        lineWidth: 1,
-        enableInteractivity: false
-      };
 
-      var chart = new google.visualization.LineChart(document.getElementById('zone1light'));
+    /**
+     * Generate a sparkline and set it to a <div>
+     * @constructor
+     * @param {int} zoneNumber - Zone number.
+     * @param {String} sensorType - Name of the sensor Type.
+     * @return {sparkline Object} - This returns the line chart object and you can call it in HTML
+     * HTML: <div google-chart chart="sparkline(int ZoneNumber, String sensorType)" style="height:50px;cursor:pointer;"></div>
+     * @author Anson Cheung & Josh Stennett
+     */
+    $scope.sparkline = function(zoneNumber, sensorType, color){
+        var zone1Ref = new Firebase("https://sunsspot.firebaseio.com/zone" + zoneNumber);
 
-//SPARKLINE CODE END
+        var sparkline = {};
+        sparkline.type = "LineChart";
+
+
+        sparkline.data = {
+            "cols": [
+                {id: "number",label: "number", type: "date"},
+                {id: "value-data",label: "Value", type: "number"
+            }],
+            "rows": []
+        };
+
+
+        zone1Ref.limitToLast(100).on('child_added', function(snapshot) {
+            var data = snapshot.val();
+            var timestamp = new Date(data.timestamp);
+
+            switch(sensorType){
+                case 'light':
+                    sparkline.data.rows.push({c: [{v: new Date(timestamp)}, {v: data.light}]});
+                    break;
+                case 'temp':
+                    sparkline.data.rows.push({c: [{v: new Date(timestamp)}, {v: data.temp}, ]});
+                    break;
+                default:
+                    sparkline.data.rows.push({c: [{v: new Date(timestamp)}, {v: data.light}]});
+            }
+
+        });
+
+        sparkline.options = {
+            hAxis: {
+              textPosition: 'none'
+            },
+            vAxis: {
+              textPosition: 'none'
+            },
+            legend: {position: 'none'},
+            lineWidth: 1,
+            lineHeight: 1,
+            enableInteractivity: false
+        };
+
+        switch(color){
+            case 'blue':
+                sparkline.options.colors = ['#0D47A1', '#0D47A1', '#0D47A1'];
+                break;
+            case 'red':
+                sparkline.options.colors = ['#880E4F', '#AD1457', '#C2185B'];
+                break;
+            default:
+                sparkline.options.colors = ['#000', '#000', '#000'];
+        }
+
+        return sparkline;
+    }
+
+    // var data = new google.visualization.DataTable();
+    //   data.addColumn('number', 'X');
+    //   data.addColumn('number', 'Dogs');
+
+    //   var zone1Ref = new Firebase("https://sunsspot.firebaseio.com/zone1");
+
+    //   zone1Ref.limitToLast(100).on("child_added", function(snapshot){
+
+    //     entry = snapshot.val();
+
+    //     var d = new Date(entry.timestamp)
+    //     // console.log(d.getMinutes());
+    //     data.addRow([entry.timestamp, entry.light]);
+    //     chart.draw(data, options);
+
+    //   })
+
+
+    //   var options = {
+    //     hAxis: {
+    //       textPosition: 'none'
+    //     },
+    //     vAxis: {
+    //       textPosition: 'none'
+    //     },
+    //     legend: {position: 'none'},
+    //     lineWidth: 1,
+    //     enableInteractivity: false
+    //   };
+
+    //   var chart = new google.visualization.LineChart(document.getElementById('zone1light'));
+
+    //SPARKLINE CODE END
 
     function createSensor(snapshot, pageElement){
 
@@ -795,7 +867,9 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
             template: '<div id="' + spotId + '_0" class="history-chart"></div>' +
                       '<div id="' + spotId + '_1" class="history-chart"></div>' +
                       '<div id="' + spotId + '_2" class="history-chart"></div>' +
-                      '<div id="' + spotId + '_3" class="history-chart"></div>',
+                      '<div id="' + spotId + '_3" class="history-chart"></div>' +
+                      '<div id="' + spotId + '_4" class="history-chart"></div>' +
+                      '<div id="' + spotId + '_5" class="history-chart"></div>',
             plain: true
         });
 
@@ -1035,31 +1109,41 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         }
 
         for(i in sensorTypeName){
+
+          //Only showing motion, light, temperature, button graphs
           if(sensorTypeName[i].length > 1){
+
             var address = trim(address); //Replace spaces with %20%
+
             var spotRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + address + "/" + sensorTypeName[i]);
 
-            // google.load("visualization", "1", {packages:["annotationchart"]});
-            // //google.setO nLoadCallback(drawChart);
-
-            $scope.populateChart(spotRef, spotId, i);
+            $scope.populateChart(spotRef, spotId, i, sensorTypeName[i]);
           }
         }
 
     }
 
-    $scope.populateChart = function(spotRef, spotId, i){
+    /**
+     * Populate data into chart
+     * (Google visualization has been called in index.html so google.load("visualization") is redundant here
+     * @param {Object} spotRef - Full address of a sensor.
+     * @param {String} spotId - The last 4 letters of the spot's ID. Example: '76D3', '797D'.
+     * @param {int} i - Index of sensorTypeName[]
+     * @param {String} sensorTypeName - Name of the sensor.
+     * @author Anson Cheung
+     */
+    $scope.populateChart = function(spotRef, spotId, i, sensorTypeName){
 
       var data = new google.visualization.DataTable();
       data.addColumn('date', 'Date');
-      data.addColumn('number','Value');
+      data.addColumn('number', sensorTypeName);
 
       spotRef.once("value", function(snapshot) {
         var newLog = snapshot.val();
 
         for (var log in newLog)
             data.addRow([new Date(newLog[log].timestamp),newLog[log].newVal]);
-        console.log(spotId + '_' + i);
+
         drawChart(data, spotId + '_' + i, ['#004D40', '#00695C', '#00796B']);
       });
 
