@@ -422,7 +422,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
      * @author Anson Cheung & Josh Stennett
      */
     $scope.sparkline = function(zoneNumber, sensorType, color){
-        var zone1Ref = new Firebase("https://sunsspot.firebaseio.com/zone" + zoneNumber);
+        var zoneRef = new Firebase("https://sunsspot.firebaseio.com/zone" + zoneNumber);
 
         var sparkline = {};
         sparkline.type = "LineChart";
@@ -437,7 +437,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         };
 
 
-        zone1Ref.limitToLast(100).on('child_added', function(snapshot) {
+        zoneRef.limitToLast(30).on('child_added', function(snapshot) {
             var data = snapshot.val();
             var timestamp = new Date(data.timestamp);
 
