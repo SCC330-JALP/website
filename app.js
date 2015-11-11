@@ -37,6 +37,8 @@ spotApp.config(function($routeProvider, $locationProvider) {
 
 //Think it as global variables
 spotApp.run(function($rootScope, $firebaseObject) {
+
+
     $rootScope.appName = 'JALP SmartLab';
 
     $rootScope.livedata = $firebaseObject(ref.child('zone1').limitToLast(1));
@@ -308,6 +310,7 @@ spotApp.run(function($rootScope, $firebaseObject) {
 spotApp.controller('smartlabController', ['$rootScope', '$scope','$firebaseObject', '$parse', 'ngDialog',
 function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
+
     /**
      * Generate a annotation graph and set it to a <div>
      * @constructor
@@ -318,7 +321,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
      */
     $scope.setHistoryChart = function(zoneNumber, graphType, bindDivName){
       console.log("setHistoryChart received bindDivName as: " + bindDivName);
-        google.load("visualization", "1", {packages:["annotationchart"]});
+        // google.load("visualization", "1", {packages:["annotationchart"]});
         //google.setOnLoadCallback(drawChart);
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'Date');
@@ -463,9 +466,11 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         $(editButton).data('task', snapshot.task);
         $(editButton).data('address', snapshot.address);
         $(editButton).data('zone', snapshot.zone);
+        
         //???????????????????????????????????????????????????????????????
         var historySensorBtn = $(pageElement).find("#historySensorBtn")[0]; //set up the links as seen in child_changed listener
         $(historySensorBtn).data('address', snapshot.address);
+        $(historySensorBtn).data('task', snapshot.task);
         //???????????????????????????????????????????????????????????????
 
 
@@ -740,13 +745,18 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
         var address = $(this).data('address');
         var spotId = address.slice(-4);
+        var sensorType = $(this).data('task');
 
         ngDialog.open({
-            template: '<div id="' + spotId + '" class="history-chart""></div>',
+            template: '<div id="' + spotId + '_0" class="history-chart"></div>' + 
+                      '<div id="' + spotId + '_1" class="history-chart"></div>' +
+                      '<div id="' + spotId + '_2" class="history-chart"></div>' +
+                      '<div id="' + spotId + '_3" class="history-chart"></div>',
             plain: true
         });
 
-        $scope.setSensorHistoryChart(address, spotId);
+        console.log(sensorType);
+        $scope.setSensorHistoryChart(address, spotId, sensorType);
 
     });
 
@@ -953,27 +963,62 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
      * @param {String} spotId - The last 4 letters of the spot's ID. Example: '76D3', '797D'.
      * @author Anson Cheung
      */
-    $scope.setSensorHistoryChart = function(address, spotId){
+    $scope.setSensorHistoryChart = function(address, spotId, sensorType){
+        var sensorTypeName = [];
 
-        var address = trim(address); //Replace spaces with %20%
-        var spotRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + address);
+        for(i in sensorType){
+          switch(sensorType[i]){
+            
+            case 'm':
+              sensorTypeName[i] = "motion";
+              break;
+            
+            case 'l':
+              sensorTypeName[i] = "light";
+              break;
+            
+            case 't':
+              sensorTypeName[i] = "temperature";
+              break;
+            
+            case 'b':
+              sensorTypeName[i] = "button";
+              break;
+            
+            default: 
+              sensorTypeName[i] = sensorType[i];
+          }
+        }
 
-        google.load("visualization", "1", {packages:["annotationchart"]});
-        //google.setOnLoadCallback(drawChart);
+        for(i in sensorTypeName){
+          if(sensorTypeName[i].length > 1){
+            var address = trim(address); //Replace spaces with %20%
+            var spotRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + address + "/" + sensorTypeName[i]);
 
-        var data = new google.visualization.DataTable();
+            // google.load("visualization", "1", {packages:["annotationchart"]});
+            // //google.setO nLoadCallback(drawChart);
 
-        data.addColumn('date', 'Date');
-        data.addColumn('number','Value');
+            $scope.populateChart(spotRef, spotId, i);
+          }
+        }
+        
+    }
 
-        spotRef.once("value", function(snapshot, prevChildKey) {
-            var newLog = snapshot.val();
-            for (var log in newLog){
-                data.addRow([new Date(newLog[log].timestamp),newLog[log].newVal]);
-            }
+    $scope.populateChart = function(spotRef, spotId, i){
 
-            drawChart(data, spotId, ['#004D40', '#00695C', '#00796B']);
-        });
+      var data = new google.visualization.DataTable();
+      data.addColumn('date', 'Date');
+      data.addColumn('number','Value');
+
+      spotRef.once("value", function(snapshot) {
+        var newLog = snapshot.val();
+
+        for (var log in newLog)
+            data.addRow([new Date(newLog[log].timestamp),newLog[log].newVal]);
+        console.log(spotId + '_' + i);
+        drawChart(data, spotId + '_' + i, ['#004D40', '#00695C', '#00796B']);
+      });
+
     }
 
     /**
