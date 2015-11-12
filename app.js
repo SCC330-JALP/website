@@ -21,11 +21,11 @@ spotApp.config(function($routeProvider, $locationProvider) {
             templateUrl: 'pages/smartlab.html',
             controller: 'smartlabController'
         })
-        .when('/map', {
-            templateUrl: 'pages/map.html',
+        .when('/mapTest', {
+            templateUrl: 'pages/mapTest.html',
             controller: 'mapController'
         })
-        .when('/mapTest', {
+        .when('/map', {
             templateUrl: 'pages/mapTest.html',
             controller: 'mapTestController'
         })
@@ -1311,6 +1311,7 @@ function($scope, $firebaseObject, $firebaseArray, $log) {
             }
             return input;
         };
+        
         $scope.zone1 = $scope.zone1.concat($scope.rangeIn(0, 0+10))
                                    .concat($scope.rangeIn(33, 33+10))
                                    .concat($scope.rangeIn(66, 66+10))
@@ -1405,8 +1406,6 @@ function($scope, $firebaseObject, $firebaseArray, $log) {
         }
 
         
-       
-
 }]);
 
 //Map Controller
