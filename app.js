@@ -2,7 +2,6 @@
  * SCC330 Network Studio - Team 2 - JALP SmartLab
  *
  *************************************************************************
- *
  * @author
  * Anson Cheung
  * Josh Stennett
@@ -25,6 +24,10 @@ spotApp.config(function($routeProvider, $locationProvider) {
             templateUrl: 'pages/map.html',
             controller: 'mapController'
         })
+        .when('/mapTest', {
+            templateUrl: 'pages/mapTest.html',
+            controller: 'mapTestController'
+        })
         .when('/history', {
             templateUrl: 'pages/history.html',
             controller: 'historyController'
@@ -37,7 +40,6 @@ spotApp.config(function($routeProvider, $locationProvider) {
 
 //Think it as global variables
 spotApp.run(function($rootScope, $firebaseObject) {
-
 
     $rootScope.appName = 'JALP SmartLab';
 
@@ -406,12 +408,6 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         $scope.setHistoryChart(i, 'temp', 'zone' + i + 'temp');
 
 
-    }*/
-
-    //** SPARKLINE CODE START
-
-
-
     /**
      * Generate a sparkline and set it to a <div>
      * @constructor
@@ -422,7 +418,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
      * @author Anson Cheung & Josh Stennett
      */
     $scope.sparkline = function(zoneNumber, sensorType, color){
-        var zone1Ref = new Firebase("https://sunsspot.firebaseio.com/zone" + zoneNumber);
+        var zoneRef = new Firebase("https://sunsspot.firebaseio.com/zone" + zoneNumber);
 
         var sparkline = {};
         sparkline.type = "LineChart";
@@ -437,7 +433,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         };
 
 
-        zone1Ref.limitToLast(100).on('child_added', function(snapshot) {
+        zoneRef.limitToLast(30).on('child_added', function(snapshot) {
             var data = snapshot.val();
             var timestamp = new Date(data.timestamp);
 
@@ -1233,6 +1229,126 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
 
 
+spotApp.controller('mapTestController', ['$scope','$firebaseObject', '$firebaseArray', '$log',
+function($scope, $firebaseObject, $firebaseArray, $log) {
+
+        var mapRef = new Firebase("https://jalp330.firebaseio.com/Map/");
+        
+        $scope.list = [];
+
+
+        for(var i = 0; i < (33*11); i++)
+          $scope.list[i] = $firebaseArray(new Firebase("https://jalp330.firebaseio.com/Map/index_" + i));
+
+        $scope.zone1 = [];
+        $scope.zone2 = [];
+        $scope.zone3 = [];
+
+        $scope.rangeIn = function(min, max, step){
+            step = step || 1;
+            var input = [];
+            for (var i = min; i <= max; i += step) {
+              input.push(i);
+            }
+            return input;
+        };
+        $scope.zone1 = $scope.zone1.concat($scope.rangeIn(0, 0+10))
+                                   .concat($scope.rangeIn(33, 33+10))
+                                   .concat($scope.rangeIn(66, 66+10))
+                                   .concat($scope.rangeIn(99, 99+10))
+                                   .concat($scope.rangeIn(132, 132+10))
+                                   .concat($scope.rangeIn(165, 165+10))
+                                   .concat($scope.rangeIn(198, 198+10))
+                                   .concat($scope.rangeIn(231, 231+10))
+                                   .concat($scope.rangeIn(264, 264+10))
+                                   .concat($scope.rangeIn(297, 297+10))
+                                   .concat($scope.rangeIn(330, 330+10));
+
+        $scope.zone2 = $scope.zone2.concat($scope.rangeIn(11, 11+10))
+                                   .concat($scope.rangeIn(44, 44+10))
+                                   .concat($scope.rangeIn(77, 77+10))
+                                   .concat($scope.rangeIn(110, 110+10))
+                                   .concat($scope.rangeIn(143, 143+10))
+                                   .concat($scope.rangeIn(176, 176+10))
+                                   .concat($scope.rangeIn(209, 209+10))
+                                   .concat($scope.rangeIn(242, 242+10))
+                                   .concat($scope.rangeIn(275, 275+10))
+                                   .concat($scope.rangeIn(308, 308+10))
+                                   .concat($scope.rangeIn(341, 341+10));
+
+
+        $scope.zone3 = $scope.zone3.concat($scope.rangeIn(22, 22+10))
+                                   .concat($scope.rangeIn(55, 55+10))
+                                   .concat($scope.rangeIn(88, 88+10))
+                                   .concat($scope.rangeIn(121, 121+10))
+                                   .concat($scope.rangeIn(154, 154+10))
+                                   .concat($scope.rangeIn(187, 187+10))
+                                   .concat($scope.rangeIn(220, 220+10))
+                                   .concat($scope.rangeIn(253, 253+10))
+                                   .concat($scope.rangeIn(286, 286+10))
+                                   .concat($scope.rangeIn(319, 319+10))
+                                   .concat($scope.rangeIn(352, 352+10));
+
+
+        $scope.onDropComplete=function(data, evt, indexNumber){
+            var index = $scope.list[indexNumber].indexOf(data);
+
+            if (index == -1){
+
+              var spotId = data.$id.slice(-4);
+
+              mapRef.once("value", function(snapshot) {
+
+                //For each index (index_0, index_1, .. , index_999)
+                snapshot.forEach(function(childSnapshot){
+                  
+                  //etc: https://xxx.firebaseio.com/Map/index_0
+                  var childRef = mapRef.child(childSnapshot.key());
+                  $scope.remove(childRef, data.$id, indexNumber);
+
+                });
+                var dataRef = mapRef.child("index_" + indexNumber).child(data.$id);
+                $scope.update(dataRef, data.name, data.task, data.zone);
+                console.log("NEW INDEX: " + indexNumber);
+              });
+
+            }
+             
+        }
+
+        $scope.remove = function(childRef, id, indexNumber){
+          childRef.once("value", function(snapshot){
+            
+            var indexFoundSpotID = snapshot.child(id).exists();
+
+            if(indexFoundSpotID){
+              var indexName = snapshot.key();
+               
+              console.log("OLD INDEX: " + indexName);
+
+              var dataRef = mapRef.child(indexName).child(id);
+              dataRef.remove();
+            }
+            
+          })
+        }
+
+        $scope.update = function(ref, name, task, zone){
+          ref.set({
+              name: name,
+              task: task,
+              zone: zone
+          });
+        }
+
+        $scope.range = function(num) {
+            return new Array(num);
+        }
+
+        
+       
+
+}]);
 
 //Map Controller
 spotApp.controller('mapController', ['$scope','$firebaseObject', '$log',

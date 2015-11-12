@@ -11,9 +11,9 @@
 .objects{
     position:absolute;
 }
-.zone1{background-color:#8FC5F9;}
-.zone2{background-color:#4DD0E1;}
-.zone3{background-color:#4DB6AC;}
+.zone1{background-color:#8FC5F9 !important;}
+.zone2{background-color:#4DD0E1 !important;}
+.zone3{background-color:#4DB6AC !important;}
 
 .sensor{
     background-color:white;

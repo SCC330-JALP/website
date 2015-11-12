@@ -2,7 +2,6 @@
  * SCC330 Network Studio - Team 2 - JALP SmartLab
  *
  *************************************************************************
- *
  * @author
  * Anson Cheung
  * Josh Stennett
@@ -25,6 +24,10 @@ spotApp.config(function($routeProvider, $locationProvider) {
             templateUrl: 'pages/map.html',
             controller: 'mapController'
         })
+        .when('/mapTest', {
+            templateUrl: 'pages/mapTest.html',
+            controller: 'mapTestController'
+        })
         .when('/history', {
             templateUrl: 'pages/history.html',
             controller: 'historyController'
@@ -37,7 +40,6 @@ spotApp.config(function($routeProvider, $locationProvider) {
 
 //Think it as global variables
 spotApp.run(function($rootScope, $firebaseObject) {
-
 
     $rootScope.appName = 'JALP SmartLab';
 
@@ -302,6 +304,7 @@ spotApp.run(function($rootScope, $firebaseObject) {
     //########### TESTING END ###########//
     //########## DONT DELETE ############//
     //-----------------------------------//
+
 })
 
 
@@ -405,12 +408,6 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         $scope.setHistoryChart(i, 'temp', 'zone' + i + 'temp');
 
 
-    }*/
-
-    //** SPARKLINE CODE START
-
-
-    
     /**
      * Generate a sparkline and set it to a <div>
      * @constructor
@@ -421,41 +418,36 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
      * @author Anson Cheung & Josh Stennett
      */
     $scope.sparkline = function(zoneNumber, sensorType, color){
-        var zone1Ref = new Firebase("https://sunsspot.firebaseio.com/zone" + zoneNumber);
+        var zoneRef = new Firebase("https://sunsspot.firebaseio.com/zone" + zoneNumber);
 
         var sparkline = {};
         sparkline.type = "LineChart";
 
-<<<<<<< HEAD
-        var d = new Date(entry.timestamp)
-        console.log(d.getMinutes());
-        data.addRow([entry.timestamp, entry.light]);
-        //chart.draw(data, options); <------ this actually draws the graph but is horrible inneficient.
-=======
+
         sparkline.data = {
             "cols": [
-                {id: "number",label: "number", type: "date"}, 
+                {id: "number",label: "number", type: "date"},
                 {id: "value-data",label: "Value", type: "number"
             }],
             "rows": []
         };
->>>>>>> a7e1e1a16127a297e111f1e15378ce3089cc00a8
 
-        zone1Ref.limitToLast(100).on('child_added', function(snapshot) {
+
+        zoneRef.limitToLast(30).on('child_added', function(snapshot) {
             var data = snapshot.val();
             var timestamp = new Date(data.timestamp);
 
             switch(sensorType){
                 case 'light':
-                    sparkline.data.rows.push({c: [{v: new Date(timestamp)}, {v: data.light}]}); 
+                    sparkline.data.rows.push({c: [{v: new Date(timestamp)}, {v: data.light}]});
                     break;
                 case 'temp':
-                    sparkline.data.rows.push({c: [{v: new Date(timestamp)}, {v: data.temp}, ]}); 
+                    sparkline.data.rows.push({c: [{v: new Date(timestamp)}, {v: data.temp}, ]});
                     break;
                 default:
                     sparkline.data.rows.push({c: [{v: new Date(timestamp)}, {v: data.light}]});
             }
-            
+
         });
 
         sparkline.options = {
@@ -485,46 +477,89 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         return sparkline;
     }
 
-    // var data = new google.visualization.DataTable();
-    //   data.addColumn('number', 'X');
-    //   data.addColumn('number', 'Dogs');
-
-    //   var zone1Ref = new Firebase("https://sunsspot.firebaseio.com/zone1");
-
-    //   zone1Ref.limitToLast(100).on("child_added", function(snapshot){
-
-    //     entry = snapshot.val();
-
-    //     var d = new Date(entry.timestamp)
-    //     // console.log(d.getMinutes());
-    //     data.addRow([entry.timestamp, entry.light]);
-    //     chart.draw(data, options);
-
-    //   })
+<<<<<<< HEAD
 
 
-    //   var options = {
-    //     hAxis: {
-    //       textPosition: 'none'
-    //     },
-    //     vAxis: {
-    //       textPosition: 'none'
-    //     },
-    //     legend: {position: 'none'},
-    //     lineWidth: 1,
-    //     enableInteractivity: false
-    //   };
+      $scope.fillArray = function(){
+        var spotAddress = $('#historyPlayback').find('#spotAddress')[0].innerHTML
+        var hours =  $('#playbackHours').val()
+        var speed = $('#playbackSpeed').val()
+          console.log("spotAddress " + spotAddress);
+          console.log("hours " + hours);
+          console.log("speed " + speed);
+          var ref = new Firebase("https://sunsspot.firebaseio.com/spotReadings/"+spotAddress+"/zone");
+          var zoneArray = new Array();
+          var hoursMilli = hours * 3600000;
+          console.log(hoursMilli);
+          var curDate = new Date();
+          curDate = Date.now();
 
-    //   var chart = new google.visualization.LineChart(document.getElementById('zone1light'));
+          // dataTable code
+          var data = new google.visualization.DataTable();
+          data.addColumn('number', 'Zone');
+          data.addColumn('datetime', "Time entered zone");
 
-    //SPARKLINE CODE END
+          ref.on("value", function(snapshot, prevChildKey) {
+            var newLog = snapshot.val();
+            for (var log in newLog){
+              if(newLog[log].timestamp >= (curDate - hoursMilli)){
+                  data.addRow([newLog[log].newVal, new Date(newLog[log].timestamp)])
+              }
+            }
+            var table = new google.visualization.Table(document.getElementById('table_div'));
 
+            table.draw(data, {width: '100%', height: '100%'});
+          });
+
+
+/* Animation code
+          ref.on("value", function(snapshot, prevChildKey) {
+            var newLog = snapshot.val();
+            console.log(curDate);
+            console.log(hoursMilli);
+            for (var log in newLog){
+              if(newLog[log].timestamp >= (curDate - hoursMilli))
+                zoneArray.push(newLog[log]);
+
+            }
+            $scope.playback(zoneArray, speed);
+
+          });
+*/
+
+        }
+
+        $scope.playback = function(zoneArray,speed){
+          console.log(zoneArray.length);
+          for(i = 0; i<zoneArray.length;i++){
+          //  var waitTime = (zoneArray[(i+1)].timestamp -zoneArray[i].timestamp)/speed
+            //console.log("logging : " + zoneArray[i].newVal + " to: " + "#playbackZone"+zoneArray[i].newVal + " at array index: " + i);
+            $scope.pause(10);
+
+            $("#playbackZone"+zoneArray[i].newVal).append(zoneArray[i].newVal);
+            console.log("appended");
+          }
+        }
+
+        $scope.pause = function(millis)
+        {
+          var date = new Date();
+          var curDate = null;
+
+          do { curDate = new Date(); }
+          while(curDate-date < millis);
+        }
+
+
+=======
+>>>>>>> 633a2c991c27c20c7905b2e37fc6a0bee5f868d1
     function createSensor(snapshot, pageElement){
 
       //all of this applies to both person sensors && non-person sensors
 
       $(pageElement).find("#spotName")[0].innerHTML = snapshot.name; //insert the spot name
       $(pageElement).find("#spotMAC")[0].innerHTML = snapshot.address; //insert the spot name
+      $(pageElement).find("#locationHistoryBtn").data('address', snapshot.address);
 
       if(snapshot.task.indexOf("p") === -1){ //new sensor is not a person sensor
         console.log("Creating new sensor!");
@@ -928,6 +963,15 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         modal.find("#deleteSpotAddress")[0].innerHTML = address;
     });
 
+    $(document).on("click", "#locationHistoryBtn", function(){
+
+        var address = $(this).data('address');
+
+        var modal = $("#historyPlayback");
+
+        modal.find("#spotAddress")[0].innerHTML = address;
+
+    })
     $("#editSensorTypeSelect").change(function(){
 
       if($(this).val() == "multi"){
@@ -1116,9 +1160,9 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
           //Only showing motion, light, temperature, button graphs
           if(sensorTypeName[i].length > 1){
-            
+
             var address = trim(address); //Replace spaces with %20%
-            
+
             var spotRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + address + "/" + sensorTypeName[i]);
 
             $scope.populateChart(spotRef, spotId, i, sensorTypeName[i]);
@@ -1128,7 +1172,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
     }
 
     /**
-     * Populate data into chart 
+     * Populate data into chart
      * (Google visualization has been called in index.html so google.load("visualization") is redundant here
      * @param {Object} spotRef - Full address of a sensor.
      * @param {String} spotId - The last 4 letters of the spot's ID. Example: '76D3', '797D'.
@@ -1147,7 +1191,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
         for (var log in newLog)
             data.addRow([new Date(newLog[log].timestamp),newLog[log].newVal]);
-        
+
         drawChart(data, spotId + '_' + i, ['#004D40', '#00695C', '#00796B']);
       });
 
@@ -1188,6 +1232,126 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
 
 
+spotApp.controller('mapTestController', ['$scope','$firebaseObject', '$firebaseArray', '$log',
+function($scope, $firebaseObject, $firebaseArray, $log) {
+
+        var mapRef = new Firebase("https://jalp330.firebaseio.com/Map/");
+        
+        $scope.list = [];
+
+
+        for(var i = 0; i < (33*11); i++)
+          $scope.list[i] = $firebaseArray(new Firebase("https://jalp330.firebaseio.com/Map/index_" + i));
+
+        $scope.zone1 = [];
+        $scope.zone2 = [];
+        $scope.zone3 = [];
+
+        $scope.rangeIn = function(min, max, step){
+            step = step || 1;
+            var input = [];
+            for (var i = min; i <= max; i += step) {
+              input.push(i);
+            }
+            return input;
+        };
+        $scope.zone1 = $scope.zone1.concat($scope.rangeIn(0, 0+10))
+                                   .concat($scope.rangeIn(33, 33+10))
+                                   .concat($scope.rangeIn(66, 66+10))
+                                   .concat($scope.rangeIn(99, 99+10))
+                                   .concat($scope.rangeIn(132, 132+10))
+                                   .concat($scope.rangeIn(165, 165+10))
+                                   .concat($scope.rangeIn(198, 198+10))
+                                   .concat($scope.rangeIn(231, 231+10))
+                                   .concat($scope.rangeIn(264, 264+10))
+                                   .concat($scope.rangeIn(297, 297+10))
+                                   .concat($scope.rangeIn(330, 330+10));
+
+        $scope.zone2 = $scope.zone2.concat($scope.rangeIn(11, 11+10))
+                                   .concat($scope.rangeIn(44, 44+10))
+                                   .concat($scope.rangeIn(77, 77+10))
+                                   .concat($scope.rangeIn(110, 110+10))
+                                   .concat($scope.rangeIn(143, 143+10))
+                                   .concat($scope.rangeIn(176, 176+10))
+                                   .concat($scope.rangeIn(209, 209+10))
+                                   .concat($scope.rangeIn(242, 242+10))
+                                   .concat($scope.rangeIn(275, 275+10))
+                                   .concat($scope.rangeIn(308, 308+10))
+                                   .concat($scope.rangeIn(341, 341+10));
+
+
+        $scope.zone3 = $scope.zone3.concat($scope.rangeIn(22, 22+10))
+                                   .concat($scope.rangeIn(55, 55+10))
+                                   .concat($scope.rangeIn(88, 88+10))
+                                   .concat($scope.rangeIn(121, 121+10))
+                                   .concat($scope.rangeIn(154, 154+10))
+                                   .concat($scope.rangeIn(187, 187+10))
+                                   .concat($scope.rangeIn(220, 220+10))
+                                   .concat($scope.rangeIn(253, 253+10))
+                                   .concat($scope.rangeIn(286, 286+10))
+                                   .concat($scope.rangeIn(319, 319+10))
+                                   .concat($scope.rangeIn(352, 352+10));
+
+
+        $scope.onDropComplete=function(data, evt, indexNumber){
+            var index = $scope.list[indexNumber].indexOf(data);
+
+            if (index == -1){
+
+              var spotId = data.$id.slice(-4);
+
+              mapRef.once("value", function(snapshot) {
+
+                //For each index (index_0, index_1, .. , index_999)
+                snapshot.forEach(function(childSnapshot){
+                  
+                  //etc: https://xxx.firebaseio.com/Map/index_0
+                  var childRef = mapRef.child(childSnapshot.key());
+                  $scope.remove(childRef, data.$id, indexNumber);
+
+                });
+                var dataRef = mapRef.child("index_" + indexNumber).child(data.$id);
+                $scope.update(dataRef, data.name, data.task, data.zone);
+                console.log("NEW INDEX: " + indexNumber);
+              });
+
+            }
+             
+        }
+
+        $scope.remove = function(childRef, id, indexNumber){
+          childRef.once("value", function(snapshot){
+            
+            var indexFoundSpotID = snapshot.child(id).exists();
+
+            if(indexFoundSpotID){
+              var indexName = snapshot.key();
+               
+              console.log("OLD INDEX: " + indexName);
+
+              var dataRef = mapRef.child(indexName).child(id);
+              dataRef.remove();
+            }
+            
+          })
+        }
+
+        $scope.update = function(ref, name, task, zone){
+          ref.set({
+              name: name,
+              task: task,
+              zone: zone
+          });
+        }
+
+        $scope.range = function(num) {
+            return new Array(num);
+        }
+
+        
+       
+
+}]);
 
 //Map Controller
 spotApp.controller('mapController', ['$scope','$firebaseObject', '$log',
