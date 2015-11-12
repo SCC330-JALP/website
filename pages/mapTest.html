@@ -1,7 +1,7 @@
 
 <div ng-repeat="i in range(list.length) track by $index" ng-init="mainIndex = $index">
     <div ng-class="{'zone1':(zone1.indexOf(mainIndex)>-1), 'zone2':(zone2.indexOf(mainIndex)>-1), 'zone3':(zone3.indexOf(mainIndex)>-1)}"  ng-drop="true" ng-drop-success="onDropComplete($data, $event, mainIndex)">
-      <!-- <span class="title">{{$index}}</span> -->
+      <span class="title" style="opacity:0.3">{{$index}}</span>
 
       <div ng-repeat="obj in list[mainIndex]" ng-drag="true" ng-drag-data="obj">
           {{obj.name}}
