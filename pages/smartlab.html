@@ -219,7 +219,9 @@
 
             <div class="card-footer">
             <small id="spotMAC">Unknown Address</small><br>
-             <button id="viewPersonBtn" class="btn btn-primary data-button pull-right" type="button" name="button" data-toggle="modal" data-target="#viewPerson" data-name="" data-address="" data-zone="" data-task="">View</button>
+             <button id="viewPersonBtn" class="btn btn-primary data-button " type="button" name="button" data-toggle="modal" data-target="#viewPerson" data-name="" data-address="" data-zone="" data-task="">View</button>
+             <span id="locationHistoryBtn" data-toggle="modal" data-target="#historyPlayback" class="btn btn-primary btn">History</span>
+
             </div>
 
 
@@ -251,6 +253,7 @@
           <button id="editSensorBtn" class="btn btn-primary data-button" data-toggle="modal" data-target="#myModal" data-name="" data-task="" data-address="" data-zone="">Edit</button>
 
           <span id="historySensorBtn" data-address="" data-task="" class="btn btn-primary btn">Graphs</span>
+          <span id="locationHistoryBtn" data-toggle="modal" data-target="#historyPlayback" data-address="" class="btn btn-primary btn">History</span>
 
         </div>
 
@@ -260,6 +263,66 @@
 </div>
 <!-- end template -->
 
+
+<!--
+
+HISTORY PLAYBACK MODAL
+
+ -->
+
+ <div id="historyPlayback" class="modal fade">
+   <div class="modal-dialog">
+     <div class="modal-content">
+       <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+         <h4 class="modal-title">Location History Playback</h4> <small id="spotAddress"> address unkown </small>
+       </div>
+       <div class="modal-body">
+        <div class="container-fluid">
+          <form class="form-inline" role="form">
+              <div class="form-group">
+                  <label class="control-label col-sm-2">Length:
+                  <select id="playbackHours">
+                    <option value="1">1 hour</option>
+                    <option value="2">2 hours</option>
+                    <option value="5">5 hours</option>
+                    <option value="10">10 hours</option>
+                  </select></label>
+              </div>
+              <div class="form-group">
+                  <label class="control-label col-sm-2">Speed:
+                  <select id="playbackSpeed">
+                    <option value="1">1x</option>
+                    <option value="2">5x</option>
+                    <option value="5">20x</option>
+                    <option value="10">100x</option>
+                  </select></label>
+              </div>
+              <button type="submit" class="btn btn-default" ng-click="fillArray()">Play</button>
+            </form>
+            <br>
+            <div class="container-fluid">
+              <div id="playbackZone1" class="col-xs-4 playbackZone">
+                  Zone 1
+              </div>
+              <div id="playbackZone2" class="col-xs-4 playbackZone">
+                  Zone 2
+              </div>
+              <div id="playbackZone3" class="col-xs-4 playbackZone">
+                  Zone 3
+              </div>
+            </div>
+            <div id="table_div"></div>
+        </div>
+
+       </div>
+       <div class="modal-footer">
+         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+       </div>
+     </div><!-- /.modal-content -->
+   </div><!-- /.modal-dialog -->
+ </div><!-- /.modal -->
 
 <!--
 

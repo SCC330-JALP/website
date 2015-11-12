@@ -481,39 +481,78 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         return sparkline;
     }
 
-    // var data = new google.visualization.DataTable();
-    //   data.addColumn('number', 'X');
-    //   data.addColumn('number', 'Dogs');
-
-    //   var zone1Ref = new Firebase("https://sunsspot.firebaseio.com/zone1");
-
-    //   zone1Ref.limitToLast(100).on("child_added", function(snapshot){
-
-    //     entry = snapshot.val();
-
-    //     var d = new Date(entry.timestamp)
-    //     // console.log(d.getMinutes());
-    //     data.addRow([entry.timestamp, entry.light]);
-    //     chart.draw(data, options);
-
-    //   })
 
 
-    //   var options = {
-    //     hAxis: {
-    //       textPosition: 'none'
-    //     },
-    //     vAxis: {
-    //       textPosition: 'none'
-    //     },
-    //     legend: {position: 'none'},
-    //     lineWidth: 1,
-    //     enableInteractivity: false
-    //   };
+      $scope.fillArray = function(){
+        var spotAddress = $('#historyPlayback').find('#spotAddress')[0].innerHTML
+        var hours =  $('#playbackHours').val()
+        var speed = $('#playbackSpeed').val()
+          console.log("spotAddress " + spotAddress);
+          console.log("hours " + hours);
+          console.log("speed " + speed);
+          var ref = new Firebase("https://sunsspot.firebaseio.com/spotReadings/"+spotAddress+"/zone");
+          var zoneArray = new Array();
+          var hoursMilli = hours * 3600000;
+          console.log(hoursMilli);
+          var curDate = new Date();
+          curDate = Date.now();
 
-    //   var chart = new google.visualization.LineChart(document.getElementById('zone1light'));
+          // dataTable code
+          var data = new google.visualization.DataTable();
+          data.addColumn('number', 'Zone');
+          data.addColumn('datetime', "Time entered zone");
 
-    //SPARKLINE CODE END
+          ref.on("value", function(snapshot, prevChildKey) {
+            var newLog = snapshot.val();
+            for (var log in newLog){
+              if(newLog[log].timestamp >= (curDate - hoursMilli)){
+                  data.addRow([newLog[log].newVal, new Date(newLog[log].timestamp)])
+              }
+            }
+            var table = new google.visualization.Table(document.getElementById('table_div'));
+
+            table.draw(data, {width: '100%', height: '100%'});
+          });
+
+
+/* Animation code
+          ref.on("value", function(snapshot, prevChildKey) {
+            var newLog = snapshot.val();
+            console.log(curDate);
+            console.log(hoursMilli);
+            for (var log in newLog){
+              if(newLog[log].timestamp >= (curDate - hoursMilli))
+                zoneArray.push(newLog[log]);
+
+            }
+            $scope.playback(zoneArray, speed);
+
+          });
+*/
+
+        }
+
+        $scope.playback = function(zoneArray,speed){
+          console.log(zoneArray.length);
+          for(i = 0; i<zoneArray.length;i++){
+          //  var waitTime = (zoneArray[(i+1)].timestamp -zoneArray[i].timestamp)/speed
+            //console.log("logging : " + zoneArray[i].newVal + " to: " + "#playbackZone"+zoneArray[i].newVal + " at array index: " + i);
+            $scope.pause(10);
+
+            $("#playbackZone"+zoneArray[i].newVal).append(zoneArray[i].newVal);
+            console.log("appended");
+          }
+        }
+
+        $scope.pause = function(millis)
+        {
+          var date = new Date();
+          var curDate = null;
+
+          do { curDate = new Date(); }
+          while(curDate-date < millis);
+        }
+
 
     function createSensor(snapshot, pageElement){
 
@@ -521,6 +560,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
       $(pageElement).find("#spotName")[0].innerHTML = snapshot.name; //insert the spot name
       $(pageElement).find("#spotMAC")[0].innerHTML = snapshot.address; //insert the spot name
+      $(pageElement).find("#locationHistoryBtn").data('address', snapshot.address);
 
       if(snapshot.task.indexOf("p") === -1){ //new sensor is not a person sensor
         console.log("Creating new sensor!");
@@ -924,6 +964,15 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         modal.find("#deleteSpotAddress")[0].innerHTML = address;
     });
 
+    $(document).on("click", "#locationHistoryBtn", function(){
+
+        var address = $(this).data('address');
+
+        var modal = $("#historyPlayback");
+
+        modal.find("#spotAddress")[0].innerHTML = address;
+
+    })
     $("#editSensorTypeSelect").change(function(){
 
       if($(this).val() == "multi"){
