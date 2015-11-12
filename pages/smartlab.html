@@ -1,4 +1,8 @@
-<h1 class="centered">Smart lab</h1>
+<header class="container-fluid">
+  <h1 class="centered">Smart lab   <a href="#/map" class="btn btn-primary"> <span class="fa fa-globe"></span> </a></h1>
+
+</header>
+
 
 <div class="centered" id="zoneContainer">
 
@@ -219,8 +223,12 @@
 
             <div class="card-footer">
             <small id="spotMAC">Unknown Address</small><br>
-             <button id="viewPersonBtn" class="btn btn-primary data-button " type="button" name="button" data-toggle="modal" data-target="#viewPerson" data-name="" data-address="" data-zone="" data-task="">View</button>
-             <span id="locationHistoryBtn" data-toggle="modal" data-target="#historyPlayback" class="btn btn-primary btn">History</span>
+            <div class="btn-group" role="group">
+              <button id="viewPersonBtn" class="btn btn-primary data-button " type="button" name="button" data-toggle="modal" data-target="#viewPerson" data-name="" data-address="" data-zone="" data-task=""><span class="fa fa-eye"></span></button>
+              <span id="locationHistoryBtn" data-toggle="modal" data-target="#historyPlayback" class="btn btn-primary btn"><span class="fa fa-history"></span></span>
+
+
+            </div>
 
             </div>
 
@@ -249,11 +257,14 @@
         <div class="card-footer">
 
           <small id="spotMAC"> Spot MAC</small><br>
+          <div class="btn-group" role="group">
+            <button id="editSensorBtn" class="btn btn-primary data-button" data-toggle="modal" data-target="#myModal" data-name="" data-task="" data-address="" data-zone=""><span class="fa fa-edit"></span></button>
 
-          <button id="editSensorBtn" class="btn btn-primary data-button" data-toggle="modal" data-target="#myModal" data-name="" data-task="" data-address="" data-zone="">Edit</button>
+            <button id="historySensorBtn" data-address="" data-task="" class="btn btn-primary btn"><span class="fa fa-bar-chart"></span></button>
+            <button id="locationHistoryBtn" data-toggle="modal" data-target="#historyPlayback" data-address="" class="btn btn-primary btn"><span class="fa fa-history"></span></button>
 
-          <span id="historySensorBtn" data-address="" data-task="" class="btn btn-primary btn">Graphs</span>
-          <span id="locationHistoryBtn" data-toggle="modal" data-target="#historyPlayback" data-address="" class="btn btn-primary btn">History</span>
+
+          </div>
 
         </div>
 
@@ -284,9 +295,9 @@ HISTORY PLAYBACK MODAL
                   <label class="control-label col-sm-2">Length:
                   <select id="playbackHours">
                     <option value="1">1 hour</option>
-                    <option value="2">2 hours</option>
                     <option value="5">5 hours</option>
-                    <option value="10">10 hours</option>
+                    <option value="24">24 hours</option>
+                    <option value="168">1 week</option>
                   </select></label>
               </div>
               <div class="form-group">

@@ -1019,6 +1019,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         var modal = $("#historyPlayback");
 
         modal.find("#spotAddress")[0].innerHTML = address;
+        modal.find("#table_div")[0].innerHTML = "";
 
     })
     /**
@@ -1292,7 +1293,7 @@ spotApp.controller('mapTestController', ['$scope','$firebaseObject', '$firebaseA
 function($scope, $firebaseObject, $firebaseArray, $log) {
 
         var mapRef = new Firebase("https://jalp330.firebaseio.com/Map/");
-        
+
         $scope.list = [];
 
 
@@ -1360,7 +1361,7 @@ function($scope, $firebaseObject, $firebaseArray, $log) {
 
                 //For each index (index_0, index_1, .. , index_999)
                 snapshot.forEach(function(childSnapshot){
-                  
+
                   //etc: https://xxx.firebaseio.com/Map/index_0
                   var childRef = mapRef.child(childSnapshot.key());
                   $scope.remove(childRef, data.$id, indexNumber);
@@ -1372,23 +1373,23 @@ function($scope, $firebaseObject, $firebaseArray, $log) {
               });
 
             }
-             
+
         }
 
         $scope.remove = function(childRef, id, indexNumber){
           childRef.once("value", function(snapshot){
-            
+
             var indexFoundSpotID = snapshot.child(id).exists();
 
             if(indexFoundSpotID){
               var indexName = snapshot.key();
-               
+
               console.log("OLD INDEX: " + indexName);
 
               var dataRef = mapRef.child(indexName).child(id);
               dataRef.remove();
             }
-            
+
           })
         }
 
@@ -1404,8 +1405,8 @@ function($scope, $firebaseObject, $firebaseArray, $log) {
             return new Array(num);
         }
 
-        
-       
+
+
 
 }]);
 
