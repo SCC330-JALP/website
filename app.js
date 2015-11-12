@@ -2,6 +2,7 @@
  * SCC330 Network Studio - Team 2 - JALP SmartLab
  *
  *************************************************************************
+ *
  * @author
  * Anson Cheung
  * Josh Stennett
@@ -40,6 +41,7 @@ spotApp.config(function($routeProvider, $locationProvider) {
 
 //Think it as global variables
 spotApp.run(function($rootScope, $firebaseObject) {
+
 
     $rootScope.appName = 'JALP SmartLab';
 
@@ -408,6 +410,12 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         $scope.setHistoryChart(i, 'temp', 'zone' + i + 'temp');
 
 
+    }*/
+
+    //** SPARKLINE CODE START
+
+
+
     /**
      * Generate a sparkline and set it to a <div>
      * @constructor
@@ -478,7 +486,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
     }
 
 
-
+    /**
+     * DESCRIPTION
+     * @author Josh Stennett, Liam cottier
+     */
       $scope.fillArray = function(){
         var spotAddress = $('#historyPlayback').find('#spotAddress')[0].innerHTML
         var hours =  $('#playbackHours').val()
@@ -528,6 +539,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
         }
 
+        /**
+         * DESCRIPTION
+         * @author  Liam cottier
+         */
         $scope.playback = function(zoneArray,speed){
           console.log(zoneArray.length);
           for(i = 0; i<zoneArray.length;i++){
@@ -539,7 +554,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
             console.log("appended");
           }
         }
-
+        /**
+         * DESCRIPTION
+         * @author  Liam cottier
+         */
         $scope.pause = function(millis)
         {
           var date = new Date();
@@ -549,7 +567,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
           while(curDate-date < millis);
         }
 
-
+        /**
+         * DESCRIPTION
+         * @author Josh Stennett
+         */
     function createSensor(snapshot, pageElement){
 
       //all of this applies to both person sensors && non-person sensors
@@ -601,6 +622,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       $(pageElement).removeClass('hidden'); //element created, so display it.
     }
 
+    /**
+     * DESCRIPTION
+     * @author Josh Stennett
+     */
     function setTask(element, task){
       taskLength = task.length; //get the length of the task string
      if(task == "s"){ //if the task is just "s" it must be idle
@@ -642,7 +667,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       }
       }
     }
-
+    /**
+     * DESCRIPTION
+     * @author Josh Stennett
+     */
     function updatePersonSensor(snapshot, changedElement){
       $(changedElement).find("#spotName")[0].innerHTML = snapshot.name;
 
@@ -669,7 +697,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
       }
     }
-
+    /**
+     * DESCRIPTION
+     * @author Josh Stennett
+     */
     function updateSensor(snapshot, changedElement){
       $(changedElement).find("#spotName")[0].innerHTML = snapshot.name; //populate element name
 
@@ -702,7 +733,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         appendSensor(snapshot.zone,changedElement);
       }
     }
-
+    /**
+     * DESCRIPTION
+     * @author Josh Stennett
+     */
     function appendSensor(zone, element){
       if(zone == 1 || zone == 2 || zone == 3){
         $("#zone"+zone+"Sensors").append(element)
@@ -711,7 +745,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       }
 
     }
-
+    /**
+     * DESCRIPTION
+     * @author Josh Stennett
+     */
     function createDataListeners(snapshot, element){
       console.log("LiveData Listener created");
 
@@ -754,7 +791,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
     }
 
     var settingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
-
+    /**
+     * DESCRIPTION
+     * @author Josh Stennett
+     */
     settingsRef.on("child_added", function(snapshot) { //listen for when a child is added : also triggers once for each child in database on page load.
           //console.log(snapshot.key());
 
@@ -783,7 +823,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
 
     });
-
+    /**
+     * DESCRIPTION
+     * @author Josh Stennett
+     */
     settingsRef.on("child_changed", function(snapshot) { //listen for when a child is edited
         console.log('child changed');
 
@@ -836,7 +879,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         }
 
     });
-
+    /**
+     * DESCRIPTION
+     * @author Josh Stennett
+     */
     $(document).on("click", "#editSensorBtn", function() { //when you open the Edit modal
         var name = $(this).data('name'); //populate variables from data-attributes
         var task = $(this).data('task');
@@ -913,7 +959,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         $scope.setSensorHistoryChart(address, spotId, sensorType);
 
     });
-
+    /**
+     * DESCRIPTION
+     * @author Josh Stennett
+     */
     $(document).on("click", "#viewPersonBtn", function() { //when you open the Edit modal
         var name = $(this).data('name'); //populate variables from data-attributes
         var task = $(this).data('task');
@@ -959,7 +1008,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         modal.find("#myModalLabel")[0].innerHTML = name;
         modal.find("#deleteSpotAddress")[0].innerHTML = address;
     });
-
+    /**
+     * DESCRIPTION
+     * @author Josh Stennett
+     */
     $(document).on("click", "#locationHistoryBtn", function(){
 
         var address = $(this).data('address');
@@ -969,6 +1021,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         modal.find("#spotAddress")[0].innerHTML = address;
 
     })
+    /**
+     * DESCRIPTION
+     * @author Josh Stennett
+     */
     $("#editSensorTypeSelect").change(function(){
 
       if($(this).val() == "multi"){
@@ -977,7 +1033,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         $("#editSensorCheckbox").addClass("hidden");
       }
     })
-
+    /**
+     * DESCRIPTION
+     * @author Josh Stennett
+     */
     $("#viewSensorTypeSelect").change(function(){
       console.log("Select changed!");
       console.log($(this).val());
