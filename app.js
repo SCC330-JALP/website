@@ -1289,30 +1289,43 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
 
 
-spotApp.controller('mapTestController', ['$scope','$firebaseObject', '$firebaseArray', '$log',
-function($scope, $firebaseObject, $firebaseArray, $log) {
+spotApp.controller('mapTestController', ['$scope','$firebaseObject', '$firebaseArray', 
+function($scope, $firebaseObject, $firebaseArray) {
 
+        //Set map map reference
         var mapRef = new Firebase("https://jalp330.firebaseio.com/Map/");
 
+        //An array of a list of index references
         $scope.list = [];
 
-
+        //Set each index of the list array as a reference of each index
         for(var i = 0; i < (33*11); i++)
           $scope.list[i] = $firebaseArray(new Firebase("https://jalp330.firebaseio.com/Map/index_" + i));
 
-        $scope.zone1 = [];
-        $scope.zone2 = [];
-        $scope.zone3 = [];
 
+        /**
+         * Creating a range between two defined numbers, eg. 5 to 15
+         * @param {min} min - Min number of the starting range.
+         * @param {max} max - Max number of the starting range..
+         * @param {step}(Optional) step - Steps in between each loop, in default, it sets to 1.
+         * @return {array} - An array of a range of two defined numbers.
+         * @author Anson Cheung
+         */
         $scope.rangeIn = function(min, max, step){
             step = step || 1;
-            var input = [];
-            for (var i = min; i <= max; i += step) {
-              input.push(i);
-            }
-            return input;
+            var array = [];
+
+            for (var i = min; i <= max; i += step)
+              array.push(i);
+
+            return array;
         };
-        
+
+        $scope.zone1 = []; //Range of zone 1
+        $scope.zone2 = []; //Range of zone 2
+        $scope.zone3 = []; //Range of zone 3
+
+        //Set zone 1 range
         $scope.zone1 = $scope.zone1.concat($scope.rangeIn(0, 0+10))
                                    .concat($scope.rangeIn(33, 33+10))
                                    .concat($scope.rangeIn(66, 66+10))
@@ -1324,7 +1337,7 @@ function($scope, $firebaseObject, $firebaseArray, $log) {
                                    .concat($scope.rangeIn(264, 264+10))
                                    .concat($scope.rangeIn(297, 297+10))
                                    .concat($scope.rangeIn(330, 330+10));
-
+        //Set zone 2 range
         $scope.zone2 = $scope.zone2.concat($scope.rangeIn(11, 11+10))
                                    .concat($scope.rangeIn(44, 44+10))
                                    .concat($scope.rangeIn(77, 77+10))
@@ -1336,8 +1349,7 @@ function($scope, $firebaseObject, $firebaseArray, $log) {
                                    .concat($scope.rangeIn(275, 275+10))
                                    .concat($scope.rangeIn(308, 308+10))
                                    .concat($scope.rangeIn(341, 341+10));
-
-
+        //Set zone 3 range
         $scope.zone3 = $scope.zone3.concat($scope.rangeIn(22, 22+10))
                                    .concat($scope.rangeIn(55, 55+10))
                                    .concat($scope.rangeIn(88, 88+10))
@@ -1350,25 +1362,38 @@ function($scope, $firebaseObject, $firebaseArray, $log) {
                                    .concat($scope.rangeIn(319, 319+10))
                                    .concat($scope.rangeIn(352, 352+10));
 
-
+        /**
+         * Update object's location when it's dropped to a new location
+         * @param {Object} data - an object that contains a sensor's data.
+         * @param {evt} event - Indicate the type of mouse event.
+         * @param {int} indexNumber - The current index of an array.
+         * @author Anson Cheung
+         */
         $scope.onDropComplete=function(data, evt, indexNumber){
+            
             var index = $scope.list[indexNumber].indexOf(data);
 
+            //Check for existence of data inside an array (If array contains data)
             if (index == -1){
 
-              var spotId = data.$id.slice(-4);
-
+              //Get the snapshot from the firebase map reference
               mapRef.once("value", function(snapshot) {
 
-                //For each index (index_0, index_1, .. , index_999)
+                //From the snapshot, get each childsnapshot index (index_0, index_1, .. , index_999)
                 snapshot.forEach(function(childSnapshot){
 
-                  //etc: https://xxx.firebaseio.com/Map/index_0
+                  //Set child reference as, etc, https://xxx.firebaseio.com/Map/index_0
                   var childRef = mapRef.child(childSnapshot.key());
+
+                  //Remove OLD index/location of the object
                   $scope.remove(childRef, data.$id, indexNumber);
 
                 });
+
+                //Set data reference as, etc, https://xxx.firebaseio.com/Map/index_0/(object_name)
                 var dataRef = mapRef.child("index_" + indexNumber).child(data.$id);
+
+                //Update new index/locatino for the object
                 $scope.update(dataRef, data.name, data.task, data.zone);
                 console.log("NEW INDEX: " + indexNumber);
               });
@@ -1377,23 +1402,47 @@ function($scope, $firebaseObject, $firebaseArray, $log) {
 
         }
 
+        /**
+         * Remove OLD index/location of an object
+         * @param {FirebaseReference} childRef - an index reference of the map.
+         * @param {String} id - The data name of the JSON object.
+         * @param {int} indexNumber - The current index of an array.
+         * @author Anson Cheung
+         */
         $scope.remove = function(childRef, id, indexNumber){
+          
+          //Get the snapshot from the firebase map->index reference
           childRef.once("value", function(snapshot){
 
+            //Set var to true/false if 'index_X' exists
             var indexFoundSpotID = snapshot.child(id).exists();
 
+            //if it exists
             if(indexFoundSpotID){
+
+              //Find its index name
               var indexName = snapshot.key();
 
               console.log("OLD INDEX: " + indexName);
 
+              //Use the found index name 
               var dataRef = mapRef.child(indexName).child(id);
+
+              //and removes its data
               dataRef.remove();
             }
 
           })
         }
 
+        /**
+         * Update NEW index/location of an object
+         * @param {FirebaseReference} ref - an index reference of the map.
+         * @param {String} name - The name of a sensor.
+         * @param {String} task - The task of a sensor.
+         * @param {String} zone - The zone of a sensor.
+         * @author Anson Cheung
+         */
         $scope.update = function(ref, name, task, zone){
           ref.set({
               name: name,
@@ -1402,6 +1451,12 @@ function($scope, $firebaseObject, $firebaseArray, $log) {
           });
         }
 
+        /**
+         * Return an array of a desired range of numbers.
+         * @param {int} num - The length of an array.
+         * @return {Array(num)} - Return an array of numbers.
+         * @author Anson Cheung
+         */
         $scope.range = function(num) {
             return new Array(num);
         }
