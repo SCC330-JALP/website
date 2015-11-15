@@ -801,6 +801,17 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
     }
 
+    function createSensorTouchEvents(element){
+      var options = {
+
+      }
+      var hammerEvent = new Hammer(element,options);
+      hammerEvent.on('tap', function(ev){
+        console.log(ev);
+      })
+
+
+    }
     var settingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
     /**
      * DESCRIPTION
@@ -821,6 +832,8 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
           createSensor(newSensor, sensorElement);
 
           createDataListeners(newSensor, sensorElement);
+
+          createSensorTouchEvents(sensorElement);
 
         }else{ //sensor is a person tracker
 
@@ -1300,7 +1313,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
 
 
-spotApp.controller('mapTestController', ['$scope','$firebaseObject', '$firebaseArray', 
+spotApp.controller('mapTestController', ['$scope','$firebaseObject', '$firebaseArray',
 function($scope, $firebaseObject, $firebaseArray) {
 
         //Set map map reference
@@ -1332,14 +1345,13 @@ function($scope, $firebaseObject, $firebaseArray) {
             return array;
         };
 
-<<<<<<< HEAD
-=======
+
         $scope.zone1 = []; //Range of zone 1
         $scope.zone2 = []; //Range of zone 2
         $scope.zone3 = []; //Range of zone 3
 
         //Set zone 1 range
->>>>>>> 36fb52d4a2968bfa30edf7d83eeb5f5a4a804bb2
+
         $scope.zone1 = $scope.zone1.concat($scope.rangeIn(0, 0+10))
                                    .concat($scope.rangeIn(33, 33+10))
                                    .concat($scope.rangeIn(66, 66+10))
@@ -1384,7 +1396,7 @@ function($scope, $firebaseObject, $firebaseArray) {
          * @author Anson Cheung
          */
         $scope.onDropComplete=function(data, evt, indexNumber){
-            
+
             var index = $scope.list[indexNumber].indexOf(data);
 
             //Check for existence of data inside an array (If array contains data)
@@ -1424,7 +1436,7 @@ function($scope, $firebaseObject, $firebaseArray) {
          * @author Anson Cheung
          */
         $scope.remove = function(childRef, id, indexNumber){
-          
+
           //Get the snapshot from the firebase map->index reference
           childRef.once("value", function(snapshot){
 
@@ -1439,7 +1451,7 @@ function($scope, $firebaseObject, $firebaseArray) {
 
               console.log("OLD INDEX: " + indexName);
 
-              //Use the found index name 
+              //Use the found index name
               var dataRef = mapRef.child(indexName).child(id);
 
               //and removes its data
