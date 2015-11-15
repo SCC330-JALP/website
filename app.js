@@ -802,11 +802,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
     }
 
     function createSensorTouchEvents(element){
-      var options = {
 
-      }
-      var hammerEvent = new Hammer(element,options);
-      hammerEvent.on('tap', function(ev){
+      var options = {};
+      var hammerEvent = new Hammer(element[0], options);
+     hammerEvent.on('tap', function(ev){
         console.log(ev);
       })
 
