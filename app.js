@@ -506,16 +506,27 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
           // dataTable code
           var data = new google.visualization.DataTable();
-          data.addColumn('number', 'Zone');
+          data.addColumn('string', 'Zone');
           data.addColumn('datetime', "Time entered zone");
+          data.addColumn('datetime', "Time exit zone");
 
           ref.on("value", function(snapshot, prevChildKey) {
             var newLog = snapshot.val();
+            var oldLog = null;
             for (var log in newLog){
-              if(newLog[log].timestamp >= (curDate - hoursMilli)){
-                  data.addRow([newLog[log].newVal, new Date(newLog[log].timestamp)])
+              if (oldLog != null){
+                if(newLog[log].timestamp >= (curDate - hoursMilli)){
+                    data.addRow([newLog[oldLog].newVal.toString(), new Date(newLog[oldLog].timestamp), new Date(newLog[log].timestamp)])
+                }
               }
+
+
+              oldLog = log;
             }
+            var timeline = new google.visualization.Timeline(document.getElementById('timeline_div'));
+
+            timeline.draw(data, {width: '100%', height: '100%'});
+
             var table = new google.visualization.Table(document.getElementById('table_div'));
 
             table.draw(data, {width: '100%', height: '100%'});
@@ -1312,7 +1323,7 @@ function($scope, $firebaseObject, $firebaseArray, $log) {
             }
             return input;
         };
-        
+
         $scope.zone1 = $scope.zone1.concat($scope.rangeIn(0, 0+10))
                                    .concat($scope.rangeIn(33, 33+10))
                                    .concat($scope.rangeIn(66, 66+10))
