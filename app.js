@@ -769,8 +769,16 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
         newDataRef.limitToLast(1).on("child_added", function(snapshot){
           var time = new Date(snapshot.val().timestamp)
+                    //btnoutput.innerHTML = "Button " + snapshot.val().newVal + " pressed at " + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
+          var buttonID = snapshot.val().newVal;
 
-          btnoutput.innerHTML = "Button " + snapshot.val().newVal + " pressed at " + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
+          if(buttonID == 1){
+              btnoutput.innerHTML = "<span class='fa-stack fa-lg'><i class='fa fa-hand-pointer-o fa-stack-1x'></i><i class='fa fa-circle-o fa-stack-2x'></i></span>" + time.getHours() + ":" + time.getMinutes();
+          }else if(buttonID == 2){
+              btnoutput.innerHTML = "<i class='fa fa-sign-in fa-rotate-90 fa-2x'></i><b>" + buttonID + "</b> " + time.getHours() + ":" + time.getMinutes();
+          }
+
+
         })
       }
 
@@ -781,7 +789,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         newDataRef.limitToLast(1).on("child_added", function(snapshot){
           var time = new Date(snapshot.val().timestamp)
 
-          lightoutput.innerHTML = "Light triggered to: " + snapshot.val().newVal + "  at :" + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
+          lightoutput.innerHTML = "<i class='fa fa-lightbulb-o fa-2x'></i> " + snapshot.val().newVal + " " + time.getHours() + ":" + time.getMinutes();
         })
       }
 
@@ -792,7 +800,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         newDataRef.limitToLast(1).on("child_added", function(snapshot){
           var time = new Date(snapshot.val().timestamp)
 
-          motionoutput.innerHTML = "Motion detected at:  "  + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
+          motionoutput.innerHTML = "<i class='fa fa-arrows fa-2x'></i> "  + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
         })
       }
 
@@ -802,14 +810,33 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
     }
 
     function createSensorTouchEvents(element){
-
+      element = $(element).find(".card-content");
+      //$(element).css("background-color","blue");
       var options = {};
       var hammerEvent = new Hammer(element[0], options);
-     hammerEvent.on('tap', function(ev){
-        console.log(ev);
+     hammerEvent.on('pinchout', function(ev){
+        element.parent().find("#historySensorBtn")[0].click();
       })
 
+      hammerEvent.on('press', function(ev){
+         console.log("press");
+         element.parent().find("#editSensorBtn")[0].click();
+       })
 
+
+       hammerEvent.on('rotate', function(ev){
+         console.log("rotate");
+         element.parent().find("#locationHistoryBtn")[0].click();
+       })
+
+       var statusElement = element.find("#status")[0]
+
+       var statusEvent = new Hammer(statusElement, options);
+
+       statusEvent.on('press', function(ev){
+         element.parent().find("#editSensorBtn")[0].click();
+         $("#myModal").find("#deleteBtn")[0].click();
+       })
     }
     var settingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
     /**
@@ -834,6 +861,8 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
           createSensorTouchEvents(sensorElement);
 
+          $(sensorElement).draggable({containment: "parent"});
+
         }else{ //sensor is a person tracker
 
           newSensor.address = snapshot.key();
@@ -842,6 +871,8 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
           $(personElement).attr('id', newSensor.address.replace(/ /g, "_"));
 
             createSensor(newSensor, personElement);
+
+              $(personElement).draggable({containment: "parent"});
         }
 
 

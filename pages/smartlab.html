@@ -1,5 +1,5 @@
 <header class="container-fluid">
-  <h1 class="centered">Smart lab   <a href="#/map" class="btn btn-primary"> <span class="fa fa-globe"></span> </a></h1>
+  <h1 class="centered">Smart lab   <a href="#/map" class="btn btn-primary"> <span class="fa fa-map-o"></span> </a></h1>
 
 </header>
 
@@ -55,9 +55,9 @@
         </div>
         <!-- //container -->
 
-        <div class="container-fluid">
+        <div class="container-fluid ">
             <h3>Sensors</h3>
-            <div class="row" id="zone1Sensors">
+            <div class="row sensorsContainer" id="zone1Sensors">
 
 
             </div>
@@ -123,9 +123,9 @@
         </div>
         <!-- //container -->
 
-        <div class="container-fluid">
+        <div class="container-fluid ">
             <h3>Sensors</h3>
-            <div class="row" id="zone2Sensors">
+            <div class="row sensorsContainer" id="zone2Sensors">
 
 
             </div>
@@ -187,9 +187,9 @@
         </div>
         <!-- //container -->
 
-        <div class="container-fluid">
+        <div class="container-fluid ">
             <h3>Sensors</h3>
-            <div class="row" id="zone3Sensors">
+            <div class="row sensorsContainer" id="zone3Sensors">
 
 
             </div>
@@ -214,11 +214,13 @@
  -->
 <div id="personTemplate" class="col-xs-6 object-card hidden">
     <div class="card">
+  <div class="card-content">
+    <span id="spotName">Unassigned</span> <br>
+    <div class="centered">
+      <span class="fa fa-user fa-4x"></span>
+    </div>
 
-            <span id="spotName">Unassigned</span> <br>
-            <div class="centered">
-              <span class="fa fa-user fa-4x"></span>
-            </div>
+  </div>
 
 
             <div class="card-footer">
@@ -244,16 +246,20 @@
  -->
 <div id="sensorTemplate" class="col-md-12 col-lg-6 object-card hidden">
     <div class="card">
+      <div class="card-content">
         <div id="status" class="status-light"> </div>
 
         <span id="spotName"> Spot name </span>
 
-        <div id="liveDatalight">  </div>
-        <div id="liveDatatemp">  </div>
-        <div id="liveDatamotion">  </div>
-        <div id="liveDatabtn">  </div>
+        <div id="liveDatalight" class="col-xs-6">  </div>
+        <div id="liveDatatemp" class="col-xs-6">  </div>
+        <div id="liveDatamotion" class="col-xs-6">  </div>
+        <div id="liveDatabtn" class="col-xs-6">  </div>
 
-        <span id="spotTask">Spot type</span>
+        <span id="spotTask" class="col-xs-12">Spot type</span>
+
+      </div>
+
         <div class="card-footer">
 
           <small id="spotMAC"> Spot MAC</small><br>
@@ -476,7 +482,7 @@ HISTORY PLAYBACK MODAL
                         <div class="form-group">
                             <div class="col-sm-offset-2 col-sm-10 modal-footer">
                                 <!-- <button type="submit" class="btn btn-default" data-dismiss="modal" -->
-                                <button class="btn btn-danger pull-left" data-toggle="modal" data-target="#deleteModal" data-name="">Delete spot</button>
+                                <button id="deleteBtn" class="btn btn-danger pull-left" data-toggle="modal" data-target="#deleteModal" data-name="">Delete spot</button>
                                 <div class="pull-right">
                                     <button class="btn btn-default" data-dismiss="modal"> Cancel </button>
                                     <button type="submit" class="btn btn-default" data-dismiss="modal" ng-click="modalSubmit()">Save changes</button>

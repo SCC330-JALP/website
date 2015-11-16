@@ -1,3 +1,9 @@
+.sensorsContainer
+{
+    min-height: 400px;
+
+    background-color: lightgrey;
+}
 .debug
 {
     min-height: 100px;
