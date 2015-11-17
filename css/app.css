@@ -126,3 +126,20 @@ h3
 
     cursor: pointer;
 }
+
+#viewPerson label > input
+{
+    position: absolute;
+
+    visibility: hidden;
+}
+#viewPerson label > input + img
+{
+    cursor: pointer;
+
+    border: 2px solid transparent;
+}
+#viewPerson label > input:checked + img
+{
+    border: 2px solid #00bfff;
+}

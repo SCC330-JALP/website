@@ -619,12 +619,27 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       }else{ //new sensor is a person sensor
         console.log("Creating new person!");
         console.log(snapshot);
+
         var viewButton = $(pageElement).find("#viewPersonBtn")[0]; //set up the links as seen in child_changed listener
         $(viewButton).data('name', snapshot.name);
         $(viewButton).data('task', snapshot.task);
         $(viewButton).data('address', snapshot.address);
         $(viewButton).data('zone', snapshot.zone);
 
+        var profileRef = new Firebase("https://sunsspot.firebaseio.com/spotProfile/"+snapshot.address+"/FileName");
+
+        profileRef.once("value", function(snapshot){
+          var fileName = snapshot.val();
+          console.log(snapshot);
+          if(fileName != "undefined.jpg"){
+            var img = document.createElement("img");
+            img.src = "../images/profile/" + fileName;
+            img.width = 100;
+            img.height = 100;
+            $(pageElement).find("#profileImage").empty().append(img).removeClass("fa fa-user fa-4x");
+          }
+
+        });
 
         appendSensor(snapshot.zone,pageElement);
 
@@ -698,15 +713,31 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
       if(oldTask != snapshot.task){
 
-        dataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings" + changedSensor.address);
+        dataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings" + snapshot.address);
         dataRef.remove()
       }
 
       if (oldZone != snapshot.zone) { //if the zone has changed, the element needs to move to a different sub-heading
-
         appendSensor(snapshot.zone,changedElement);
-
       }
+
+      var profileRef = new Firebase("https://sunsspot.firebaseio.com/spotProfile/"+snapshot.address+"/FileName");
+
+      profileRef.once("value", function(snapshot){
+        var fileName = snapshot.val();
+        console.log(snapshot);
+        if(fileName != "undefined.jpg"){
+          var img = document.createElement("img");
+          img.src = "../images/profile/" + fileName;
+          img.width = 100;
+          img.height = 100;
+          $(changedElement).find("#profileImage").empty().append(img).removeClass("fa fa-user fa-4x");
+        }
+
+      });
+
+
+
     }
     /**
      * DESCRIPTION
@@ -800,7 +831,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         newDataRef.limitToLast(1).on("child_added", function(snapshot){
           var time = new Date(snapshot.val().timestamp)
 
-          motionoutput.innerHTML = "<i class='fa fa-arrows fa-2x'></i> "  + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
+          motionoutput.innerHTML = "<i class='fa fa-arrows fa-2x'></i> "  + time.getHours() + ":" + time.getMinutes();
         })
       }
 
@@ -814,7 +845,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       //$(element).css("background-color","blue");
       var options = {};
       var hammerEvent = new Hammer(element[0], options);
-     hammerEvent.on('pinchout', function(ev){
+     hammerEvent.on('pinch', function(ev){
         element.parent().find("#historySensorBtn")[0].click();
       })
 
@@ -1061,6 +1092,17 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         var modal = $("#deleteModal");
         modal.find("#myModalLabel")[0].innerHTML = name;
         modal.find("#deleteSpotAddress")[0].innerHTML = address;
+
+        profileSrc = $(this).parents("div.card").find("img").attr('src');
+        profileSrc = profileSrc.split("/");
+        console.log(profileSrc[profileSrc.length -1]);
+
+        profileSrc = profileSrc[profileSrc.length -1].split(".")
+        console.log(profileSrc[0]);
+        profileSrc = profileSrc[0];
+
+        $("input[name=profilePic][value="+ profileSrc +"]").prop('checked', true);
+
     });
     /**
      * DESCRIPTION
@@ -1093,8 +1135,8 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
      * @author Josh Stennett
      */
     $("#viewSensorTypeSelect").change(function(){
-      console.log("Select changed!");
-      console.log($(this).val());
+      //console.log("Select changed!");
+      //console.log($(this).val());
       if($(this).val() == "multi"){
         $("#viewSensorCheckbox").removeClass("hidden");
       }else{
@@ -1202,6 +1244,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       newTask = multiTask;
     }
 
+      var chosenProfilePic = $('input[name=profilePic]:checked').val();
+      console.log("Profile pic : " + chosenProfilePic);
+      var profRef =  new Firebase("sunsspot.firebaseio.com/spotProfile/"+address+"/FileName")
+      profRef.set(chosenProfilePic + ".jpg");
 
 
       var updateRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings/"); //create reference

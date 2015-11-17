@@ -217,7 +217,7 @@
   <div class="card-content">
     <span id="spotName">Unassigned</span> <br>
     <div class="centered">
-      <span class="fa fa-user fa-4x"></span>
+      <span id="profileImage"class="fa fa-user fa-4x"></span>
     </div>
 
   </div>
@@ -251,10 +251,10 @@
 
         <span id="spotName"> Spot name </span>
 
-        <div id="liveDatalight" class="col-xs-6">  </div>
-        <div id="liveDatatemp" class="col-xs-6">  </div>
-        <div id="liveDatamotion" class="col-xs-6">  </div>
-        <div id="liveDatabtn" class="col-xs-6">  </div>
+        <div id="liveDatalight" title="Live Light Data" class="col-xs-6">  </div>
+        <div id="liveDatatemp" title="Live Temperature Data" class="col-xs-6">  </div>
+        <div id="liveDatamotion" title="Live Motion Data" class="col-xs-6">  </div>
+        <div id="liveDatabtn" title="Live Button Data" class="col-xs-6">  </div>
 
         <span id="spotTask" class="col-xs-12">Spot type</span>
 
@@ -361,6 +361,27 @@ HISTORY PLAYBACK MODAL
                         <label class="control-label col-sm-2" for="email">Name:</label>
                         <div class="col-sm-10">
                             <input type="name" class="form-control" id="name" placeholder="Enter Name" value=>
+                        </div>
+
+
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="email">Profile Picture:</label>
+
+                        <div class="col-sm-10">
+                          <label>
+                            <input type="radio" name="profilePic" value="1" />
+                            <img src="./images/profile/1.jpg" width="100" height="100">
+                          </label>
+                          <label>
+                            <input type="radio" name="profilePic" value="2" />
+                            <img src="./images/profile/2.jpg" width="100" height="100">
+                          </label>
+                          <label>
+                            <input type="radio" name="profilePic" value="3" />
+                            <img src="./images/profile/3.jpg" width="100" height="100">
+                          </label>
                         </div>
 
 
