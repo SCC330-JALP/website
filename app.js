@@ -590,6 +590,9 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       $(pageElement).find("#spotMAC")[0].innerHTML = snapshot.address; //insert the spot name
       $(pageElement).find("#locationHistoryBtn").data('address', snapshot.address);
 
+      $(pageElement).find("#battery")[0].innerHTML = snapshot.battery + "%";
+
+
       if(!snapshot.alive){ //set the status light to red if the sensor is not alive.
         var status = $(pageElement).find("#status");
         $(status).css('background-color','darkred');
@@ -609,6 +612,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         $(editButton).data('address', snapshot.address);
         $(editButton).data('zone', snapshot.zone);
         $(editButton).data('status', snapshot.alive);
+        $(editButton).data('battery', snapshot.battery);
 
         var historySensorBtn = $(pageElement).find("#historySensorBtn")[0]; //set up the links as seen in child_changed listener
         $(historySensorBtn).data('address', snapshot.address);
@@ -628,6 +632,8 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         $(viewButton).data('address', snapshot.address);
         $(viewButton).data('zone', snapshot.zone);
         $(viewButton).data('status', snapshot.alive);
+        $(viewButton).data('battery', snapshot.battery);
+
         var profileRef = new Firebase("https://sunsspot.firebaseio.com/spotProfile/"+snapshot.address+"/FileName");
 
         profileRef.once("value", function(snapshot){
@@ -703,7 +709,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       $(changedElement).find("#spotName")[0].innerHTML = snapshot.name;
 
       $(changedElement).find("#spotMAC")[0].innerHTML = snapshot.address;
-
+      $(changedElement).find("#battery")[0].innerHTML = snapshot.battery;
       var status = $(changedElement).find("#status")[0]
       $(status).css('background-color','green');
 
@@ -721,7 +727,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       $(link).data('task', snapshot.task);
       $(link).data('zone', snapshot.zone);
       $(link).data('status', snapshot.alive);
-
+      $(link).data('battery', snapshot.battery);
       if(oldTask != snapshot.task){
 
         dataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings" + snapshot.address);
@@ -756,7 +762,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
      */
     function updateSensor(snapshot, changedElement){
       $(changedElement).find("#spotName")[0].innerHTML = snapshot.name; //populate element name
-
+      $(changedElement).find("#battery")[0].innerHTML = snapshot.battery;
       var spotTask = $(changedElement).find("#spotTask")[0];
       setTask(spotTask, snapshot.task); //set the task
 
@@ -777,6 +783,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       $(link).data('task', snapshot.task);
       $(link).data('zone', snapshot.zone);
       $(link).data('status', snapshot.alive);
+      $(link).data('battery', snapshot.battery);
 
       if(oldTask != snapshot.task){
         dataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address);
@@ -995,7 +1002,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         var address = $(this).data('address');
         var zone = $(this).data('zone');
         var status = $(this).data('status');
-
+        var battery = $(this).data('battery');
 
         var modal = $("#myModal"); //get the modal element
 
@@ -1034,6 +1041,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         modal.find("input#" + task).prop("checked", true);
         modal.find("#sensorZone")[0].innerHTML = zone;
         modal.find("#sensorStatus")[0].innerHTML = status;
+        modal.find("#battery")[0].innerHTML = battery;
         var modal = $("#deleteModal");
         modal.find("#myModalLabel")[0].innerHTML = name;
         modal.find("#deleteSpotAddress")[0].innerHTML = address;
@@ -1076,7 +1084,8 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         var address = $(this).data('address');
         var zone = $(this).data('zone');
         var status = $(this).data('status');
-
+        var battery = $(this).data('battery');
+        console.log(battery);
         var modal = $("#viewPerson");
         if(task == "sp"){
           //person sensor
@@ -1109,7 +1118,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         modal.find("#spotAddress")[0].innerHTML = address;
         modal.find("input#name")[0].value = name;
         modal.find("#sensorStatus")[0].innerHTML = status;
-
+        modal.find("#battery")[0].innerHTML = battery;
         modal.find("#personZone")[0].innerHTML = zone
 
         var modal = $("#deleteModal");
@@ -1199,7 +1208,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       var newZone = parseInt($("span#sensorZone")[0].innerHTML);
       var newTask = modal.find('#editSensorTypeSelect').val();
       var status = modal.find("#sensorStatus")[0].innerHTML;
-
+      var newBattery = modal.find("#battery")[0].innerHTML;
       if(newTask == "multi"){
         var multiTask = "s";
         if($("input#m").is(':checked')){
@@ -1227,7 +1236,8 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
           name: newName,
           task: newTask,
           zone: newZone,
-          alive: status
+          alive: status,
+          battery: newBattery
       }); //update the record with the new data
       $("input#m").prop("checked", false);
       $("input#l").prop("checked", false);
@@ -1247,7 +1257,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
     var newName = modal.find("#name")[0].value;
     var newZone = parseInt($("span#personZone")[0].innerHTML);
     var status = modal.find("#sensorStatus")[0].innerHTML;
-
+    var newBattery = modal.find("#battery")[0].innerHTML;
     var newTask = modal.find('#viewSensorTypeSelect').val();
     if(newTask == "multi"){
       var multiTask = "s";
@@ -1282,7 +1292,8 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
           name: newName,
           task: newTask,
           zone: newZone,
-          alive: status
+          alive: status,
+          battery: newBattery
       }); //update the record with the new data
 
 

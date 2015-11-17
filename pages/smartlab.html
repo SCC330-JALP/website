@@ -213,9 +213,11 @@
 
  -->
 <div id="personTemplate" class="col-xs-6 object-card hidden">
+<div id="battery" class="pull-left"></div>
     <div class="card">
   <div class="card-content">
       <div id="status" class="status-light"> </div>
+
     <span id="spotName">Unassigned</span> <br>
     <div class="centered">
       <span id="profileImage"class="fa fa-user fa-4x"></span>
@@ -227,7 +229,7 @@
             <div class="card-footer">
             <small id="spotMAC">Unknown Address</small><br>
             <div class="btn-group" role="group">
-              <button id="viewPersonBtn" class="btn btn-primary data-button " type="button" name="button" data-toggle="modal" data-target="#viewPerson" data-name="" data-address="" data-zone="" data-task="" data-status=""><span class="fa fa-eye"></span></button>
+              <button id="viewPersonBtn" class="btn btn-primary data-button " type="button" name="button" data-toggle="modal" data-target="#viewPerson" data-name="" data-address="" data-zone="" data-task="" data-status="" data-battery=""><span class="fa fa-eye"></span></button>
               <span id="locationHistoryBtn" data-toggle="modal" data-target="#historyPlayback" class="btn btn-primary btn"><span class="fa fa-history"></span></span>
 
 
@@ -245,8 +247,10 @@
   SENSOR TEMPLATE
 
  -->
-<div id="sensorTemplate" class="col-md-12 col-lg-6 object-card hidden">
+<div id="sensorTemplate" class="col-xs-6  object-card hidden">
+  <div id="battery" class="pull-left"></div>
     <div class="card">
+
       <div class="card-content">
         <div id="status" class="status-light"> </div>
 
@@ -265,7 +269,7 @@
 
           <small id="spotMAC"> Spot MAC</small><br>
           <div class="btn-group" role="group">
-            <button id="editSensorBtn" class="btn btn-primary data-button" data-toggle="modal" data-target="#myModal" data-name="" data-task="" data-address="" data-zone="" data-status=""><span class="fa fa-edit"></span></button>
+            <button id="editSensorBtn" class="btn btn-primary data-button" data-toggle="modal" data-target="#myModal" data-name="" data-task="" data-address="" data-zone="" data-status="" data-battery=""><span class="fa fa-edit"></span></button>
 
             <button id="historySensorBtn" data-address="" data-task="" class="btn btn-primary btn"><span class="fa fa-bar-chart"></span></button>
             <button id="locationHistoryBtn" data-toggle="modal" data-target="#historyPlayback" data-address="" class="btn btn-primary btn"><span class="fa fa-history"></span></button>
@@ -354,7 +358,7 @@ HISTORY PLAYBACK MODAL
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">Spot Name</h4><small id="spotAddress">Address Unknown</small> <small> Zone : <span id="personZone">N/A </span> </small> | Status : <span id="sensorStatus">?</span>
+                <h4 class="modal-title" id="myModalLabel">Spot Name</h4><small id="spotAddress">Address Unknown</small> <small> Zone : <span id="personZone">N/A </span> </small> | Status : <span id="sensorStatus">?</span> | Battery : <span id="battery">?</span>%
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" role="form">
@@ -456,7 +460,7 @@ HISTORY PLAYBACK MODAL
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">Spot Name</h4><small id="spotAddress">Address Unknown</small> | <small> Zone : <span id="sensorZone">N/A </span> </small> | Status : <span id="sensorStatus">?</span>
+                <h4 class="modal-title" id="myModalLabel">Spot Name</h4><small id="spotAddress">Address Unknown</small> | <small> Zone : <span id="sensorZone">N/A </span> </small> | Status : <span id="sensorStatus">?</span>  | Battery : <span id="battery">?</span>%
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" role="form">

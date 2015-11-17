@@ -126,7 +126,10 @@ h3
 
     cursor: pointer;
 }
-
+#battery
+{
+    padding-left: 5px;
+}
 #viewPerson label > input
 {
     position: absolute;
