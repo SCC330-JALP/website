@@ -859,11 +859,11 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
        hammerEvent.on('tap', function(ev){
 
           console.log("TAP DETECTED");
-          
+
         })
 
 
-       hammerEvent.on('rotate', function(ev){
+       hammerEvent.on('rotatestart', function(ev){
          console.log("rotate");
          element.parent().find("#locationHistoryBtn")[0].click();
        })
