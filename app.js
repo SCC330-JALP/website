@@ -590,16 +590,18 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       $(pageElement).find("#spotMAC")[0].innerHTML = snapshot.address; //insert the spot name
       $(pageElement).find("#locationHistoryBtn").data('address', snapshot.address);
 
+      if(!snapshot.alive){ //set the status light to red if the sensor is not alive.
+        var status = $(pageElement).find("#status");
+        $(status).css('background-color','darkred');
+      }
+
       if(snapshot.task.indexOf("p") === -1){ //new sensor is not a person sensor
-        console.log("Creating new sensor!");
-        console.log(snapshot);
+        //console.log("Creating new sensor!");
+        //console.log(snapshot);
         var spotTask = $(pageElement).find("#spotTask")[0];
         setTask(spotTask, snapshot.task); //set the task
 
-        if(!snapshot.alive){ //set the status light to red if the sensor is not alive.
-          var status = $(pageElement).find("#status");
-          $(status).css('background-color','darkred');
-        }
+
 
         var editButton = $(pageElement).find("#editSensorBtn")[0]; //set up the links as seen in child_changed listener
         $(editButton).data('name', snapshot.name);
@@ -608,30 +610,29 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         $(editButton).data('zone', snapshot.zone);
         $(editButton).data('status', snapshot.alive);
 
-        //???????????????????????????????????????????????????????????????
         var historySensorBtn = $(pageElement).find("#historySensorBtn")[0]; //set up the links as seen in child_changed listener
         $(historySensorBtn).data('address', snapshot.address);
         $(historySensorBtn).data('task', snapshot.task);
-        //???????????????????????????????????????????????????????????????
+
 
 
         appendSensor(snapshot.zone,pageElement);
 
       }else{ //new sensor is a person sensor
-        console.log("Creating new person!");
-        console.log(snapshot);
+        //console.log("Creating new person!");
+      //  console.log(snapshot);
 
         var viewButton = $(pageElement).find("#viewPersonBtn")[0]; //set up the links as seen in child_changed listener
         $(viewButton).data('name', snapshot.name);
         $(viewButton).data('task', snapshot.task);
         $(viewButton).data('address', snapshot.address);
         $(viewButton).data('zone', snapshot.zone);
-
+        $(viewButton).data('status', snapshot.alive);
         var profileRef = new Firebase("https://sunsspot.firebaseio.com/spotProfile/"+snapshot.address+"/FileName");
 
         profileRef.once("value", function(snapshot){
           var fileName = snapshot.val();
-          console.log(snapshot);
+          //console.log(snapshot);
           if(fileName != "undefined.jpg"){
             var img = document.createElement("img");
             img.src = "../images/profile/" + fileName;
@@ -703,6 +704,14 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
       $(changedElement).find("#spotMAC")[0].innerHTML = snapshot.address;
 
+      var status = $(changedElement).find("#status")[0]
+      $(status).css('background-color','green');
+
+      if(!snapshot.alive ){
+        $(status).css('background-color','darkred');
+
+      }
+
       var link = $(changedElement).find("#viewPersonBtn")[0]; //find the link to Edit modal
 
       var oldZone = $(link).data('zone'); //get the old task from the data attribute on the link
@@ -711,6 +720,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       $(link).data('name', snapshot.name); //update the data attributes to the new data
       $(link).data('task', snapshot.task);
       $(link).data('zone', snapshot.zone);
+      $(link).data('status', snapshot.alive);
 
       if(oldTask != snapshot.task){
 
@@ -1065,6 +1075,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         var task = $(this).data('task');
         var address = $(this).data('address');
         var zone = $(this).data('zone');
+        var status = $(this).data('status');
 
         var modal = $("#viewPerson");
         if(task == "sp"){
@@ -1097,7 +1108,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         modal.find("#myModalLabel")[0].innerHTML = name;
         modal.find("#spotAddress")[0].innerHTML = address;
         modal.find("input#name")[0].value = name;
-
+        modal.find("#sensorStatus")[0].innerHTML = status;
 
         modal.find("#personZone")[0].innerHTML = zone
 
@@ -1235,6 +1246,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
     var address = modal.find("#spotAddress")[0].innerHTML //populate variables based off of form values
     var newName = modal.find("#name")[0].value;
     var newZone = parseInt($("span#personZone")[0].innerHTML);
+    var status = modal.find("#sensorStatus")[0].innerHTML;
 
     var newTask = modal.find('#viewSensorTypeSelect').val();
     if(newTask == "multi"){
@@ -1269,7 +1281,8 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       updateRef.child(address).set({
           name: newName,
           task: newTask,
-          zone: newZone
+          zone: newZone,
+          alive: status
       }); //update the record with the new data
 
 
