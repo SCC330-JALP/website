@@ -846,13 +846,21 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       var options = {};
       var hammerEvent = new Hammer(element[0], options);
      hammerEvent.on('pinch', function(ev){
+        console.log("PINCH DETECTED");
         element.parent().find("#historySensorBtn")[0].click();
       })
 
       hammerEvent.on('press', function(ev){
-         console.log("press");
+
+         console.log("PRESS DETECTED");
          element.parent().find("#editSensorBtn")[0].click();
        })
+
+       hammerEvent.on('tap', function(ev){
+
+          console.log("TAP DETECTED");
+          
+        })
 
 
        hammerEvent.on('rotate', function(ev){
