@@ -606,6 +606,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         $(editButton).data('task', snapshot.task);
         $(editButton).data('address', snapshot.address);
         $(editButton).data('zone', snapshot.zone);
+        $(editButton).data('status', snapshot.alive);
 
         //???????????????????????????????????????????????????????????????
         var historySensorBtn = $(pageElement).find("#historySensorBtn")[0]; //set up the links as seen in child_changed listener
@@ -765,6 +766,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       $(link).data('name', snapshot.name); //update the data attributes to the new data
       $(link).data('task', snapshot.task);
       $(link).data('zone', snapshot.zone);
+      $(link).data('status', snapshot.alive);
 
       if(oldTask != snapshot.task){
         dataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address);
@@ -982,6 +984,8 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         console.log(task);
         var address = $(this).data('address');
         var zone = $(this).data('zone');
+        var status = $(this).data('status');
+
 
         var modal = $("#myModal"); //get the modal element
 
@@ -1018,8 +1022,8 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         modal.find("#spotAddress")[0].innerHTML = address;
         modal.find("input#name")[0].value = name;
         modal.find("input#" + task).prop("checked", true);
-        modal.find("#sensorZone")[0].innerHTML = zone
-
+        modal.find("#sensorZone")[0].innerHTML = zone;
+        modal.find("#sensorStatus")[0].innerHTML = status;
         var modal = $("#deleteModal");
         modal.find("#myModalLabel")[0].innerHTML = name;
         modal.find("#deleteSpotAddress")[0].innerHTML = address;
@@ -1183,6 +1187,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       var newName = modal.find("#name")[0].value;
       var newZone = parseInt($("span#sensorZone")[0].innerHTML);
       var newTask = modal.find('#editSensorTypeSelect').val();
+      var status = modal.find("#sensorStatus")[0].innerHTML;
 
       if(newTask == "multi"){
         var multiTask = "s";
@@ -1210,7 +1215,8 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       updateRef.child(address).set({
           name: newName,
           task: newTask,
-          zone: newZone
+          zone: newZone,
+          alive: status
       }); //update the record with the new data
       $("input#m").prop("checked", false);
       $("input#l").prop("checked", false);
