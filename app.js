@@ -590,8 +590,9 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       $(pageElement).find("#spotMAC")[0].innerHTML = snapshot.address; //insert the spot name
       $(pageElement).find("#locationHistoryBtn").data('address', snapshot.address);
 
-      $(pageElement).find("#battery")[0].innerHTML = snapshot.battery + "%";
 
+      var batteryElement =  $(pageElement).find("#battery")[0]
+      setBattery(batteryElement, parseInt(snapshot.battery));
 
       if(!snapshot.alive){ //set the status light to red if the sensor is not alive.
         var status = $(pageElement).find("#status");
@@ -656,6 +657,25 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       $(pageElement).removeClass('hidden'); //element created, so display it.
     }
 
+    function setBattery(element, battery){
+      $(element).removeAttr('style');
+      $(element).removeClass();
+      $(element).addClass('pull-left');
+      if(battery < 6){
+        $(element).addClass('fa fa-battery-0');
+        $(element).css('color','red');
+      }else if(battery < 21){
+        $(element).addClass('fa fa-battery-0');
+      }else if(battery < 41){
+        $(element).addClass('fa fa-battery-1');
+      }else if(battery < 61){
+        $(element).addClass('fa fa-battery-2');
+      }else if(battery < 81){
+        $(element).addClass('fa fa-battery-3');
+      }else{
+        $(element).addClass('fa fa-battery-4');
+      }
+    }
     /**
      * DESCRIPTION
      * @author Josh Stennett
@@ -709,7 +729,8 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       $(changedElement).find("#spotName")[0].innerHTML = snapshot.name;
 
       $(changedElement).find("#spotMAC")[0].innerHTML = snapshot.address;
-      $(changedElement).find("#battery")[0].innerHTML = snapshot.battery;
+      var batteryElement =  $(changedElement).find("#battery")[0]
+      setBattery(batteryElement, parseInt(snapshot.battery));
       var status = $(changedElement).find("#status")[0]
       $(status).css('background-color','green');
 
@@ -762,7 +783,8 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
      */
     function updateSensor(snapshot, changedElement){
       $(changedElement).find("#spotName")[0].innerHTML = snapshot.name; //populate element name
-      $(changedElement).find("#battery")[0].innerHTML = snapshot.battery;
+      var batteryElement =  $(changedElement).find("#battery")[0]
+      setBattery(batteryElement, parseInt(snapshot.battery));
       var spotTask = $(changedElement).find("#spotTask")[0];
       setTask(spotTask, snapshot.task); //set the task
 
