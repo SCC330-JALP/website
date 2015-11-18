@@ -1011,7 +1011,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
            element.parent().find("#historySensorBtn")[0].click();
          } else if(ev.scale < 1){
            //console.log("Trigger pinch in")
-           console.log("minimise");
+           element.parent().find(".card-header")[0].click();
          }
        })
 
@@ -1041,7 +1041,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
            element.parent().find("#locationHistoryBtn")[0].click();
          }else if(ev.scale < 1){
            //console.log("Trigger pinch in")
-           console.log("minimise");
+           element.parent().find(".card-header")[0].click();
          }
        })
 
@@ -1304,6 +1304,11 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
     })
 
+    $(document).on("click", ".card-header", function(){
+      console.log("trigger minimise");
+      $(this).parent(".card").find(".card-content").toggle();
+      $(this).parent(".card").find(".card-footer").toggle();
+    })
     /**
      * DESCRIPTION
      * @author Josh Stennett
