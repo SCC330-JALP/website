@@ -896,11 +896,11 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
          element.parent().find("#editSensorBtn")[0].click();
        })
 
-       hammerEvent.on('rotateend pinchend', function(ev){
+       hammerEvent.on('pinchend', function(ev){
          //console.log("ROTATE END AND/OR PINCH END");
          //lement.parent().find("#locationHistoryBtn")[0].click();
          console.log(ev);
-         if(ev.type == "rotateend"){
+         if(ev.rotation >= 30){
            console.log("Trigger rotation");
          } else if(ev.scale > 1){
            console.log("Trigger pinch out");
