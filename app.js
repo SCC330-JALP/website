@@ -886,7 +886,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       //$(element).css("background-color","blue");
       var options = {};
       var hammerEvent = new Hammer(element[0], options);
-      hammerEvent.get('press').set({ enable: true, threshold: 20 });
+      hammerEvent.get('press').set({ enable: true, threshold: 25 });
       hammerEvent.get('pinch').set({ enable: true, threshold: 0.3  });
       hammerEvent.get('rotate').set({ enable: true, threshold: 40 });
 
@@ -912,9 +912,38 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
          }
        })
 
+    }
 
+    function createPersonTouchEvents(element){
+      element = $(element).find(".card-content");
+      //$(element).css("background-color","blue");
+      var options = {};
+      var hammerEvent = new Hammer(element[0], options);
+      hammerEvent.get('press').set({ enable: true, threshold: 25 });
+      hammerEvent.get('pinch').set({ enable: true, threshold: 0.3  });
+      hammerEvent.get('rotate').set({ enable: true, threshold: 40 });
+
+
+      hammerEvent.on('press', function(ev){
+         //console.log("PRESS DETECTED");
+         element.parent().find("#viewPersonBtn")[0].click();
+       })
+
+       hammerEvent.on('pinchend', function(ev){
+         //console.log("ROTATE END AND/OR PINCH END");
+
+         //console.log(ev);
+         if(ev.rotation >= 40 || ev.rotation <= -40){
+          // console.log("Trigger rotation");
+           element.parent().find("#locationHistoryBtn")[0].click();
+         }else if(ev.scale < 1){
+           //console.log("Trigger pinch in")
+           console.log("minimise");
+         }
+       })
 
     }
+
     var settingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
     /**
      * DESCRIPTION
@@ -949,7 +978,9 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
             createSensor(newSensor, personElement);
 
-              $(personElement).draggable({containment: "parent"});
+            createPersonTouchEvents(sensorElement);
+
+            $(personElement).draggable({containment: "parent"});
         }
 
 
