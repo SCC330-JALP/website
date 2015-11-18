@@ -887,7 +887,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       var options = {};
       var hammerEvent = new Hammer(element[0], options);
       hammerEvent.get('press').set({ enable: true, threshold: 20 });
-      hammerEvent.get('pinch').set({ enable: true, threshold: 5  });
+      hammerEvent.get('pinch').set({ enable: true, threshold: 3  });
       hammerEvent.get('rotate').set({ enable: true, threshold: 30 });
 
 
@@ -901,12 +901,12 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
          element.parent().find("#locationHistoryBtn")[0].click();
        })
 
-       hammerEvent.on('pinchin', function(ev){
+       hammerEvent.on('pinchin pinchend', function(ev){
          console.log("PINCH IN DETECTED");
          //element.parent().find("#historySensorBtn")[0].click();
        })
 
-       hammerEvent.on('pinchout', function(ev){
+       hammerEvent.on('pinchout pinchend', function(ev){
          console.log("PINCH OUT DETECTED");
          element.parent().find("#historySensorBtn")[0].click();
        })
