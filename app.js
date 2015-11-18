@@ -887,19 +887,19 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       var options = {};
       var hammerEvent = new Hammer(element[0], options);
       hammerEvent.get('pinch').set({ enable: true });
-hammerEvent.get('rotate').set({ enable: true });
-     hammerEvent.on('pinch', function(ev){
+      hammerEvent.get('rotate').set({ enable: true });
+      hammerEvent.on('pinch', function(ev){
         console.log("PINCH DETECTED");
-        element.parent().find("#historySensorBtn")[0].click();
+        //element.parent().find("#historySensorBtn")[0].click();
       })
 
       hammerEvent.on('press', function(ev){
 
          console.log("PRESS DETECTED");
-         element.parent().find("#editSensorBtn")[0].click();
+         //element.parent().find("#editSensorBtn")[0].click();
        })
 
-       hammerEvent.on('tap', function(ev){
+      hammerEvent.on('tap', function(ev){
 
           console.log("TAP DETECTED");
 
@@ -908,7 +908,7 @@ hammerEvent.get('rotate').set({ enable: true });
 
        hammerEvent.on('rotatestart', function(ev){
          console.log("rotate");
-         element.parent().find("#locationHistoryBtn")[0].click();
+         //element.parent().find("#locationHistoryBtn")[0].click();
        })
 
        var statusElement = element.find("#status")[0]
