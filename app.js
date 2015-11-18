@@ -901,17 +901,18 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
          element.parent().find("#locationHistoryBtn")[0].click();
        })
 
-       hammerEvent.on('pinchin pinchend', function(ev){
-         console.log("PINCH IN DETECTED");
+       hammerEvent.on('pinchend', function(ev){
+         console.log("PINCH END DETECTED");
+         console.log(ev);
          //element.parent().find("#historySensorBtn")[0].click();
        })
-
+/*
        hammerEvent.on('pinchout pinchend', function(ev){
          console.log("PINCH OUT DETECTED");
          element.parent().find("#historySensorBtn")[0].click();
        })
 
-
+*/
 
 
     }
