@@ -978,7 +978,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
             createSensor(newSensor, personElement);
 
-            createPersonTouchEvents(sensorElement);
+            createPersonTouchEvents(personElement);
 
             $(personElement).draggable({containment: "parent"});
         }
