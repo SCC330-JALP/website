@@ -886,40 +886,34 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       //$(element).css("background-color","blue");
       var options = {};
       var hammerEvent = new Hammer(element[0], options);
+      hammerEvent.get('press').set({ enable: true, threshold: 20 });
       hammerEvent.get('pinch').set({ enable: true, threshold: 5  });
       hammerEvent.get('rotate').set({ enable: true, threshold: 30 });
 
-      hammerEvent.on('pinch', function(ev){
-        console.log("PINCH DETECTED");
-        //element.parent().find("#historySensorBtn")[0].click();
-      })
 
       hammerEvent.on('press', function(ev){
-
          console.log("PRESS DETECTED");
-         //element.parent().find("#editSensorBtn")[0].click();
+         element.parent().find("#editSensorBtn")[0].click();
        })
-
-      hammerEvent.on('tap', function(ev){
-
-          console.log("TAP DETECTED");
-
-        })
-
 
        hammerEvent.on('rotatestart', function(ev){
          console.log("rotate");
-         //element.parent().find("#locationHistoryBtn")[0].click();
+         element.parent().find("#locationHistoryBtn")[0].click();
        })
 
-       var statusElement = element.find("#status")[0]
-
-       var statusEvent = new Hammer(statusElement, options);
-
-       statusEvent.on('press', function(ev){
-         element.parent().find("#editSensorBtn")[0].click();
-         $("#myModal").find("#deleteBtn")[0].click();
+       hammerEvent.on('pinchin', function(ev){
+         console.log("PINCH IN DETECTED");
+         //element.parent().find("#historySensorBtn")[0].click();
        })
+
+       hammerEvent.on('pinchout', function(ev){
+         console.log("PINCH OUT DETECTED");
+         element.parent().find("#historySensorBtn")[0].click();
+       })
+
+
+
+
     }
     var settingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
     /**
