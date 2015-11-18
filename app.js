@@ -387,10 +387,11 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         }, 1000);
     }
 
-    $scope.changeSpeed = function(){
+    $scope.changeSpeed = function(length){
         $scope.speed = $scope.selectedSpeed.code;
         console.log("FPS: " + $scope.speed);
         $scope.stop();
+        $scope.play(length);
     }
 
     $scope.forward = function(length){
@@ -412,6 +413,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
     }
 
     $scope.clear = function(){
+        console.log("Clearing...");
         $scope.index = 0;
         $scope.ref = [];
         $scope.history = [];
@@ -1301,6 +1303,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         modal.find("#table_div")[0].innerHTML = "";
 
     })
+
     /**
      * DESCRIPTION
      * @author Josh Stennett
