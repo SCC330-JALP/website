@@ -313,48 +313,47 @@ HISTORY PLAYBACK MODAL
          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
          <h4 class="modal-title">Location History Playback</h4> <small id="spotAddress"> address unkown </small>
        </div>
-       <div class="modal-body">
+       <div class="modal-body" ng-init="loadHistory();">
         <div class="container-fluid">
-          <form class="form-inline" role="form">
-              <div class="form-group">
-                  <label class="control-label col-sm-2">Length:
-                  <select id="playbackHours">
-                    <option value="1">1 hour</option>
-                    <option value="5">5 hours</option>
-                    <option value="24">24 hours</option>
-                    <option value="168">1 week</option>
-                  </select></label>
-              </div>
-              <div class="form-group">
-                  <label class="control-label col-sm-2">Speed:
-                  <select id="playbackSpeed">
-                    <option value="1">1x</option>
-                    <option value="2">5x</option>
-                    <option value="5">20x</option>
-                    <option value="10">100x</option>
-                  </select></label>
-              </div>
-              <button type="submit" class="btn btn-default" ng-click="fillArray()">Play</button>
-            </form>
-            <br>
             <div class="container-fluid">
               <div id="playbackZone1" class="col-xs-4 playbackZone">
-                  Zone 1
+                  <div class="playbackObject" ng-class="{ 'show' : history[index].newVal == 1 }"></div>
               </div>
               <div id="playbackZone2" class="col-xs-4 playbackZone">
-                  Zone 2
+                  <div class="playbackObject" ng-class="{ 'show' : history[index].newVal == 2 }"></div>
               </div>
               <div id="playbackZone3" class="col-xs-4 playbackZone">
-                  Zone 3
+                  <div class="playbackObject" ng-class="{ 'show' : history[index].newVal == 3 }"></div>
               </div>
+              <span>Frame: {{index}}/{{ history.length }} | </span>
+              <span>{{ history[index].timestamp | date:'medium' }}</span>
+
+              <form class="form-inline" role="form">
+              <button class="btn btn-primary btn-sm" ng-click="play(history.length)">Play</button>
+              <button class="btn btn-primary btn-sm" ng-click="stop()">Stop</button>
+              <button class="btn btn-primary btn-sm" ng-click="restart()">Restart</button>
+              <button class="btn btn-primary btn-sm" ng-click="forward(history.length)">Next</button>
+              <button class="btn btn-primary btn-sm" ng-click="backward(history.length)">Back</button>
+              
+              <div class="form-group">
+                  <select ng-options="selected as selected.hour for selected in playbackHours " ng-model="selected" ng-change="loadHistory()"></select>
+
+              </div>
+
+              <div class="form-group">
+                  <select ng-options="selectedSpeed as selectedSpeed.speed for selectedSpeed in playbackSpeed " ng-model="selectedSpeed" ng-change="changeSpeed()"></select>
+              </div>
+
+              </form>
             </div>
+            
             <div id="timeline_div"></div>
             <div id="table_div"></div>
         </div>
 
        </div>
        <div class="modal-footer">
-         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="clear()">Close</button>
 
        </div>
      </div><!-- /.modal-content -->
