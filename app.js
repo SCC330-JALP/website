@@ -888,39 +888,30 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       var hammerEvent = new Hammer(element[0], options);
       hammerEvent.get('press').set({ enable: true, threshold: 20 });
       hammerEvent.get('pinch').set({ enable: true, threshold: 0.3  });
-      hammerEvent.get('rotate').set({ enable: true, threshold: 50 });
+      hammerEvent.get('rotate').set({ enable: true, threshold: 40 });
 
 
       hammerEvent.on('press', function(ev){
-         console.log("PRESS DETECTED");
+         //console.log("PRESS DETECTED");
          element.parent().find("#editSensorBtn")[0].click();
        })
 
        hammerEvent.on('pinchend', function(ev){
          //console.log("ROTATE END AND/OR PINCH END");
-         //lement.parent().find("#locationHistoryBtn")[0].click();
-         console.log(ev);
-         if(ev.rotation >= 50 || ev.rotation <= -50){
-           console.log("Trigger rotation");
+
+         //console.log(ev);
+         if(ev.rotation >= 40 || ev.rotation <= -40){
+          // console.log("Trigger rotation");
+           element.parent().find("#locationHistoryBtn")[0].click();
          } else if(ev.scale > 1){
-           console.log("Trigger pinch out");
+           //console.log("Trigger pinch out");
+           element.parent().find("#historySensorBtn")[0].click();
          } else if(ev.scale < 1){
-           console.log("Trigger pinch in")
+           //console.log("Trigger pinch in")
+           console.log("minimise");
          }
        })
 
-    /*   hammerEvent.on('pinchend', function(ev){
-         console.log("PINCH END DETECTED");
-         console.log(ev);
-         //element.parent().find("#historySensorBtn")[0].click();
-       })*/
-/*
-       hammerEvent.on('pinchout pinchend', function(ev){
-         console.log("PINCH OUT DETECTED");
-         element.parent().find("#historySensorBtn")[0].click();
-       })
-
-*/
 
 
     }
@@ -1026,7 +1017,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
     $(document).on("click", "#editSensorBtn", function() { //when you open the Edit modal
         var name = $(this).data('name'); //populate variables from data-attributes
         var task = $(this).data('task');
-        console.log(task);
+        //console.log(task);
         var address = $(this).data('address');
         var zone = $(this).data('zone');
         var status = $(this).data('status');
@@ -1074,7 +1065,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         modal.find("#myModalLabel")[0].innerHTML = name;
         modal.find("#deleteSpotAddress")[0].innerHTML = address;
 
-        console.log(name);
+      //  console.log(name);
     });
 
     /**
@@ -1098,7 +1089,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
             plain: true
         });
 
-        console.log(sensorType);
+        //console.log(sensorType);
         $scope.setSensorHistoryChart(address, spotId, sensorType);
 
     });
@@ -1113,7 +1104,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
         var zone = $(this).data('zone');
         var status = $(this).data('status');
         var battery = $(this).data('battery');
-        console.log(battery);
+        //console.log(battery);
         var modal = $("#viewPerson");
         if(task == "sp"){
           //person sensor
@@ -1155,10 +1146,10 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
         profileSrc = $(this).parents("div.card").find("img").attr('src');
         profileSrc = profileSrc.split("/");
-        console.log(profileSrc[profileSrc.length -1]);
+        //console.log(profileSrc[profileSrc.length -1]);
 
         profileSrc = profileSrc[profileSrc.length -1].split(".")
-        console.log(profileSrc[0]);
+        //console.log(profileSrc[0]);
         profileSrc = profileSrc[0];
 
         $("input[name=profilePic][value="+ profileSrc +"]").prop('checked', true);
