@@ -213,32 +213,35 @@
 
  -->
 <div id="personTemplate" class="col-xs-6 object-card hidden">
-<div id="battery" class="pull-left"></div>
-    <div class="card">
-  <div class="card-content">
-      <div id="status" class="status-light"> </div>
+  <div class="card">
+    <div class="row card-header">
+      <div class="col-xs-1">
+        <div id="battery"></div>
+      </div>
 
-    <span id="spotName">Unassigned</span> <br>
-    <div class="centered">
-      <span id="profileImage"class="fa fa-user fa-4x"></span>
+      <div class="col-xs-8">
+        <div id="spotName"> Spot name </div>
+      </div>
+      <div class="col-xs-1">
+        <div id="status" class="status-light"> </div>
+      </div>
+    </div>
+    <div class="card-content">
+
+      <div class="centered">
+        <span id="profileImage"class="fa fa-user fa-4x"></span>
+      </div>
+
     </div>
 
+    <div class="card-footer">
+        <small id="spotMAC">Unknown Address</small><br>
+        <div class="btn-group" role="group">
+            <button id="viewPersonBtn" class="btn btn-primary data-button " type="button" name="button" data-toggle="modal" data-target="#viewPerson" data-name="" data-address="" data-zone="" data-task="" data-status="" data-battery=""><span class="fa fa-eye"></span></button>
+            <span id="locationHistoryBtn" data-toggle="modal" data-target="#historyPlayback" class="btn btn-primary btn"><span class="fa fa-history"></span></span>
+        </div>
+    </div>
   </div>
-
-
-            <div class="card-footer">
-            <small id="spotMAC">Unknown Address</small><br>
-            <div class="btn-group" role="group">
-              <button id="viewPersonBtn" class="btn btn-primary data-button " type="button" name="button" data-toggle="modal" data-target="#viewPerson" data-name="" data-address="" data-zone="" data-task="" data-status="" data-battery=""><span class="fa fa-eye"></span></button>
-              <span id="locationHistoryBtn" data-toggle="modal" data-target="#historyPlayback" class="btn btn-primary btn"><span class="fa fa-history"></span></span>
-
-
-            </div>
-
-            </div>
-
-
-    </div>
 </div>
 <!-- end template -->
 
@@ -248,13 +251,24 @@
 
  -->
 <div id="sensorTemplate" class="col-xs-6  object-card hidden">
-  <div id="battery" class="pull-left"></div>
+
     <div class="card">
+      <div class="row card-header">
+        <div class="col-xs-1">
+            <div id="battery"></div>
+        </div>
+
+        <div class="col-xs-8">
+          <div id="spotName"> Spot name </div>
+        </div>
+        <div class="col-xs-1">
+          <div id="status" class="status-light"> </div>
+        </div>
+
+      </div>
 
       <div class="card-content">
-        <div id="status" class="status-light"> </div>
 
-        <span id="spotName"> Spot name </span>
 
         <div id="liveDatalight" title="Live Light Data" class="col-xs-6">  </div>
         <div id="liveDatatemp" title="Live Temperature Data" class="col-xs-6">  </div>
