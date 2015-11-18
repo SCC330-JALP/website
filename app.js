@@ -902,9 +902,9 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
          console.log(ev);
          if(ev.type == "rotateend"){
            console.log("Trigger rotation");
-         } else if(scale > 1){
+         } else if(ev.scale > 1){
            console.log("Trigger pinch out");
-         } else if(scale < 1){
+         } else if(ev.scale < 1){
            console.log("Trigger pinch in")
          }
        })
