@@ -886,7 +886,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       //$(element).css("background-color","blue");
       var options = {};
       var hammerEvent = new Hammer(element[0], options);
-      hammerEvent.get('pinch').set({ enable: true, threshold: 10  });
+      hammerEvent.get('pinch').set({ enable: true, threshold: 5  });
       hammerEvent.get('rotate').set({ enable: true, threshold: 30 });
 
       hammerEvent.on('pinch', function(ev){
