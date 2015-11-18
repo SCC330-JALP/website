@@ -887,7 +887,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       var options = {};
       var hammerEvent = new Hammer(element[0], options);
       hammerEvent.get('press').set({ enable: true, threshold: 20 });
-      hammerEvent.get('pinch').set({ enable: true, threshold: 3  });
+      hammerEvent.get('pinch').set({ enable: true, threshold: 1  });
       hammerEvent.get('rotate').set({ enable: true, threshold: 30 });
 
 
