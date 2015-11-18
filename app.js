@@ -900,7 +900,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
          //console.log("ROTATE END AND/OR PINCH END");
          //lement.parent().find("#locationHistoryBtn")[0].click();
          console.log(ev);
-         if(ev.rotation >= 30){
+         if(ev.rotation >= 30 || ev.rotation <= -30){
            console.log("Trigger rotation");
          } else if(ev.scale > 1){
            console.log("Trigger pinch out");
