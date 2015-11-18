@@ -311,8 +311,113 @@ spotApp.run(function($rootScope, $firebaseObject) {
 
 
 //smart lab Controller
-spotApp.controller('smartlabController', ['$rootScope', '$scope','$firebaseObject', '$parse', 'ngDialog',
-function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
+spotApp.controller('smartlabController', ['$rootScope', '$scope', '$interval', '$timeout', '$firebaseObject', '$parse', 'ngDialog',
+function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDialog) {
+
+    $scope.playbackHours = [ 
+        {code : 1, hour: '1 hour'}, 
+        {code : 5, hour: '5 hours'}, 
+        {code : 24, hour: '24 hours'} ,
+        {code : 168, hour: '1 week'} 
+    ];
+
+    $scope.selected = $scope.playbackHours[0];
+
+    $scope.playbackSpeed = [ 
+        {code : 1, speed: '1x'}, 
+        {code : 2, speed: '5x'}, 
+        {code : 5, speed: '20x'} ,
+        {code : 10, speed: '100x'} 
+    ];
+
+    $scope.selectedSpeed = $scope.playbackSpeed[0];
+    
+    $scope.loadHistory = function(){
+
+        //Retrieve opened sensor values
+        var spotAddress = $('#historyPlayback').find('#spotAddress')[0].innerHTML
+        var hours =  $scope.selected.code;
+        var hoursMilli = hours * 3600000;
+        var curDate = new Date();
+        curDate = Date.now();
+
+        $scope.speed = $scope.selectedSpeed.code;
+        $scope.index = 0;
+
+        // Get a reference for our log
+        var ref = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + spotAddress + "/zone");
+        
+        $scope.ref = [];
+        $scope.history = [];
+
+        var j = 0;
+
+        ref.on('child_added', function(snapshot, prevChildKey) {
+            var data = snapshot.val();
+
+            //Set range of selected data
+            if(data.timestamp >= (curDate - hoursMilli)){
+                $scope.ref[j] = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + spotAddress + "/zone/" + snapshot.key());
+                $scope.history[j] = $firebaseObject($scope.ref[j]);
+                j++;
+            }
+
+        });
+    }
+    
+    var promise;
+
+    $scope.play = function(length){
+        console.log("play buttion pressed.");
+        
+        promise = $interval(function(){
+                        if($scope.index < length){
+                            $scope.index++;
+                        }else{
+                            $scope.stop();
+                        }
+                    }, 1000 / $scope.speed);
+
+    }
+
+    $scope.stop = function(){
+        $interval.cancel(promise);
+        promise = $timeout(function(){
+            console.log("Stopped.");
+        }, 1000);
+    }
+
+    $scope.changeSpeed = function(){
+        $scope.speed = $scope.selectedSpeed.code;
+        console.log("FPS: " + $scope.speed);
+        $scope.stop();
+    }
+
+    $scope.forward = function(length){
+        if($scope.index < length){
+            $scope.index++;
+            console.log($scope.history[$scope.index]);
+        }
+    }
+
+    $scope.backward = function(length){
+        if($scope.index > 0 && $scope.index < length){
+            $scope.index--;
+            console.log($scope.history[$scope.index]);
+        }
+    }
+
+    $scope.restart = function(){
+        $scope.index = 0;
+    }
+
+    $scope.clear = function(){
+        $scope.index = 0;
+        $scope.ref = [];
+        $scope.history = [];
+        $scope.selected = $scope.playbackHours[0];
+        $scope.selectedSpeed = $scope.playbackSpeed[0];
+    }
 
 
     /**
@@ -411,10 +516,6 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
 
 
     }*/
-
-    //** SPARKLINE CODE START
-
-
 
     /**
      * Generate a sparkline and set it to a <div>
