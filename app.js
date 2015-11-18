@@ -896,16 +896,17 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
          element.parent().find("#editSensorBtn")[0].click();
        })
 
-       hammerEvent.on('rotatestart', function(ev){
-         console.log("rotate");
-         element.parent().find("#locationHistoryBtn")[0].click();
+       hammerEvent.on('rotateend pinchend', function(ev){
+         console.log("ROTATE END AND/OR PINCH END");
+         //lement.parent().find("#locationHistoryBtn")[0].click();
+         console.log(ev);
        })
 
-       hammerEvent.on('pinchend', function(ev){
+    /*   hammerEvent.on('pinchend', function(ev){
          console.log("PINCH END DETECTED");
          console.log(ev);
          //element.parent().find("#historySensorBtn")[0].click();
-       })
+       })*/
 /*
        hammerEvent.on('pinchout pinchend', function(ev){
          console.log("PINCH OUT DETECTED");
