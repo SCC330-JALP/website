@@ -402,7 +402,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
     }
 
     $scope.backward = function(length){
-        if($scope.index > 0 && $scope.index < length){
+        if($scope.index > 0 && $scope.index <= length){
             $scope.index--;
             console.log($scope.history[$scope.index]);
         }

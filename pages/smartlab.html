@@ -315,6 +315,7 @@ HISTORY PLAYBACK MODAL
        </div>
        <div class="modal-body" ng-init="loadHistory();">
         <div class="container-fluid">
+
             <div class="container-fluid">
               <div id="playbackZone1" class="col-xs-4 playbackZone">
                   <span class="zone-label">Zone 1</span>
@@ -329,35 +330,35 @@ HISTORY PLAYBACK MODAL
                   <div class="playbackObject" ng-class="{ 'show' : history[index].newVal == 3 }"></div>
               </div>
 
-              <span class="playhistory-info">Frame: {{index}}/{{ history.length }}
-                <span ng-if="index <= history.length">| {{ history[index].timestamp | date:'medium' }}</span>
+              <span class="playhistory-info">
+                <span ng-if="history.length == 0" class="alert-danger">Selected range has no data.</span>
+                <span ng-if="index <= history.length"class="alert-info">{{ history[index].timestamp | date:'medium' }}</span>
+                <span ng-if="index == history.length && index > 0" class="alert-success">Completed</span>
               </span>
 
-              <div class="progress" style="clear:both;">
+              <div class="input-group progress" style="clear:both;">
                 <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{index}}" aria-valuemin="0" aria-valuemax="{{ history.length }}" style="width: {{ (index/history.length)*100 }}%">
                 <span class="sr-only">{{(index/history.length)*100}}% Complete</span>
                 </div>
+                <span class="input-group-addon playhistory-info">{{index}}/{{ history.length }}</span>
               </div>
               
               
+<!--  -->
+              <!-- <form class="form-inline" role="form"> -->
+<div class="center-wrap">
+  <div class="btn-group">
+    <button type="button" class="btn btn-default" aria-label="Left Align" ng-click="play(history.length)"><span class="glyphicon glyphicon-play" aria-hidden="true"></span></button>
+    <button type="button" class="btn btn-default" aria-label="Center Align" ng-click="stop()"><span class="glyphicon glyphicon-pause" aria-hidden="true"></span></button>
+    <button type="button" class="btn btn-default" aria-label="Center Align" ng-click="restart()"><span class="glyphicon  glyphicon-refresh" aria-hidden="true"></span></button>
+    <button type="button" class="btn btn-default" aria-label="Right Align" ng-click="backward(history.length)"><span class="glyphicon glyphicon-backward" aria-hidden="true"></span></button>
+    <button type="button" class="btn btn-default" aria-label="Center Align" ng-click="forward(history.length)"><span class="glyphicon glyphicon-forward" aria-hidden="true"></span></button>
+    <select class="btn btn-info" style="border-bottom: 2px solid #5BC0DE" ng-options="selected as selected.hour for selected in playbackHours " ng-model="selected" ng-change="loadHistory()"></select>
+    <select class="btn btn-info" style="border-bottom: 2px solid #5BC0DE" ng-options="selectedSpeed as selectedSpeed.speed for selectedSpeed in playbackSpeed " ng-model="selectedSpeed" ng-change="changeSpeed(history.length)"></select>
+  </div>
+</div>
 
-              <form class="form-inline" role="form">
-              <button class="btn btn-primary btn-sm" ng-click="play(history.length)">Play</button>
-              <button class="btn btn-primary btn-sm" ng-click="stop()">Stop</button>
-              <button class="btn btn-primary btn-sm" ng-click="restart()">Restart</button>
-              <button class="btn btn-primary btn-sm" ng-click="forward(history.length)">Next</button>
-              <button class="btn btn-primary btn-sm" ng-click="backward(history.length)">Back</button>
-              
-              <div class="form-group">
-                  <select class="btn btn-info btn-sm" ng-options="selected as selected.hour for selected in playbackHours " ng-model="selected" ng-change="loadHistory()"></select>
-
-              </div>
-
-              <div class="form-group">
-                  <select class="btn btn-info btn-sm" ng-options="selectedSpeed as selectedSpeed.speed for selectedSpeed in playbackSpeed " ng-model="selectedSpeed" ng-change="changeSpeed(history.length)"></select>
-              </div>
-
-              </form>
+<!--               </form> -->
             </div>
             
             <div id="timeline_div"></div>

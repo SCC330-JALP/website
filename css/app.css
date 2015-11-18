@@ -67,6 +67,9 @@
     width: 100%;
     text-align: center;
 }
+.center-wrap {
+    text-align: center;
+}
 /*
 *    Cards
 */
