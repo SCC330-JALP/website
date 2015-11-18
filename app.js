@@ -420,7 +420,13 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         $scope.selected = $scope.playbackHours[0];
         $scope.selectedSpeed = $scope.playbackSpeed[0];
     }
-
+    $scope.setIndex = function(index){
+        console.log($scope.index);
+        $scope.index = index;
+    }
+    $scope.range = function(num) {
+        return new Array(num);
+    }
 
     /**
      * Generate a annotation graph and set it to a <div>
