@@ -1304,14 +1304,13 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
     })
 
-<<<<<<< HEAD
-=======
+
     $(document).on("click", ".card-header", function(){
       console.log("trigger minimise");
       $(this).parent(".card").find(".card-content").toggle();
       $(this).parent(".card").find(".card-footer").toggle();
     })
->>>>>>> 9838ceb7ab4fcb430ade318bb310ce7b1047faa4
+
     /**
      * DESCRIPTION
      * @author Josh Stennett
