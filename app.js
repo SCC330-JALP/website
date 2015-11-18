@@ -888,7 +888,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
       var hammerEvent = new Hammer(element[0], options);
       hammerEvent.get('press').set({ enable: true, threshold: 20 });
       hammerEvent.get('pinch').set({ enable: true, threshold: 0.3  });
-      hammerEvent.get('rotate').set({ enable: true, threshold: 30 });
+      hammerEvent.get('rotate').set({ enable: true, threshold: 50 });
 
 
       hammerEvent.on('press', function(ev){
@@ -900,7 +900,7 @@ function($rootScope, $scope, $firebaseObject, $parse, ngDialog) {
          //console.log("ROTATE END AND/OR PINCH END");
          //lement.parent().find("#locationHistoryBtn")[0].click();
          console.log(ev);
-         if(ev.rotation >= 30 || ev.rotation <= -30){
+         if(ev.rotation >= 50 || ev.rotation <= -50){
            console.log("Trigger rotation");
          } else if(ev.scale > 1){
            console.log("Trigger pinch out");
