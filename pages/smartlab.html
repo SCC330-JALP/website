@@ -466,20 +466,6 @@ HISTORY PLAYBACK MODAL
                   <div class="playbackObject" ng-class="{ 'show' : history[index].newVal == 3 }"></div>
               </div>
 
-              <span>Frame: {{index}}/{{ history.length }} | </span>
-              <span>{{ history[index].timestamp | date:'medium' }}</span>
-
-              <form class="form-inline" role="form">
-              <button class="btn btn-primary btn-sm" ng-click="play(history.length)">Play</button>
-              <button class="btn btn-primary btn-sm" ng-click="stop()">Stop</button>
-              <button class="btn btn-primary btn-sm" ng-click="restart()">Restart</button>
-              <button class="btn btn-primary btn-sm" ng-click="forward(history.length)">Next</button>
-              <button class="btn btn-primary btn-sm" ng-click="backward(history.length)">Back</button>
-
-              <div class="form-group">
-                  <select ng-options="selected as selected.hour for selected in playbackHours " ng-model="selected" ng-change="loadHistory()"></select>
-
-
               <span class="playhistory-info">
                 <span ng-if="history.length == 0" class="alert-danger">Selected range has no data.</span>
                 <span ng-if="index <= history.length"class="alert-info">{{ history[index].timestamp | date:'medium' }}</span>
@@ -493,7 +479,7 @@ HISTORY PLAYBACK MODAL
                 <span class="input-group-addon playhistory-info">{{index}}/{{ history.length }}</span>
               </div>
 
-
+            
 
             <!-- Player options -->
             <div class="center-wrap">
@@ -507,19 +493,17 @@ HISTORY PLAYBACK MODAL
                 <select class="btn btn-info" style="border-bottom: 2px solid #5BC0DE" ng-options="selectedSpeed as selectedSpeed.speed for selectedSpeed in playbackSpeed " ng-model="selectedSpeed" ng-change="changeSpeed(history.length)"></select>
               </div>
             </div>
-
               
             <hr>  
             
             <!-- Mini Date Squares -->
-
             <div class="container-fluid">
               <div ng-repeat="square in history track by $index">
-
-                    <div class="date-square"
-                    ng-class="{
-                    'zone1-date-square' : (square.newVal == 1),
-                    'zone2-date-square' : (square.newVal == 2),
+                    
+                    <div class="date-square" 
+                    ng-class="{ 
+                    'zone1-date-square' : (square.newVal == 1), 
+                    'zone2-date-square' : (square.newVal == 2), 
                     'zone3-date-square' : (square.newVal == 3),
                     'zone-size-1' : ((history[$index+1].timestamp - square.timestamp) >= 60000*5),
                     'zone-size-2' : ((history[$index+1].timestamp - square.timestamp) >= 60000*30),
@@ -529,14 +513,13 @@ HISTORY PLAYBACK MODAL
                     'zone-size-6' : ((history[$index+1].timestamp - square.timestamp) >= 60000*60*24*5),
                     'zone-size-7' : ((history[$index+1].timestamp - square.timestamp) >= 60000*60*24*7),
                     'date-square-selected' : index == $index }"
-
-                    ng-click="setIndex($index)">{{square.newVal}}</div>
-
+                    ng-click="setIndex($index);console(history[$index+1].timestamp - square.timestamp)">{{square.newVal}}</div>
+                    
               </div>
             </div>
 
             </div>
-
+            
             <div id="timeline_div"></div>
             <div id="table_div"></div>
         </div>
@@ -549,6 +532,8 @@ HISTORY PLAYBACK MODAL
      </div><!-- /.modal-content -->
    </div><!-- /.modal-dialog -->
  </div><!-- /.modal -->
+
+<!--
 
 <!--
 
