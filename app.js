@@ -387,10 +387,11 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         }, 1000);
     }
 
-    $scope.changeSpeed = function(){
+    $scope.changeSpeed = function(length){
         $scope.speed = $scope.selectedSpeed.code;
         console.log("FPS: " + $scope.speed);
         $scope.stop();
+        $scope.play(length);
     }
 
     $scope.forward = function(length){
@@ -401,7 +402,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
     }
 
     $scope.backward = function(length){
-        if($scope.index > 0 && $scope.index < length){
+        if($scope.index > 0 && $scope.index <= length){
             $scope.index--;
             console.log($scope.history[$scope.index]);
         }
@@ -412,13 +413,20 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
     }
 
     $scope.clear = function(){
+        console.log("Clearing...");
         $scope.index = 0;
         $scope.ref = [];
         $scope.history = [];
         $scope.selected = $scope.playbackHours[0];
         $scope.selectedSpeed = $scope.playbackSpeed[0];
     }
-
+    $scope.setIndex = function(index){
+        console.log($scope.index);
+        $scope.index = index;
+    }
+    $scope.range = function(num) {
+        return new Array(num);
+    }
 
     /**
      * Generate a annotation graph and set it to a <div>
@@ -1314,12 +1322,14 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
     })
 
+
     $(document).on("click", ".card-header", function(){
       console.log("trigger minimise");
       $(this).parent(".card").find(".card-content").toggle();
       $(this).parent(".card").find(".card-footer").toggle();
     })
 
+<<<<<<< HEAD
     $(document).on('click', "#newAlarmBtn", function(){
       modal = $("#newAlarm");
       modal.find("#spotAddress")[0].innerHTML = $(this).data('address');
@@ -1394,6 +1404,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
 
       })
+>>>>>>> ce948e0e115005040c296a2a9f48da6fef59d79a
     /**
      * DESCRIPTION
      * @author Josh Stennett

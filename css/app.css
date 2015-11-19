@@ -45,9 +45,50 @@
     width: 50px;
     height: 50px;
 }
+.playhistory-info
+{
+    font-size: 10px;
+    color: #337AB7;
+    font-weight: bold;
+}
 .show
 {
     display:block;
+}
+.zone-label
+{
+    color: #AFAFAF;
+    text-shadow: 0px 0px 2px white;
+    font-size: 10px;
+    position: absolute;
+    left: 0;
+    top: 86%;
+    border-top: 1px solid #F1F1F1;
+    width: 100%;
+    text-align: center;
+}
+.center-wrap {
+    text-align: center;
+}
+.date-square {
+    width: 15px;
+    height: 15px;
+    float: left;
+    border: 1px solid #DADADA;
+    background-color: whitesmoke;
+    margin: 1px;
+    cursor:pointer;
+    font-size: 10px;
+    text-align: center;
+    color: #B4BF40;
+}
+.zone0-date-square{background-color:whitesmoke;}
+.zone1-date-square{background-color:#009688;}
+.zone2-date-square{background-color:#8BC34A;}
+.zone3-date-square{background-color:#CDDC39;}
+.date-square-selected{
+    box-shadow: 0px 0px 1px #E91E63;
+    border: 1px solid #E91E63;
 }
 /*
 *    Cards

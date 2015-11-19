@@ -446,21 +446,26 @@ HISTORY PLAYBACK MODAL
    <div class="modal-dialog">
      <div class="modal-content">
        <div class="modal-header">
-         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+         <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="clear()"><span aria-hidden="true">&times;</span></button>
          <h4 class="modal-title">Location History Playback</h4> <small id="spotAddress"> address unkown </small>
        </div>
        <div class="modal-body" ng-init="loadHistory();">
         <div class="container-fluid">
+
             <div class="container-fluid">
               <div id="playbackZone1" class="col-xs-4 playbackZone">
+                  <span class="zone-label">Zone 1</span>
                   <div class="playbackObject" ng-class="{ 'show' : history[index].newVal == 1 }"></div>
               </div>
               <div id="playbackZone2" class="col-xs-4 playbackZone">
+                  <span class="zone-label">Zone 2</span>
                   <div class="playbackObject" ng-class="{ 'show' : history[index].newVal == 2 }"></div>
               </div>
               <div id="playbackZone3" class="col-xs-4 playbackZone">
+                  <span class="zone-label">Zone 3</span>
                   <div class="playbackObject" ng-class="{ 'show' : history[index].newVal == 3 }"></div>
               </div>
+
               <span>Frame: {{index}}/{{ history.length }} | </span>
               <span>{{ history[index].timestamp | date:'medium' }}</span>
 
@@ -474,13 +479,51 @@ HISTORY PLAYBACK MODAL
               <div class="form-group">
                   <select ng-options="selected as selected.hour for selected in playbackHours " ng-model="selected" ng-change="loadHistory()"></select>
 
+
+              <span class="playhistory-info">
+                <span ng-if="history.length == 0" class="alert-danger">Selected range has no data.</span>
+                <span ng-if="index <= history.length"class="alert-info">{{ history[index].timestamp | date:'medium' }}</span>
+                <span ng-if="index == history.length && index > 0" class="alert-success">Completed</span>
+              </span>
+
+              <div class="input-group progress" style="clear:both;">
+                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{index}}" aria-valuemin="0" aria-valuemax="{{ history.length }}" style="width: {{ (index/history.length)*100 }}%">
+                <span class="sr-only">{{(index/history.length)*100}}% Complete</span>
+                </div>
+                <span class="input-group-addon playhistory-info">{{index}}/{{ history.length }}</span>
               </div>
 
-              <div class="form-group">
-                  <select ng-options="selectedSpeed as selectedSpeed.speed for selectedSpeed in playbackSpeed " ng-model="selectedSpeed" ng-change="changeSpeed()"></select>
-              </div>
 
-              </form>
+
+            <!-- Player options -->
+            <div class="center-wrap">
+              <div class="btn-group">
+                <button type="button" class="btn btn-default" aria-label="Left Align" ng-click="play(history.length)"><span class="glyphicon glyphicon-play" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-default" aria-label="Center Align" ng-click="stop()"><span class="glyphicon glyphicon-pause" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-default" aria-label="Center Align" ng-click="restart()"><span class="glyphicon  glyphicon-refresh" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-default" aria-label="Right Align" ng-click="backward(history.length)"><span class="glyphicon glyphicon-backward" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-default" aria-label="Center Align" ng-click="forward(history.length)"><span class="glyphicon glyphicon-forward" aria-hidden="true"></span></button>
+                <select class="btn btn-info" style="border-bottom: 2px solid #5BC0DE" ng-options="selected as selected.hour for selected in playbackHours " ng-model="selected" ng-change="loadHistory()"></select>
+                <select class="btn btn-info" style="border-bottom: 2px solid #5BC0DE" ng-options="selectedSpeed as selectedSpeed.speed for selectedSpeed in playbackSpeed " ng-model="selectedSpeed" ng-change="changeSpeed(history.length)"></select>
+              </div>
+            </div>
+
+            <hr>
+
+            <div class="container-fluid">
+              <div ng-repeat="square in history track by $index">
+
+                    <div class="date-square"
+                    ng-class="{
+                    'zone1-date-square' : (square.newVal == 1),
+                    'zone2-date-square' : (square.newVal == 2),
+                    'zone3-date-square' : (square.newVal == 3),
+                    'date-square-selected' : index == $index }"
+                    ng-click="setIndex($index)">{{square.newVal}}</div>
+
+              </div>
+            </div>
+
             </div>
 
             <div id="timeline_div"></div>
