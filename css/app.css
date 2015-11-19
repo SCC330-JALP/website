@@ -86,6 +86,14 @@
 .zone1-date-square{background-color:#009688;}
 .zone2-date-square{background-color:#8BC34A;}
 .zone3-date-square{background-color:#CDDC39;}
+.zone-size-1{width:32px;}
+.zone-size-2{width:49px;}
+.zone-size-3{width:66px;}
+.zone-size-4{width:83px;}
+.zone-size-5{width:100px;}
+.zone-size-6{width:117px;}
+.zone-size-7{width:134px;}
+
 .date-square-selected{
     box-shadow: 0px 0px 1px #E91E63;
     border: 1px solid #E91E63;
