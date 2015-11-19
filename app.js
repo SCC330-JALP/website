@@ -934,7 +934,15 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
      */
     function appendSensor(zone, element){
       if(zone == 1 || zone == 2 || zone == 3){
+        try{
+          $(element).draggable("destroy");
+          $(element).removeAttr('style');
+        }catch(err){}
         $("#zone"+zone+"Sensors").append(element)
+        try{
+          $(element).draggable({containment: "parent"});
+        }catch(err){}
+
       }else{
         $("#zoneContainer").append(element)
       }
@@ -957,7 +965,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
           var buttonID = snapshot.val().newVal;
 
           if(buttonID == 1){
-              btnoutput.innerHTML = "<span class='fa-stack fa-lg'><i class='fa fa-hand-pointer-o fa-stack-1x'></i><i class='fa fa-circle-o fa-stack-2x'></i></span>" + time.getHours() + ":" + time.getMinutes();
+              btnoutput.innerHTML = "<i class='fa fa-sign-in fa-rotate-90 fa-2x'></i><b>" + buttonID + "</b> " + time.getHours() + ":" + time.getMinutes();
           }else if(buttonID == 2){
               btnoutput.innerHTML = "<i class='fa fa-sign-in fa-rotate-90 fa-2x'></i><b>" + buttonID + "</b> " + time.getHours() + ":" + time.getMinutes();
           }
@@ -980,8 +988,8 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
           if(greyScaleIndex > 10){
             greyScaleIndex = 10;
           }
-          console.log("Grey Scale Index: " + greyScaleIndex);
-          console.log(greyScale[greyScaleIndex-1]);
+          //console.log("Grey Scale Index: " + greyScaleIndex);
+          //console.log(greyScale[greyScaleIndex-1]);
           $(lightoutput).find(".fa-lightbulb-o").first().css('color',greyScale[greyScaleIndex-1]);
         })
       }
