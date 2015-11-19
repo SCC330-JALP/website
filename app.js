@@ -1329,7 +1329,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
       $(this).parent(".card").find(".card-footer").toggle();
     })
 
-<<<<<<< HEAD
+
     $(document).on('click', "#newAlarmBtn", function(){
       modal = $("#newAlarm");
       modal.find("#spotAddress")[0].innerHTML = $(this).data('address');
@@ -1404,7 +1404,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
 
       })
->>>>>>> ce948e0e115005040c296a2a9f48da6fef59d79a
+
     /**
      * DESCRIPTION
      * @author Josh Stennett
