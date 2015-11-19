@@ -1102,7 +1102,28 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         })
       }
 
+      if(newSensor.task.indexOf("t") !== -1){
+          var tempoutput = $(element).find("#liveDatatemp")[0]
+        var newDataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address + "/temp")
 
+        newDataRef.limitToLast(1).on("child_added", function(snapshot){
+          var time = new Date(snapshot.val().timestamp)
+
+          tempoutput.innerHTML = "<i class='fa fa-fire fa-2x'></i> " + snapshot.val().newVal.toFixed(1) + "&deg;C " + time.getHours() + ":" + time.getMinutes();
+
+          var tempScale = ["#00FF00","#44FF00","#99FF00","#DDFF00","#FFEE00","#FFBB00","#FF8800","#FF5500","#FF2200","#FF0000"];
+          //console.log(tempScale);
+          tempScaleIndex = Math.round(snapshot.val().newVal / 5);
+            //console.log(tempScaleIndex);
+          if(tempScaleIndex > 10){
+            tempScaleIndex = 10;
+          }
+          //console.log(tempScaleIndex);
+          //console.log("Grey Scale Index: " + greyScaleIndex);
+          //console.log(greyScale[greyScaleIndex-1]);
+          $(tempoutput).find(".fa-fire").first().css('color',tempScale[tempScaleIndex-1]);
+        })
+      }
 
 
     }
