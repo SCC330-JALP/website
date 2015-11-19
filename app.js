@@ -421,11 +421,14 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         $scope.selectedSpeed = $scope.playbackSpeed[0];
     }
     $scope.setIndex = function(index){
-        console.log($scope.index);
+        // console.log($scope.index);
         $scope.index = index;
     }
     $scope.range = function(num) {
         return new Array(num);
+    }
+    $scope.console = function(input){
+        console.log(input);
     }
 
     /**
