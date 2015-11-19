@@ -314,24 +314,24 @@ spotApp.run(function($rootScope, $firebaseObject) {
 spotApp.controller('smartlabController', ['$rootScope', '$scope', '$interval', '$timeout', '$firebaseObject', '$parse', 'ngDialog',
 function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDialog) {
 
-    $scope.playbackHours = [ 
-        {code : 1, hour: '1 hour'}, 
-        {code : 5, hour: '5 hours'}, 
+    $scope.playbackHours = [
+        {code : 1, hour: '1 hour'},
+        {code : 5, hour: '5 hours'},
         {code : 24, hour: '24 hours'} ,
-        {code : 168, hour: '1 week'} 
+        {code : 168, hour: '1 week'}
     ];
 
     $scope.selected = $scope.playbackHours[0];
 
-    $scope.playbackSpeed = [ 
-        {code : 1, speed: '1x'}, 
-        {code : 2, speed: '5x'}, 
+    $scope.playbackSpeed = [
+        {code : 1, speed: '1x'},
+        {code : 2, speed: '5x'},
         {code : 5, speed: '20x'} ,
-        {code : 10, speed: '100x'} 
+        {code : 10, speed: '100x'}
     ];
 
     $scope.selectedSpeed = $scope.playbackSpeed[0];
-    
+
     $scope.loadHistory = function(){
 
         //Retrieve opened sensor values
@@ -346,7 +346,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
         // Get a reference for our log
         var ref = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + spotAddress + "/zone");
-        
+
         $scope.ref = [];
         $scope.history = [];
 
@@ -364,12 +364,12 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
         });
     }
-    
+
     var promise;
 
     $scope.play = function(length){
         console.log("play buttion pressed.");
-        
+
         promise = $interval(function(){
                         if($scope.index < length){
                             $scope.index++;
@@ -691,6 +691,9 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
       $(pageElement).find("#spotMAC")[0].innerHTML = snapshot.address; //insert the spot name
       $(pageElement).find("#locationHistoryBtn").data('address', snapshot.address);
 
+      var alarmButton = $(pageElement).find("#spotAlarmsBtn")[0];
+      $(alarmButton).data('address', snapshot.address);
+      $(alarmButton).data('name', snapshot.name);
 
       var batteryElement =  $(pageElement).find("#battery")[0]
       setBattery(batteryElement, parseInt(snapshot.battery));
@@ -962,7 +965,16 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         newDataRef.limitToLast(1).on("child_added", function(snapshot){
           var time = new Date(snapshot.val().timestamp)
 
-          lightoutput.innerHTML = "<i class='fa fa-lightbulb-o fa-2x'></i> " + snapshot.val().newVal + " " + time.getHours() + ":" + time.getMinutes();
+          lightoutput.innerHTML = "<i class='fa fa-lightbulb-o fa-2x'></i> " + snapshot.val().newVal + "% " + time.getHours() + ":" + time.getMinutes();
+
+          var greyScale = ["#000000","#191919","#323232","#4c4c4c","#666666","#7f7f7f","#999999","#b2b2b2","#cccccc","#e5e5e5"];
+          greyScaleIndex = snapshot.val().newVal / 10;
+          if(greyScaleIndex > 10){
+            greyScaleIndex = 10;
+          }
+          console.log("Grey Scale Index: " + greyScaleIndex);
+          console.log(greyScale[greyScaleIndex-1]);
+          $(lightoutput).find(".fa-lightbulb-o").first().css('color',greyScale[greyScaleIndex-1]);
         })
       }
 
@@ -1307,6 +1319,81 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
       $(this).parent(".card").find(".card-content").toggle();
       $(this).parent(".card").find(".card-footer").toggle();
     })
+
+    $(document).on('click', "#newAlarmBtn", function(){
+      modal = $("#newAlarm");
+      modal.find("#spotAddress")[0].innerHTML = $(this).data('address');
+
+        modal.find("#newAlarmName").val("");
+        modal.find("#newAlarmDay").val("");
+        modal.find("#newAlarmHour").val("");
+        modal.find("#newAlarmMinute").val("");
+    })
+
+    $(document).on('click', "#spotAlarmsBtn", function(){
+
+        $("#alarmTable").empty();
+        $("#newAlarmDay").datepicker();
+        var name = $(this).data('name');
+        var address = $(this).data('address');
+        $("#newAlarmBtn").data('address', address);
+        modal = $("#listAlarms");
+
+        modal.find("#spotName")[0].innerHTML = name;
+        modal.find("#spotAddress")[0].innerHTML = address;
+
+        alarmListRef = new Firebase("https://sunsspot.firebaseio.com/spotAlarms/"+address)
+           var dataTable = new google.visualization.DataTable();
+           dataTable.addColumn('string','Name');
+           dataTable.addColumn('string','Tone');
+           dataTable.addColumn('string','Time');
+           dataTable.addColumn('string','Type');
+           dataTable.addColumn('string','Delete'); //button column
+
+        alarmListRef.on("child_added", function(snapshot){
+          data = snapshot.val();
+
+          name = snapshot.key();
+          tone = data.alarm;
+          time = new Date(data.time);
+          type = data.type;
+
+          if(type == "o"){
+            type = "Once";
+            time = time.getDate() + " " + time.getMonth() + " " + time.getHours() + ":" + time.getMinutes();
+          }else if(type == "d"){
+            type = "Daily";
+            time = time.getHours() + ":" + time.getMinutes();
+          }else if(type == "w"){
+            type = "Weekly";
+            days = ['Monday', "Tuesday", "Wednesday","Thursday","Friday","Saturday","Sunday"];
+            time = days[time.getDay()-1] + " " + time.getHours() + ":" + time.getMinutes();
+          }
+        //  console.log("Name: " + name + " Tone: " + tone + " Time: " + time + " Type: " + type);
+
+        button = "<button id='deleteAlarmBtn' type='button' class='btn btn-danger' data-name='"+name+"' data-address='"+address+"' data-toggle='modal' data-target='#deleteAlarm'')><span class='fa fa-trash-o'></span></button>";
+          dataTable.addRow([name,tone,time,type, {v:'Delete', f:button}]);
+          var table = new google.visualization.Table(document.getElementById('alarmTable'));
+
+          table.draw(dataTable, {allowHtml: true, width: '100%', height: '100%'});
+
+        });
+    });
+
+      $(document).on('click', "#deleteAlarmBtn", function(){
+        var address = $(this).data('address');
+        var name = $(this).data('name');
+
+        modal = $("#deleteAlarm");
+
+        modal.find("#spotAddress")[0].innerHTML = address;
+        modal.find("#alarmName")[0].innerHTML = name;
+
+
+
+
+
+      })
     /**
      * DESCRIPTION
      * @author Josh Stennett
@@ -1334,6 +1421,50 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
     })
   }
 
+$scope.newAlarmSubmit = function(){
+
+  var modal = $("#newAlarm");
+  var address = modal.find("#spotAddress")[0].innerHTML;
+  console.log(address);
+  var name = modal.find("#newAlarmName").val();
+  var tune = modal.find("#newAlarmTune").find(":selected").val();
+  var type = modal.find("#newAlarmType").find(":selected").val();
+
+  var date = modal.find("#newAlarmDay").val().split('/');
+  console.log(date);
+  var day = date[1]
+  var month = date[0]
+  var year = date[2]
+  var hour = modal.find("#newAlarmHour").val();
+  var minute = modal.find("#newAlarmMinute").val();
+  var alarmTime = new Date();
+  alarmTime.setMinutes(minute);
+  alarmTime.setHours(hour);
+  alarmTime.setDate(day);
+  alarmTime.setMonth(month-1);
+  alarmTime.setFullYear(year);
+
+  saveRef = new Firebase("https://sunsspot.firebaseio.com/spotAlarms/"+address+"/"+name);
+
+  saveRef.set({
+      alarm: tune,
+      time: alarmTime.getTime(),
+      type: type
+  })
+
+
+}
+
+$scope.deleteAlarm = function(){
+  var address = $("#deleteAlarm").find("#spotAddress")[0].innerHTML;
+  var name = $("#deleteAlarm").find("#alarmName")[0].innerHTML;
+
+  console.log("DELETE: " + address + name);
+
+  deleteRef = new Firebase("https://sunsspot.firebaseio.com/spotAlarms/"+address+"/"+name);
+
+  deleteRef.remove();
+}
   /**
    * DESCRIPTION
    * @param {type} paramName - Description.
