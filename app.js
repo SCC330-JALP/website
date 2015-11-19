@@ -66,13 +66,13 @@ spotApp.run(function($rootScope, $firebaseObject) {
 
         if (type === 'light') {
             chartObject.options = {
-                max: 3000,
+                max: 100,
                 width: 400,
                 height: 120,
-                yellowFrom: 1000,
-                yellowTo: 1500,
-                redFrom: 1500,
-                redTo: 3000,
+                yellowFrom: 50,
+                yellowTo: 75,
+                redFrom: 75,
+                redTo: 100,
                 minorTicks: 5,
                 animation: {
                     duration: 1000,
@@ -160,6 +160,40 @@ spotApp.run(function($rootScope, $firebaseObject) {
         });
     }
 
+    /**
+       * DESCRIPTION
+       * @param {type} paramName - Description.
+       * @author Anson Cheung
+       */
+    $rootScope.pushHRData = function(childName, object, type) {
+        ref.child(childName).limitToLast(180).on("value", function(snapshot) {
+            snapshot.forEach(function(data) {
+                var timestamp = new Date(data.val().timestamp);
+
+                if (type === 'light') {
+                    object.data.rows.push({
+                        c: [{
+                            v: new Date(timestamp)
+                        }, {
+                            v: data.val().light
+                        }, ]
+                    });
+                }
+
+                if (type === 'temp') {
+                    object.data.rows.push({
+                        c: [{
+                            v: new Date(timestamp)
+                        }, {
+                            v: data.val().temp
+                        }, ]
+                    });
+                }
+
+            });
+        });
+    }
+
 
 
     /*----- LIVE DATA PAGE -----*/
@@ -217,6 +251,7 @@ spotApp.run(function($rootScope, $firebaseObject) {
         };
 
         $rootScope.pushData('zone' + (i + 1) + 'hourly', zoneLight[i], 'light');
+        $rootScope.pushHRData('zone' + (i + 1), zoneLight[i], 'light');
 
         zoneLight[i].options = {
             displayAnnotations: true,
@@ -519,7 +554,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
   $scope.init = function() {
 
     //Bind graphs to zone(zoneNumber)light/temp.
-    //  $scope.setHistoryChart(i, 'light', 'zone1light');
+     $scope.setHistoryChart(i, 'light', 'zone1light');
 
   /*  for(i=1;i<=3;i++){
         $scope.setHistoryChart(i, 'light', 'zone' + i + 'light');
@@ -596,6 +631,65 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
         return sparkline;
     }
+
+
+    // $scope.zoneHistory = function(zoneNumber, sensorType, color){
+    //     var zoneRef = new Firebase("https://sunsspot.firebaseio.com/zone" + zoneNumber);
+
+    //     var zoneHistory = {};
+
+    //     zoneHistory.type = "AnnotationChart";
+
+    //     zoneHistory.data = {
+    //         "cols": [{
+    //             id: "week",
+    //             label: "Week",
+    //             type: "date"
+    //         }, {
+    //             id: "value-data",
+    //             label: "Value",
+    //             type: "number"
+    //         }],
+    //         "rows": []
+    //     };
+
+
+    //     zoneRef.limitToLast(30).on('child_added', function(snapshot) {
+    //         var data = snapshot.val();
+    //         var timestamp = new Date(data.timestamp);
+
+    //         switch(sensorType){
+    //             case 'light':
+    //                 zoneHistory.data.rows.push({c: [{v: new Date(timestamp)}, {v: data.light}]});
+    //                 break;
+    //             case 'temp':
+    //                 zoneHistory.data.rows.push({c: [{v: new Date(timestamp)}, {v: data.temp}, ]});
+    //                 break;
+    //             default:
+    //                 zoneHistory.data.rows.push({c: [{v: new Date(timestamp)}, {v: data.light}]});
+    //         }
+
+    //     });
+
+    //     zoneHistory.options = {
+    //         displayAnnotations: false,
+    //         zoomButtonsOrder: ['1-hour', 'max'],
+    //         colors: ['#00FF00', '#00FF00', '#00FF00']
+    //     };
+
+    //     switch(color){
+    //         case 'blue':
+    //             zoneHistory.options.colors = ['#0D47A1', '#0D47A1', '#0D47A1'];
+    //             break;
+    //         case 'red':
+    //             zoneHistory.options.colors = ['#880E4F', '#AD1457', '#C2185B'];
+    //             break;
+    //         default:
+    //             zoneHistory.options.colors = ['#000', '#000', '#000'];
+    //     }
+
+    //     return zoneHistory;
+    // }
 
 
     /**
