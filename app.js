@@ -113,7 +113,7 @@ spotApp.run(function($rootScope, $firebaseObject) {
             if (type === 'light') {
                 object.data = [
                     ['Label', 'Value'],
-                    ['Light (lm)', light]
+                    ['Light', light]
                 ];
             }
 
