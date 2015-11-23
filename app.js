@@ -21,13 +21,9 @@ spotApp.config(function($routeProvider, $locationProvider) {
             templateUrl: 'pages/smartlab.html',
             controller: 'smartlabController'
         })
-        .when('/mapTest', {
-            templateUrl: 'pages/mapTest.html',
-            controller: 'mapController'
-        })
         .when('/map', {
-            templateUrl: 'pages/mapTest.html',
-            controller: 'mapTestController'
+            templateUrl: 'pages/map.html',
+            controller: 'mapController'
         })
         .when('/history', {
             templateUrl: 'pages/history.html',
@@ -100,7 +96,7 @@ spotApp.run(function($rootScope, $firebaseObject) {
     }
 
     /**
-       * Listens to the objects
+       * Listens to live changes of firebase objects
        * @param {type} paramName - Description.
        * @author Anson Cheung
        */
@@ -127,8 +123,10 @@ spotApp.run(function($rootScope, $firebaseObject) {
     }
 
     /**
-       * DESCRIPTION
-       * @param {type} paramName - Description.
+       * Puse data into firebase
+       * @param {String} childName - The name of the child name.
+       * @param {Object} object - The object that you want to push data to.
+       * @param {String} type - The type of the sensor.
        * @author Anson Cheung
        */
     $rootScope.pushData = function(childName, object, type) {
@@ -161,8 +159,10 @@ spotApp.run(function($rootScope, $firebaseObject) {
     }
 
     /**
-       * DESCRIPTION
-       * @param {type} paramName - Description.
+       * Puse data into firebase
+       * @param {String} childName - The name of the child name.
+       * @param {Object} object - The object that you want to push data to.
+       * @param {String} type - The type of the sensor.
        * @author Anson Cheung
        */
     $rootScope.pushHRData = function(childName, object, type) {
@@ -349,6 +349,7 @@ spotApp.run(function($rootScope, $firebaseObject) {
 spotApp.controller('smartlabController', ['$rootScope', '$scope', '$interval', '$timeout', '$firebaseObject', '$parse', 'ngDialog',
 function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDialog) {
 
+    /*Available range options*/
     $scope.playbackHours = [
         {code : 1, hour: '1 hour'},
         {code : 5, hour: '5 hours'},
@@ -356,8 +357,10 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         {code : 168, hour: '1 week'}
     ];
 
+    /*Default selected range*/
     $scope.selected = $scope.playbackHours[0];
 
+    /*Available speed options*/
     $scope.playbackSpeed = [
         {code : 1, speed: '1x'},
         {code : 2, speed: '5x'},
@@ -365,8 +368,14 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         {code : 10, speed: '100x'}
     ];
 
+    /*Default speed options*/
     $scope.selectedSpeed = $scope.playbackSpeed[0];
 
+    /**
+     * Load and synchronize history from firebase to local object
+     * @constructor
+     * @author Anson Cheung 
+     */
     $scope.loadHistory = function(){
 
         //Retrieve opened sensor values
@@ -400,8 +409,13 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         });
     }
 
+    /**
+     * Playback history - It increases its index every 1 second d ivided by the choose speed
+     * The interface function is being called and stored inside a promise variable to be closed later on.
+     * @param {int} length - The length of the history records.
+     * @author Anson Cheung 
+     */
     var promise;
-
     $scope.play = function(length){
         console.log("play buttion pressed.");
 
@@ -415,6 +429,11 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
     }
 
+    /**
+     * Stop/Pause history playing - Close the promise that was initialized by play function
+     * @param {int} length - The length of the history records.
+     * @author Anson Cheung 
+     */
     $scope.stop = function(){
         $interval.cancel(promise);
         promise = $timeout(function(){
@@ -422,6 +441,12 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         }, 1000);
     }
 
+    /**
+     * Change the speed/FPS for the animation
+     * It first change the speed, then stop the player, and finally play it again.
+     * @param {int} length - The length of the history records.
+     * @author Anson Cheung 
+     */
     $scope.changeSpeed = function(length){
         $scope.speed = $scope.selectedSpeed.code;
         console.log("FPS: " + $scope.speed);
@@ -429,6 +454,11 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         $scope.play(length);
     }
 
+    /**
+     * It increases its index by 1 so user can manually forward the animation
+     * @param {int} length - The length of the history records.
+     * @author Anson Cheung 
+     */
     $scope.forward = function(length){
         if($scope.index < length){
             $scope.index++;
@@ -436,6 +466,11 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         }
     }
 
+    /**
+     * It decreases its index by 1 so user can manually backward the animation
+     * @param {int} length - The length of the history records.
+     * @author Anson Cheung 
+     */
     $scope.backward = function(length){
         if($scope.index > 0 && $scope.index <= length){
             $scope.index--;
@@ -443,10 +478,18 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         }
     }
 
+    /**
+     * It restarts its index back to 0 so the animation will start from the beginning.
+     * @author Anson Cheung 
+     */
     $scope.restart = function(){
         $scope.index = 0;
     }
 
+    /**
+     * It clears everything when the player is closed. 
+     * @author Anson Cheung 
+     */
     $scope.clear = function(){
         console.log("Clearing...");
         $scope.index = 0;
@@ -455,13 +498,27 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         $scope.selected = $scope.playbackHours[0];
         $scope.selectedSpeed = $scope.playbackSpeed[0];
     }
+
+    /**
+     * It allows user to change the index of the history.
+     * @param {index} - The index number you want to set.
+     * @author Anson Cheung 
+     */
     $scope.setIndex = function(index){
         // console.log($scope.index);
         $scope.index = index;
     }
+
+    /**
+     * Return an array of a desired range of numbers.
+     * @param {int} num - The length of an array.
+     * @return {Array(num)} - Return an array of numbers.
+     * @author Anson Cheung
+     */
     $scope.range = function(num) {
         return new Array(num);
     }
+
     $scope.console = function(input){
         console.log(input);
     }
@@ -554,7 +611,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
   $scope.init = function() {
 
     //Bind graphs to zone(zoneNumber)light/temp.
-     $scope.setHistoryChart(i, 'light', 'zone1light');
+     // $scope.setHistoryChart(i, 'light', 'zone1light');
 
   /*  for(i=1;i<=3;i++){
         $scope.setHistoryChart(i, 'light', 'zone' + i + 'light');
@@ -631,65 +688,6 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
         return sparkline;
     }
-
-
-    // $scope.zoneHistory = function(zoneNumber, sensorType, color){
-    //     var zoneRef = new Firebase("https://sunsspot.firebaseio.com/zone" + zoneNumber);
-
-    //     var zoneHistory = {};
-
-    //     zoneHistory.type = "AnnotationChart";
-
-    //     zoneHistory.data = {
-    //         "cols": [{
-    //             id: "week",
-    //             label: "Week",
-    //             type: "date"
-    //         }, {
-    //             id: "value-data",
-    //             label: "Value",
-    //             type: "number"
-    //         }],
-    //         "rows": []
-    //     };
-
-
-    //     zoneRef.limitToLast(30).on('child_added', function(snapshot) {
-    //         var data = snapshot.val();
-    //         var timestamp = new Date(data.timestamp);
-
-    //         switch(sensorType){
-    //             case 'light':
-    //                 zoneHistory.data.rows.push({c: [{v: new Date(timestamp)}, {v: data.light}]});
-    //                 break;
-    //             case 'temp':
-    //                 zoneHistory.data.rows.push({c: [{v: new Date(timestamp)}, {v: data.temp}, ]});
-    //                 break;
-    //             default:
-    //                 zoneHistory.data.rows.push({c: [{v: new Date(timestamp)}, {v: data.light}]});
-    //         }
-
-    //     });
-
-    //     zoneHistory.options = {
-    //         displayAnnotations: false,
-    //         zoomButtonsOrder: ['1-hour', 'max'],
-    //         colors: ['#00FF00', '#00FF00', '#00FF00']
-    //     };
-
-    //     switch(color){
-    //         case 'blue':
-    //             zoneHistory.options.colors = ['#0D47A1', '#0D47A1', '#0D47A1'];
-    //             break;
-    //         case 'red':
-    //             zoneHistory.options.colors = ['#880E4F', '#AD1457', '#C2185B'];
-    //             break;
-    //         default:
-    //             zoneHistory.options.colors = ['#000', '#000', '#000'];
-    //     }
-
-    //     return zoneHistory;
-    // }
 
 
     /**
@@ -1852,18 +1850,57 @@ $scope.deleteAlarm = function(){
 
 
 
-spotApp.controller('mapTestController', ['$scope','$firebaseObject', '$firebaseArray',
-function($scope, $firebaseObject, $firebaseArray) {
+spotApp.controller('mapController', ['$scope','$firebaseObject', '$firebaseArray', '$q',
+function($scope, $firebaseObject, $firebaseArray, $q) {
 
         //Set map map reference
-        var mapRef = new Firebase("https://jalp330.firebaseio.com/Map/");
+        var mapRef = new Firebase("https://sunsspot.firebaseio.com/map");
+        var spotSettingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
+        var spotReadingsRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings");
+
+        $scope.objIndexList = [];
+        $scope.objSettingsList = [];
+
+        //Synchronize map->spot references into array
+        mapRef.once("value", function(snapshot){
+            var i = 0;
+            snapshot.forEach(function(childSnapshot){
+                var ref = mapRef.child(childSnapshot.key());
+                $scope.objIndexList[i] = new $firebaseObject(ref);
+                i++;
+            });
+        });
+
+        //Synchronize spotReadings->spot references into array
+        spotSettingsRef.once("value", function(snapshot){
+            var i = 0;
+            snapshot.forEach(function(childSnapshot){
+                var ref = spotSettingsRef.child(childSnapshot.key());
+                $scope.objSettingsList[i] = new $firebaseObject(ref);
+                i++;
+            });
+        });
+        
+        $scope.mergeObjects = function(objA, objB){
+            var myDest = [];
+
+            for(i in objA){
+                for(j in objB){
+                    if(objB[j].$id == objA[i].$id){
+                        var mergedObject = angular.extend(objA[i], objB[j]);
+                        myDest.push(mergedObject);
+                    }
+                }
+            }
+            return myDest;
+        }
 
         //An array of a list of index references
-        $scope.list = [];
+        // $scope.list = [];
 
         //Set each index of the list array as a reference of each index
-        for(var i = 0; i < (33*11); i++)
-          $scope.list[i] = $firebaseArray(new Firebase("https://jalp330.firebaseio.com/Map/index_" + i));
+        // for(var i = 0; i < (33*11); i++)
+          // $scope.list[i] = $firebaseArray(new Firebase("https://jalp330.firebaseio.com/Map/index_" + i));
 
 
         /**
@@ -1890,42 +1927,49 @@ function($scope, $firebaseObject, $firebaseArray) {
         $scope.zone3 = []; //Range of zone 3
 
         //Set zone 1 range
+        var gap = 33;
+        var skip = 10;
 
-        $scope.zone1 = $scope.zone1.concat($scope.rangeIn(0, 0+10))
-                                   .concat($scope.rangeIn(33, 33+10))
-                                   .concat($scope.rangeIn(66, 66+10))
-                                   .concat($scope.rangeIn(99, 99+10))
-                                   .concat($scope.rangeIn(132, 132+10))
-                                   .concat($scope.rangeIn(165, 165+10))
-                                   .concat($scope.rangeIn(198, 198+10))
-                                   .concat($scope.rangeIn(231, 231+10))
-                                   .concat($scope.rangeIn(264, 264+10))
-                                   .concat($scope.rangeIn(297, 297+10))
-                                   .concat($scope.rangeIn(330, 330+10));
+        var start = 0;
+        $scope.zone1 = $scope.zone1.concat($scope.rangeIn(start, start + skip))
+                                   .concat($scope.rangeIn(start + gap * 1, start + gap * 1 + skip))
+                                   .concat($scope.rangeIn(start + gap * 2, start + gap * 2 + skip))
+                                   .concat($scope.rangeIn(start + gap * 3, start + gap * 3 + skip))
+                                   .concat($scope.rangeIn(start + gap * 4, start + gap * 4 + skip))
+                                   .concat($scope.rangeIn(start + gap * 5, start + gap * 5 + skip))
+                                   .concat($scope.rangeIn(start + gap * 6, start + gap * 6 + skip))
+                                   .concat($scope.rangeIn(start + gap * 7, start + gap * 7 + skip))
+                                   .concat($scope.rangeIn(start + gap * 8, start + gap * 8 + skip))
+                                   .concat($scope.rangeIn(start + gap * 9, start + gap * 9 + skip))
+                                   .concat($scope.rangeIn(start + gap * 10, start + gap * 10 + skip));
+
         //Set zone 2 range
-        $scope.zone2 = $scope.zone2.concat($scope.rangeIn(11, 11+10))
-                                   .concat($scope.rangeIn(44, 44+10))
-                                   .concat($scope.rangeIn(77, 77+10))
-                                   .concat($scope.rangeIn(110, 110+10))
-                                   .concat($scope.rangeIn(143, 143+10))
-                                   .concat($scope.rangeIn(176, 176+10))
-                                   .concat($scope.rangeIn(209, 209+10))
-                                   .concat($scope.rangeIn(242, 242+10))
-                                   .concat($scope.rangeIn(275, 275+10))
-                                   .concat($scope.rangeIn(308, 308+10))
-                                   .concat($scope.rangeIn(341, 341+10));
+        var start = 11;
+        $scope.zone2 = $scope.zone2.concat($scope.rangeIn(start, start + skip))
+                                   .concat($scope.rangeIn(start + gap * 1, start + gap * 1 + skip))
+                                   .concat($scope.rangeIn(start + gap * 2, start + gap * 2 + skip))
+                                   .concat($scope.rangeIn(start + gap * 3, start + gap * 3 + skip))
+                                   .concat($scope.rangeIn(start + gap * 4, start + gap * 4 + skip))
+                                   .concat($scope.rangeIn(start + gap * 5, start + gap * 5 + skip))
+                                   .concat($scope.rangeIn(start + gap * 6, start + gap * 6 + skip))
+                                   .concat($scope.rangeIn(start + gap * 7, start + gap * 7 + skip))
+                                   .concat($scope.rangeIn(start + gap * 8, start + gap * 8 + skip))
+                                   .concat($scope.rangeIn(start + gap * 9, start + gap * 9 + skip))
+                                   .concat($scope.rangeIn(start + gap * 10, start + gap * 10 + skip));
+
         //Set zone 3 range
-        $scope.zone3 = $scope.zone3.concat($scope.rangeIn(22, 22+10))
-                                   .concat($scope.rangeIn(55, 55+10))
-                                   .concat($scope.rangeIn(88, 88+10))
-                                   .concat($scope.rangeIn(121, 121+10))
-                                   .concat($scope.rangeIn(154, 154+10))
-                                   .concat($scope.rangeIn(187, 187+10))
-                                   .concat($scope.rangeIn(220, 220+10))
-                                   .concat($scope.rangeIn(253, 253+10))
-                                   .concat($scope.rangeIn(286, 286+10))
-                                   .concat($scope.rangeIn(319, 319+10))
-                                   .concat($scope.rangeIn(352, 352+10));
+        var start = 22;
+        $scope.zone3 = $scope.zone3.concat($scope.rangeIn(start, start + skip))
+                                   .concat($scope.rangeIn(start + gap * 1, start + gap * 1 + skip))
+                                   .concat($scope.rangeIn(start + gap * 2, start + gap * 2 + skip))
+                                   .concat($scope.rangeIn(start + gap * 3, start + gap * 3 + skip))
+                                   .concat($scope.rangeIn(start + gap * 4, start + gap * 4 + skip))
+                                   .concat($scope.rangeIn(start + gap * 5, start + gap * 5 + skip))
+                                   .concat($scope.rangeIn(start + gap * 6, start + gap * 6 + skip))
+                                   .concat($scope.rangeIn(start + gap * 7, start + gap * 7 + skip))
+                                   .concat($scope.rangeIn(start + gap * 8, start + gap * 8 + skip))
+                                   .concat($scope.rangeIn(start + gap * 9, start + gap * 9 + skip))
+                                   .concat($scope.rangeIn(start + gap * 10, start + gap * 10 + skip));
 
         /**
          * Update object's location when it's dropped to a new location
@@ -1936,69 +1980,43 @@ function($scope, $firebaseObject, $firebaseArray) {
          */
         $scope.onDropComplete=function(data, evt, indexNumber){
 
-            var index = $scope.list[indexNumber].indexOf(data);
+            // var index = $scope.list[indexNumber].indexOf(data);
 
-            //Check for existence of data inside an array (If array contains data)
-            if (index == -1){
+            // //Check for existence of data inside an array (If array contains data)
+            // if (index == -1){
 
-              //Get the snapshot from the firebase map reference
-              mapRef.once("value", function(snapshot) {
+            //   //Get the snapshot from the firebase map reference
+            //   mapRef.once("value", function(snapshot) {
 
-                //From the snapshot, get each childsnapshot index (index_0, index_1, .. , index_999)
-                snapshot.forEach(function(childSnapshot){
+            //     //From the snapshot, get each childsnapshot index (index_0, index_1, .. , index_999)
+            //     snapshot.forEach(function(childSnapshot){
 
-                  //Set child reference as, etc, https://xxx.firebaseio.com/Map/index_0
-                  var childRef = mapRef.child(childSnapshot.key());
+            //       //Set child reference as, etc, https://xxx.firebaseio.com/Map/index_0
+            //       var childRef = mapRef.child(childSnapshot.key());
 
-                  //Remove OLD index/location of the object
-                  $scope.remove(childRef, data.$id, indexNumber);
+            //       //Remove OLD index/location of the object
+            //       $scope.remove(childRef, data.$id, indexNumber);
 
-                });
+            //     });
 
-                //Set data reference as, etc, https://xxx.firebaseio.com/Map/index_0/(object_name)
-                var dataRef = mapRef.child("index_" + indexNumber).child(data.$id);
+            //     //Set data reference as, etc, https://xxx.firebaseio.com/Map/index_0/(object_name)
+            //     var dataRef = mapRef.child("index_" + indexNumber).child(data.$id);
 
-                //Update new index/locatino for the object
-                $scope.update(dataRef, data.name, data.task, data.zone);
-                console.log("NEW INDEX: " + indexNumber);
-              });
+            //     //Update new index/locatino for the object
+            //     $scope.update(dataRef, data.name, data.task, data.zone);
+            //     console.log("NEW INDEX: " + indexNumber);
+            //   });
 
-            }
+            // }
+
+            var ref = new Firebase("https://sunsspot.firebaseio.com/map/" + trim(data.$id));
+            
+            ref.once("value", function(snapshot){
+               ref.set({mainIndex: indexNumber});
+            })
 
         }
 
-        /**
-         * Remove OLD index/location of an object
-         * @param {FirebaseReference} childRef - an index reference of the map.
-         * @param {String} id - The data name of the JSON object.
-         * @param {int} indexNumber - The current index of an array.
-         * @author Anson Cheung
-         */
-        $scope.remove = function(childRef, id, indexNumber){
-
-          //Get the snapshot from the firebase map->index reference
-          childRef.once("value", function(snapshot){
-
-            //Set var to true/false if 'index_X' exists
-            var indexFoundSpotID = snapshot.child(id).exists();
-
-            //if it exists
-            if(indexFoundSpotID){
-
-              //Find its index name
-              var indexName = snapshot.key();
-
-              console.log("OLD INDEX: " + indexName);
-
-              //Use the found index name
-              var dataRef = mapRef.child(indexName).child(id);
-
-              //and removes its data
-              dataRef.remove();
-            }
-
-          })
-        }
 
         /**
          * Update NEW index/location of an object
@@ -2032,10 +2050,10 @@ function($scope, $firebaseObject, $firebaseArray) {
 }]);
 
 //Map Controller
-spotApp.controller('mapController', ['$scope','$firebaseObject', '$log',
-function($scope, $firebaseObject, $log) {
+// spotApp.controller('mapController', ['$scope','$firebaseObject', '$log',
+// function($scope, $firebaseObject, $log) {
 
-    $scope.$log = $log;
+//     $scope.$log = $log;
 
     /*-------------------------------*/
     // $scope.draggableObjects = [{name:'one'}, {name:'two'}, {name:'three'}];
@@ -2048,146 +2066,146 @@ function($scope, $firebaseObject, $log) {
    // $scope.$on('draggable:move', onDraggableEvent);
     // $scope.$on('draggable:end', onDraggableEvent);
 
-    $scope.number = 33 * 11;
+//     $scope.number = 33 * 11;
 
-    $scope.range = function(num) {
-        return new Array(num);
-    }
+//     $scope.range = function(num) {
+//         return new Array(num);
+//     }
 
-    $scope.onDropComplete = function (data, evt) {
-        var index = $scope.sensors.indexOf(data);
-        if (index == -1)
-            $scope.sensors.push(data);
-    }
+//     $scope.onDropComplete = function (data, evt) {
+//         var index = $scope.sensors.indexOf(data);
+//         if (index == -1)
+//             $scope.sensors.push(data);
+//     }
 
-    $scope.onDragSuccess = function (data, evt) {
-        var index = $scope.sensors.indexOf(data);
-        if (index > -1)
-            $scope.sensors.splice(index, 1);
-    }
+//     $scope.onDragSuccess = function (data, evt) {
+//         var index = $scope.sensors.indexOf(data);
+//         if (index > -1)
+//             $scope.sensors.splice(index, 1);
+//     }
 
-    $scope.applyListener = function(i){
+//     $scope.applyListener = function(i){
 
-        $scope.droppedObjectsArray.push([]);
+//         $scope.droppedObjectsArray.push([]);
 
-        $scope.onDropCompleteArray[i] = function (data, evt) {
-            var index = $scope.droppedObjectsArray[i].indexOf(data);
-            if (index == -1){
-                $scope.droppedObjectsArray[i].push(data);
+//         $scope.onDropCompleteArray[i] = function (data, evt) {
+//             var index = $scope.droppedObjectsArray[i].indexOf(data);
+//             if (index == -1){
+//                 $scope.droppedObjectsArray[i].push(data);
 
-                //UPDATE SENSOR MAININDEX IN FIREBASE
-                // $scope.ref[0].update({"mainIndex" : i});
-                // console.log(mainIndex);
-                $scope.updateIndex(data, i);
-            }
+//                 //UPDATE SENSOR MAININDEX IN FIREBASE
+//                 // $scope.ref[0].update({"mainIndex" : i});
+//                 // console.log(mainIndex);
+//                 $scope.updateIndex(data, i);
+//             }
 
-        }
+//         }
 
-        $scope.onDragSuccessArray[i] = function (data, evt) {
-            var index = $scope.droppedObjectsArray[i].indexOf(data);
-            if (index > -1){
-                $scope.droppedObjectsArray[i].splice(index, 1);
-            }
-        }
-    }
+//         $scope.onDragSuccessArray[i] = function (data, evt) {
+//             var index = $scope.droppedObjectsArray[i].indexOf(data);
+//             if (index > -1){
+//                 $scope.droppedObjectsArray[i].splice(index, 1);
+//             }
+//         }
+//     }
 
-    $scope.updateIndex = function(data, i){
-      var key = trim(data.$id);
-      var ref = new Firebase("https://sunsspot.firebaseio.com/spotSettings/" + key);
+//     $scope.updateIndex = function(data, i){
+//       var key = trim(data.$id);
+//       var ref = new Firebase("https://sunsspot.firebaseio.com/spotSettings/" + key);
 
-      ref.update({"mainIndex" : i});
-    }
+//       ref.update({"mainIndex" : i});
+//     }
 
 
-    $scope.addTo = function(sensorObj, mainIndex){
-      $scope.droppedObjectsArray[mainIndex] = sensorObj;
-    }
+//     $scope.addTo = function(sensorObj, mainIndex){
+//       $scope.droppedObjectsArray[mainIndex] = sensorObj;
+//     }
 
-    $scope.droppedObjectsArray = [];
-    $scope.onDropCompleteArray = [];
-    $scope.onDragSuccessArray = [];
+//     $scope.droppedObjectsArray = [];
+//     $scope.onDropCompleteArray = [];
+//     $scope.onDragSuccessArray = [];
 
-    for(i=0;i<$scope.number;i++)
-      $scope.applyListener(i);
+//     for(i=0;i<$scope.number;i++)
+//       $scope.applyListener(i);
 
-    /*--------------------------------------------*/
+//     /*--------------------------------------------*/
 
-    $scope.ref = [];
-    $scope.syncObject = [];
-    $scope.sensors = [];
+//     $scope.ref = [];
+//     $scope.syncObject = [];
+//     $scope.sensors = [];
 
-    var j = 0;
+//     var j = 0;
 
-    // Retrieve new sensors as they are added to our database
-    spotSettingsRef.on("child_added", function(snapshot) {
-        var key = trim(snapshot.key());
+//     // Retrieve new sensors as they are added to our database
+//     spotSettingsRef.on("child_added", function(snapshot) {
+//         var key = trim(snapshot.key());
 
-        $scope.ref[j] = new Firebase("https://sunsspot.firebaseio.com/spotSettings/" + key);
+//         $scope.ref[j] = new Firebase("https://sunsspot.firebaseio.com/spotSettings/" + key);
 
-        var localObject = $scope.syncObject[j];
+//         var localObject = $scope.syncObject[j];
 
-        // download the data into a local object
-        localObject = $firebaseObject($scope.ref[j]);
+//         // download the data into a local object
+//         localObject = $firebaseObject($scope.ref[j]);
 
-        // synchronize the object with a three-way data binding
-        localObject.$bindTo($scope, "sensor_" + j);
+//         // synchronize the object with a three-way data binding
+//         localObject.$bindTo($scope, "sensor_" + j);
 
-        $scope.sensors[j] = localObject;
+//         $scope.sensors[j] = localObject;
 
-        if(snapshot.val().mainIndex != null){
-          $scope.droppedObjectsArray[snapshot.val().mainIndex].push($scope.sensors[j]);
-        }
+//         if(snapshot.val().mainIndex != null){
+//           $scope.droppedObjectsArray[snapshot.val().mainIndex].push($scope.sensors[j]);
+//         }
 
-        j++;
-    });
+//         j++;
+//     });
 
-    //Generate Grid Table
-    $scope.data = [];
-    $scope.x = 7.69; // height of a sqaure in %
-    $scope.y = 3.025; // Width of a square in %
+//     //Generate Grid Table
+//     $scope.data = [];
+//     $scope.x = 7.69; // height of a sqaure in %
+//     $scope.y = 3.025; // Width of a square in %
 
-    $scope.zone1 = "zone1";
-    $scope.zone2 = "zone2";
-    $scope.zone3 = "zone3";
+//     $scope.zone1 = "zone1";
+//     $scope.zone2 = "zone2";
+//     $scope.zone3 = "zone3";
 
-    for(i=0;i<13;i++)
-        for(y=0;y<33;y++)
-            $scope.data.push({x: i, y: y});
+//     for(i=0;i<13;i++)
+//         for(y=0;y<33;y++)
+//             $scope.data.push({x: i, y: y});
 
-}]);
+// }]);
 
-//Map - Box directive
-spotApp.directive('box', function(){
+// //Map - Box directive
+// spotApp.directive('box', function(){
 
-    return {
-        restrict: 'E',
-        scope: {
-            data: '=',
-            x: '=',
-            y: '=',
-            zone: '=',
-        },
-        template: '<div class="box {{zone}} box-{{x}}-{{y}}" style="top:{{x}}%;left:{{y}}%"></div>',
-        controller: function($scope){
-            // console.log($scope.data);
-        }
-    };
-});
+//     return {
+//         restrict: 'E',
+//         scope: {
+//             data: '=',
+//             x: '=',
+//             y: '=',
+//             zone: '=',
+//         },
+//         template: '<div class="box {{zone}} box-{{x}}-{{y}}" style="top:{{x}}%;left:{{y}}%"></div>',
+//         controller: function($scope){
+//             // console.log($scope.data);
+//         }
+//     };
+// });
 
-// Map - Sensor directive
-spotApp.directive('sensor', function(){
-    return{
-        restrict:'E',
-        scope:{
-            zone : '=',
-            task : '=',
-            name : '=',
-            x: '=',
-            y: '='
-        },
-        template: '<div class="sensor" style="top:{{x}}%;left:{{y}}%"><img style="width:100%;" src="images/{{task}}.png" ><p>{{name}}</p></div>'
-    };
-});
+// // Map - Sensor directive
+// spotApp.directive('sensor', function(){
+//     return{
+//         restrict:'E',
+//         scope:{
+//             zone : '=',
+//             task : '=',
+//             name : '=',
+//             x: '=',
+//             y: '='
+//         },
+//         template: '<div class="sensor" style="top:{{x}}%;left:{{y}}%"><img style="width:100%;" src="images/{{task}}.png" ><p>{{name}}</p></div>'
+//     };
+// });
 
 function trim(string){
   return string.replace(/\s+/g, '%20');
