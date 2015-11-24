@@ -21,7 +21,7 @@
 
                         <div class="card-footer">
 
-                          <button ng-click="openHistory('zone1light')" class="btn btn-default btn-block">
+                          <button ng-click="open(1, 'light')" class="btn btn-default btn-block">
                             <div google-chart chart="sparkline(1, 'light', 'blue')" class="sparkline"></div>
                           </button>
 
@@ -40,7 +40,7 @@
                         </div>
 
                         <div class="card-footer">
-                            <button ng-click="openHistory('zone1temp')" class="btn btn-default btn-block">  <div google-chart chart="sparkline(1, 'temp', 'red')" class="sparkline"></div>
+                            <button ng-click="open(1, 'temp')" class="btn btn-default btn-block">  <div google-chart chart="sparkline(1, 'temp', 'red')" class="sparkline"></div>
                             </button>
                         </div>
 
@@ -58,7 +58,6 @@
         <div class="container-fluid ">
             <h3>Sensors</h3>
             <div class="row sensorsContainer" id="zone1Sensors">
-
 
             </div>
 
@@ -87,10 +86,10 @@
                         </div>
 
                         <div class="card-footer">
-                        <button ng-click="openHistory('zone2light')" class="btn btn-default btn-block">
+                        <button ng-click="open(2, 'light')" class="btn btn-default btn-block">
                             <div google-chart chart="sparkline(2, 'light', 'blue')" class="sparkline"></div>
                         </button>
-
+                        
                         </div>
 
                     </div>
@@ -105,7 +104,7 @@
                         </div>
 
                         <div class="card-footer">
-                        <button ng-click="openHistory('zone2temp')" class="btn btn-default btn-block">
+                        <button ng-click="open(2, 'temp')" class="btn btn-default btn-block">
                             <div google-chart chart="sparkline(2, 'temp', 'red')" class="sparkline"></div>
                         </button>
                         </div>
@@ -153,7 +152,7 @@
                         </div>
 
                         <div class="card-footer">
-                        <button ng-click="openHistory('zone3light')" class="btn btn-default btn-block">
+                        <button ng-click="open(1, 'light')" class="btn btn-default btn-block">
                             <div google-chart chart="sparkline(3, 'light', 'blue')" class="sparkline"></div>
                         </button>
 
@@ -171,7 +170,7 @@
                         </div>
 
                         <div class="card-footer">
-                        <button ng-click="openHistory('zone3temp')" class="btn btn-default btn-block">
+                        <button ng-click="open(3, 'temp')" class="btn btn-default btn-block">
                             <div google-chart chart="sparkline(3, 'temp', 'red')" class="sparkline"></div>
                         </button>
                         </div>
@@ -745,3 +744,22 @@ DELETE MODAL
         <!-- /.modal-content -->
     </div>
     <!-- /.modal-dialog -->
+
+
+
+<script type="text/ng-template" id="zoneHistory.html">
+
+    <div class="modal-header">
+        <h3 class="modal-title">Zone History</h3>
+    </div>
+    <div class="modal-body">
+
+        <div google-chart chart="zoneHistory" class="history-chart"></div>
+
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+
+</script>

@@ -9,7 +9,7 @@
  *************************************************************************/
 
 //modules
-var spotApp = angular.module('spotApp', ['ngRoute', 'ngResource', 'firebase', 'googlechart', 'ngDialog', 'ngDraggable']);
+var spotApp = angular.module('spotApp', ['ngRoute', 'ngResource', 'firebase', 'googlechart', 'ngDialog', 'ngDraggable', 'n3-line-chart', 'ngAnimate', 'ui.bootstrap']);
 var ref = new Firebase("https://sunsspot.firebaseio.com");
 var spotSettingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
 
@@ -37,7 +37,6 @@ spotApp.config(function($routeProvider, $locationProvider) {
 
 //Think it as global variables
 spotApp.run(function($rootScope, $firebaseObject) {
-
 
     $rootScope.appName = 'JALP SmartLab';
 
@@ -342,12 +341,88 @@ spotApp.run(function($rootScope, $firebaseObject) {
     //########## DONT DELETE ############//
     //-----------------------------------//
 
+  $rootScope.dataTest = [
+      {x: 0, value: 4, otherValue: 14},
+      {x: 1, value: 8, otherValue: 1},
+      {x: 2, value: 15, otherValue: 11},
+      {x: 3, value: 16, otherValue: 147},
+      {x: 4, value: 23, otherValue: 87},
+      {x: 5, value: 42, otherValue: 45}
+    ];
+
+    $rootScope.optionsTest = {
+      axes: {
+        x: {key: 'x', ticksFormat: '.2f', type: 'linear', min: 0, max: 10, ticks: 2},
+        y: {type: 'linear', min: 0, max: 1, ticks: 5, innerTicks: true, grid: true},
+        y2: {type: 'linear', min: 0, max: 1, ticks: [1, 2, 3, 4]}
+      },
+      margin: {
+        left: 100
+      },
+      series: [
+        {y: 'value', color: 'steelblue', thickness: '2px', type: 'area', striped: true, label: 'Pouet'},
+        {y: 'otherValue', axis: 'y2', color: 'lightsteelblue', visible: false, drawDots: true, dotSize: 2}
+      ],
+      lineMode: 'linear',
+      tension: 0.7,
+      tooltip: {mode: 'scrubber', formatter: function(x, y, series) {return 'pouet';}},
+      drawLegend: true,
+      drawDots: true,
+      hideOverflow: false,
+      columnsHGap: 5
+    }
+
 })
 
-
 //smart lab Controller
-spotApp.controller('smartlabController', ['$rootScope', '$scope', '$interval', '$timeout', '$firebaseObject', '$parse', 'ngDialog',
-function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDialog) {
+spotApp.controller('smartlabController', ['$rootScope', '$scope', '$interval', '$timeout', '$firebaseObject', '$parse', 'ngDialog', '$uibModal',
+function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDialog, $uibModal) {
+
+
+
+
+  $scope.open = function(zoneNumber, type){
+
+    var modalInstance = $uibModal.open({
+      animation: $scope.animationsEnabled | true,
+      templateUrl: 'zoneHistory.html',
+      controller: 'zoneHistoryCtrl',
+      size: 'lg',
+      resolve: {
+        zoneHistory: function (){
+            if(type == 'light'){
+                if(zoneNumber==1)
+                    return $rootScope.zone1light;
+                if(zoneNumber==2)
+                    return $rootScope.zone2light;
+                if(zoneNumber==3)
+                    return $rootScope.zone3light;
+            }
+            if(type == 'temp'){
+                if(zoneNumber==1)
+                    return $rootScope.zone1temp;
+                if(zoneNumber==2)
+                    return $rootScope.zone2temp;
+                if(zoneNumber==3)
+                    return $rootScope.zone3temp;
+            }
+            
+        }
+      },
+      
+    });
+      
+    modalInstance.result.then(function (selectedItem) {
+      $scope.selected = selectedItem;
+    }, function () {
+            console.log('Modal dismissed at: ' + new Date());
+        });
+    };
+
+    $scope.toggleAnimation = function () {
+        $scope.animationsEnabled = !$scope.animationsEnabled;
+    };
+
 
     /*Available range options*/
     $scope.playbackHours = [
@@ -1741,6 +1816,7 @@ $scope.deleteAlarm = function(){
         });
     };
 
+
     /**
      * Generate a annotation graph and set it to a <div>
      * @param {String} address - Full address of a sensor.
@@ -2005,3 +2081,19 @@ function($scope, $firebaseObject, $firebaseArray, $q) {
 function trim(string){
   return string.replace(/\s+/g, '%20');
 }
+
+
+// Please note that $modalInstance represents a modal window (instance) dependency.
+// It is not the same as the $uibModal service used above.
+spotApp.controller('zoneHistoryCtrl', function ($rootScope, $scope, $uibModalInstance, zoneHistory) {
+
+  $scope.zoneHistory = zoneHistory;
+
+  $scope.ok = function () {
+    $uibModalInstance.close($scope.selected.item);
+  };
+
+  $scope.cancel = function () {
+    $uibModalInstance.dismiss('cancel');
+  };
+});
