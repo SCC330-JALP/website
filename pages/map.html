@@ -1,31 +1,101 @@
-<!-- <pre>{{ mergeObjects(objIndexList, objSettingsList) | json }}</pre> -->
-
 
 <div ng-repeat="i in range(363) track by $index" ng-init="mainIndex = $index">
     <div ng-class="{
         'zone1':(zone1.indexOf(mainIndex)>-1), 
         'zone2':(zone2.indexOf(mainIndex)>-1), 
         'zone3':(zone3.indexOf(mainIndex)>-1)}"
-        ng-drop="true" 
+        class="droppable"
+        ng-drop="true"
         ng-drop-success="onDropComplete($data, $event, mainIndex)">
     
     <span class="title" style="opacity:0.3">{{$index}}</span>
-
-    <div 
-        ng-repeat="obj in list[mainIndex]" 
-        ng-drag="true" 
-        ng-drag-data="obj">
-          {{obj.name}}
-    </div>
     
     <div ng-repeat="obj in mergeObjects(objIndexList, objSettingsList)" >
-      <div ng-if="obj.mainIndex == mainIndex" ng-drag="true" ng-drag-data="obj">
+      <div ng-if="obj.mainIndex == mainIndex" ng-drag="true" ng-drag-data="obj" class="draggable">
         {{obj.name}}
       </div>
     </div>
 
     </div>
 </div>
+
+<div class="row">
+  
+  <!-- Zone 1 unassigned objects -->
+  <div class="panel panel-default col-sm-4" style="padding:0 !important">
+    <div class="panel-heading">Zone 1 unassigned objects</div>
+    <div 
+          class="panel-body" 
+          ng-drop="true" 
+          ng-drop-success="onDropComplete($data, $event, -1)">
+
+      <span 
+        ng-repeat="obj in mergeObjects(objIndexList, objSettingsList)" 
+        ng-if="obj.mainIndex == -1 && obj.zone == 1" 
+        ng-drag="true" 
+        ng-drag-data="obj" 
+        class="btn btn-default btn-primary unassigned">{{obj.name}}
+      </span>
+
+    </div>
+  </div>
+
+  <!-- Zone 2 unassigned objects -->
+  <div class="panel panel-default col-sm-4" style="padding:0 !important">
+    <div class="panel-heading">Zone 2 unassigned objects</div>
+    <div 
+          class="panel-body" 
+          ng-drop="true" 
+          ng-drop-success="onDropComplete($data, $event, -1)">
+      
+      <span 
+        ng-repeat="obj in mergeObjects(objIndexList, objSettingsList)" 
+        ng-if="obj.mainIndex == -1 && obj.zone == 2" 
+        ng-drag="true" 
+        ng-drag-data="obj" 
+        class="btn btn-default btn-primary unassigned">
+          <span class="fa" 
+          ng-class="{
+          'fa-battery-0' : obj.battery <= 20,
+          'fa-battery-1' : obj.battery <= 40,
+          'fa-battery-2' : obj.battery <= 60,
+          'fa-battery-3' : obj.battery <= 80,
+          'fa-battery-4' : obj.battery <= 100}">
+          </span> {{obj.name}}
+      </span>
+  
+    </div>
+  </div>
+
+  <!-- Zone 3 unassigned objects -->
+  <div class="panel panel-default col-sm-4" style="padding:0 !important">
+    <div class="panel-heading">Zone 3 unassigned objects</div>
+    <div 
+          class="panel-body" 
+          ng-drop="true" 
+          ng-drop-success="onDropComplete($data, $event, -1)">
+
+      <span 
+        ng-repeat="obj in mergeObjects(objIndexList, objSettingsList)" 
+        ng-if="obj.mainIndex == -1 && obj.zone == 3" 
+        ng-drag="true" 
+        ng-drag-data="obj" 
+        class="btn btn-default btn-primary unassigned">
+        <span class="fa" 
+          ng-class="{
+          'fa-battery-0' : obj.battery <= 20,
+          'fa-battery-1' : obj.battery <= 40,
+          'fa-battery-2' : obj.battery <= 60,
+          'fa-battery-3' : obj.battery <= 80,
+          'fa-battery-4' : obj.battery <= 100}">
+          </span> {{obj.name}}
+      </span>
+
+    </div>
+  </div>
+
+
+<pre style="clear:both;">{{ mergeObjects(objIndexList, objSettingsList, objReadingsList) | json }}</pre>
 
 
 <!-- <div 
@@ -108,4 +178,3 @@
 </div>
  <pre>{{droppedObjectsArray | json}}</pre>
  <pre>{{sensors | json}}</pre>
- -->

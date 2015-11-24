@@ -1856,7 +1856,6 @@ function($scope, $firebaseObject, $firebaseArray, $q) {
         //Set map map reference
         var mapRef = new Firebase("https://sunsspot.firebaseio.com/map");
         var spotSettingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
-        var spotReadingsRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings");
 
         $scope.objIndexList = [];
         $scope.objSettingsList = [];
@@ -1880,27 +1879,25 @@ function($scope, $firebaseObject, $firebaseArray, $q) {
                 i++;
             });
         });
-        
+
+
+        /**
+         * Merge three objects to return a new array
+         * @param {obj} objA - First object you want to merge.
+         * @param {obj} objB - Second object you want to merge.
+         * @return {array} - An array of three merged objects.
+         * @author Anson Cheung
+         */
         $scope.mergeObjects = function(objA, objB){
-            var myDest = [];
+            var mergedObjects = [];
 
-            for(i in objA){
-                for(j in objB){
-                    if(objB[j].$id == objA[i].$id){
-                        var mergedObject = angular.extend(objA[i], objB[j]);
-                        myDest.push(mergedObject);
-                    }
-                }
-            }
-            return myDest;
+            for(i in objA)
+                for(j in objB)
+                        if(objA[i].$id == objB[j].$id)
+                            mergedObjects.push(angular.extend(objA[i], objB[j]));
+                    
+            return mergedObjects;
         }
-
-        //An array of a list of index references
-        // $scope.list = [];
-
-        //Set each index of the list array as a reference of each index
-        // for(var i = 0; i < (33*11); i++)
-          // $scope.list[i] = $firebaseArray(new Firebase("https://jalp330.firebaseio.com/Map/index_" + i));
 
 
         /**
@@ -1980,35 +1977,6 @@ function($scope, $firebaseObject, $firebaseArray, $q) {
          */
         $scope.onDropComplete=function(data, evt, indexNumber){
 
-            // var index = $scope.list[indexNumber].indexOf(data);
-
-            // //Check for existence of data inside an array (If array contains data)
-            // if (index == -1){
-
-            //   //Get the snapshot from the firebase map reference
-            //   mapRef.once("value", function(snapshot) {
-
-            //     //From the snapshot, get each childsnapshot index (index_0, index_1, .. , index_999)
-            //     snapshot.forEach(function(childSnapshot){
-
-            //       //Set child reference as, etc, https://xxx.firebaseio.com/Map/index_0
-            //       var childRef = mapRef.child(childSnapshot.key());
-
-            //       //Remove OLD index/location of the object
-            //       $scope.remove(childRef, data.$id, indexNumber);
-
-            //     });
-
-            //     //Set data reference as, etc, https://xxx.firebaseio.com/Map/index_0/(object_name)
-            //     var dataRef = mapRef.child("index_" + indexNumber).child(data.$id);
-
-            //     //Update new index/locatino for the object
-            //     $scope.update(dataRef, data.name, data.task, data.zone);
-            //     console.log("NEW INDEX: " + indexNumber);
-            //   });
-
-            // }
-
             var ref = new Firebase("https://sunsspot.firebaseio.com/map/" + trim(data.$id));
             
             ref.once("value", function(snapshot){
@@ -2017,22 +1985,6 @@ function($scope, $firebaseObject, $firebaseArray, $q) {
 
         }
 
-
-        /**
-         * Update NEW index/location of an object
-         * @param {FirebaseReference} ref - an index reference of the map.
-         * @param {String} name - The name of a sensor.
-         * @param {String} task - The task of a sensor.
-         * @param {String} zone - The zone of a sensor.
-         * @author Anson Cheung
-         */
-        $scope.update = function(ref, name, task, zone){
-          ref.set({
-              name: name,
-              task: task,
-              zone: zone
-          });
-        }
 
         /**
          * Return an array of a desired range of numbers.
@@ -2049,163 +2001,6 @@ function($scope, $firebaseObject, $firebaseArray, $q) {
 
 }]);
 
-//Map Controller
-// spotApp.controller('mapController', ['$scope','$firebaseObject', '$log',
-// function($scope, $firebaseObject, $log) {
-
-//     $scope.$log = $log;
-
-    /*-------------------------------*/
-    // $scope.draggableObjects = [{name:'one'}, {name:'two'}, {name:'three'}];
-
-    // var onDraggableEvent = function (evt, data) {
-    //     console.log("128", "onDraggableEvent", evt, data);
-    // }
-
-    // $scope.$on('draggable:start', onDraggableEvent);
-   // $scope.$on('draggable:move', onDraggableEvent);
-    // $scope.$on('draggable:end', onDraggableEvent);
-
-//     $scope.number = 33 * 11;
-
-//     $scope.range = function(num) {
-//         return new Array(num);
-//     }
-
-//     $scope.onDropComplete = function (data, evt) {
-//         var index = $scope.sensors.indexOf(data);
-//         if (index == -1)
-//             $scope.sensors.push(data);
-//     }
-
-//     $scope.onDragSuccess = function (data, evt) {
-//         var index = $scope.sensors.indexOf(data);
-//         if (index > -1)
-//             $scope.sensors.splice(index, 1);
-//     }
-
-//     $scope.applyListener = function(i){
-
-//         $scope.droppedObjectsArray.push([]);
-
-//         $scope.onDropCompleteArray[i] = function (data, evt) {
-//             var index = $scope.droppedObjectsArray[i].indexOf(data);
-//             if (index == -1){
-//                 $scope.droppedObjectsArray[i].push(data);
-
-//                 //UPDATE SENSOR MAININDEX IN FIREBASE
-//                 // $scope.ref[0].update({"mainIndex" : i});
-//                 // console.log(mainIndex);
-//                 $scope.updateIndex(data, i);
-//             }
-
-//         }
-
-//         $scope.onDragSuccessArray[i] = function (data, evt) {
-//             var index = $scope.droppedObjectsArray[i].indexOf(data);
-//             if (index > -1){
-//                 $scope.droppedObjectsArray[i].splice(index, 1);
-//             }
-//         }
-//     }
-
-//     $scope.updateIndex = function(data, i){
-//       var key = trim(data.$id);
-//       var ref = new Firebase("https://sunsspot.firebaseio.com/spotSettings/" + key);
-
-//       ref.update({"mainIndex" : i});
-//     }
-
-
-//     $scope.addTo = function(sensorObj, mainIndex){
-//       $scope.droppedObjectsArray[mainIndex] = sensorObj;
-//     }
-
-//     $scope.droppedObjectsArray = [];
-//     $scope.onDropCompleteArray = [];
-//     $scope.onDragSuccessArray = [];
-
-//     for(i=0;i<$scope.number;i++)
-//       $scope.applyListener(i);
-
-//     /*--------------------------------------------*/
-
-//     $scope.ref = [];
-//     $scope.syncObject = [];
-//     $scope.sensors = [];
-
-//     var j = 0;
-
-//     // Retrieve new sensors as they are added to our database
-//     spotSettingsRef.on("child_added", function(snapshot) {
-//         var key = trim(snapshot.key());
-
-//         $scope.ref[j] = new Firebase("https://sunsspot.firebaseio.com/spotSettings/" + key);
-
-//         var localObject = $scope.syncObject[j];
-
-//         // download the data into a local object
-//         localObject = $firebaseObject($scope.ref[j]);
-
-//         // synchronize the object with a three-way data binding
-//         localObject.$bindTo($scope, "sensor_" + j);
-
-//         $scope.sensors[j] = localObject;
-
-//         if(snapshot.val().mainIndex != null){
-//           $scope.droppedObjectsArray[snapshot.val().mainIndex].push($scope.sensors[j]);
-//         }
-
-//         j++;
-//     });
-
-//     //Generate Grid Table
-//     $scope.data = [];
-//     $scope.x = 7.69; // height of a sqaure in %
-//     $scope.y = 3.025; // Width of a square in %
-
-//     $scope.zone1 = "zone1";
-//     $scope.zone2 = "zone2";
-//     $scope.zone3 = "zone3";
-
-//     for(i=0;i<13;i++)
-//         for(y=0;y<33;y++)
-//             $scope.data.push({x: i, y: y});
-
-// }]);
-
-// //Map - Box directive
-// spotApp.directive('box', function(){
-
-//     return {
-//         restrict: 'E',
-//         scope: {
-//             data: '=',
-//             x: '=',
-//             y: '=',
-//             zone: '=',
-//         },
-//         template: '<div class="box {{zone}} box-{{x}}-{{y}}" style="top:{{x}}%;left:{{y}}%"></div>',
-//         controller: function($scope){
-//             // console.log($scope.data);
-//         }
-//     };
-// });
-
-// // Map - Sensor directive
-// spotApp.directive('sensor', function(){
-//     return{
-//         restrict:'E',
-//         scope:{
-//             zone : '=',
-//             task : '=',
-//             name : '=',
-//             x: '=',
-//             y: '='
-//         },
-//         template: '<div class="sensor" style="top:{{x}}%;left:{{y}}%"><img style="width:100%;" src="images/{{task}}.png" ><p>{{name}}</p></div>'
-//     };
-// });
 
 function trim(string){
   return string.replace(/\s+/g, '%20');
