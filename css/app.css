@@ -1,3 +1,79 @@
+#glassContainer  /* src : http://priteshgupta.com/2011/07/filling-a-glass-with-water-using-html5/*/
+{
+    width: 50px;
+    margin-right: auto;
+    margin-left: auto;
+    padding-top: 1px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+
+    transition: all .5s ease-out;
+
+    border-top: 0;
+    border-right: 1px solid #bbb;
+    border-bottom: 1px solid #bbb;
+    border-left: 1px solid #bbb;
+    border-radius: 10px;
+    background: rgba( 0, 0, 0, .10);
+}
+#glass  /* src : http://priteshgupta.com/2011/07/filling-a-glass-with-water-using-html5/*/
+{
+    position: relative;
+
+    width: 37px;
+    height: 60px;
+
+    border: 1px solid #bbb;
+    border-top: 1px solid #eee;
+    border-radius: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    background: rgba( 255, 255, 255, .50);
+}
+#water  /* src : http://priteshgupta.com/2011/07/filling-a-glass-with-water-using-html5/*/
+{
+    position: absolute;
+    bottom: 0;
+
+    width: 34px;
+    height: 50px;
+
+    transition: all .2s ease-out;
+
+    border-bottom-right-radius: 9px;
+    border-bottom-left-radius: 9px;
+    background-color: #8ad5f8;
+    background-position: top right;
+}
+.progress
+{
+    position: relative;
+
+    transition: all 9s;
+}
+
+.progress-bar span
+{
+    position: absolute;
+
+    display: block;
+
+    width: 100%;
+    max-width: 100%;
+
+    transition: all 9s;
+
+    color: white;
+}
+
+.divider
+{
+    height: 1px;
+
+    border-bottom: 1px solid lightgrey;
+}
+
 .sensorsContainer
 {
     min-height: 400px;
@@ -31,72 +107,120 @@
 .playbackZone
 {
     height: 100px;
-    background-color: #F9F9F9;
-    border: 1px solid #ECECEC;
+
+    border: 1px solid #ececec;
+    background-color: #f9f9f9;
 }
 
 .playbackObject
 {
-    margin: auto;
-    margin-top: 17%;
-     display: none; 
-    background-image: url("../images/dance_1.gif");
-    background-repeat: no-repeat;
+    display: none;
+
     width: 50px;
     height: 50px;
+    margin: auto;
+    margin-top: 17%;
+
+    background-image: url('../images/dance_1.gif');
+    background-repeat: no-repeat;
 }
 .playhistory-info
 {
     font-size: 10px;
-    color: #337AB7;
     font-weight: bold;
+
+    color: #337ab7;
 }
 .show
 {
-    display:block;
+    display: block;
 }
 .zone-label
 {
-    color: #AFAFAF;
-    text-shadow: 0px 0px 2px white;
     font-size: 10px;
+
     position: absolute;
-    left: 0;
     top: 86%;
-    border-top: 1px solid #F1F1F1;
+    left: 0;
+
     width: 100%;
+
+    text-align: center;
+
+    color: #afafaf;
+    border-top: 1px solid #f1f1f1;
+    text-shadow: 0 0 2px white;
+}
+.center-wrap
+{
     text-align: center;
 }
-.center-wrap {
-    text-align: center;
-}
-.date-square {
+.date-square
+{
+    font-size: 10px;
+
+    float: left;
+
     width: 15px;
     height: 15px;
-    float: left;
-    border: 1px solid #DADADA;
-    background-color: whitesmoke;
     margin: 1px;
-    cursor:pointer;
-    font-size: 10px;
-    text-align: center;
-    color: #B4BF40;
-}
-.zone0-date-square{background-color:whitesmoke;}
-.zone1-date-square{background-color:#009688;}
-.zone2-date-square{background-color:#8BC34A;}
-.zone3-date-square{background-color:#CDDC39;}
-.zone-size-1{width:32px;}
-.zone-size-2{width:49px;}
-.zone-size-3{width:66px;}
-.zone-size-4{width:83px;}
-.zone-size-5{width:100px;}
-.zone-size-6{width:117px;}
-.zone-size-7{width:134px;}
 
-.date-square-selected{
-    box-shadow: 0px 0px 1px #E91E63;
-    border: 1px solid #E91E63;
+    cursor: pointer;
+    text-align: center;
+
+    color: #b4bf40;
+    border: 1px solid #dadada;
+    background-color: whitesmoke;
+}
+.zone0-date-square
+{
+    background-color: whitesmoke;
+}
+.zone1-date-square
+{
+    background-color: #009688;
+}
+.zone2-date-square
+{
+    background-color: #8bc34a;
+}
+.zone3-date-square
+{
+    background-color: #cddc39;
+}
+.zone-size-1
+{
+    width: 32px;
+}
+.zone-size-2
+{
+    width: 49px;
+}
+.zone-size-3
+{
+    width: 66px;
+}
+.zone-size-4
+{
+    width: 83px;
+}
+.zone-size-5
+{
+    width: 100px;
+}
+.zone-size-6
+{
+    width: 117px;
+}
+.zone-size-7
+{
+    width: 134px;
+}
+
+.date-square-selected
+{
+    border: 1px solid #e91e63;
+    box-shadow: 0 0 1px #e91e63;
 }
 /*
 *    Cards
@@ -187,19 +311,19 @@ h3
 {
     margin-top: 2px;
 }
-#viewPerson label > input
+#profilePictureSelection label > input
 {
     position: absolute;
 
     visibility: hidden;
 }
-#viewPerson label > input + img
+#profilePictureSelection label > input + img
 {
     cursor: pointer;
 
     border: 2px solid transparent;
 }
-#viewPerson label > input:checked + img
+#profilePictureSelection label > input:checked + img
 {
     border: 2px solid #00bfff;
 }

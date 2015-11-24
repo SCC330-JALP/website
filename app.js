@@ -815,8 +815,12 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         setTask(spotTask, snapshot.task); //set the task
 
 
+        if(snapshot.task == "sc"){
+            var editButton = $(pageElement).find("#editCupBtn")[0]; //set up the links as seen in child_changed listener
+        }else{
+            var editButton = $(pageElement).find("#editSensorBtn")[0]; //set up the links as seen in child_changed listener
+        }
 
-        var editButton = $(pageElement).find("#editSensorBtn")[0]; //set up the links as seen in child_changed listener
         $(editButton).data('name', snapshot.name);
         $(editButton).data('task', snapshot.task);
         $(editButton).data('address', snapshot.address);
@@ -862,7 +866,9 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         appendSensor(snapshot.zone,pageElement);
 
       }
-
+      if(snapshot.task != "sp" ){
+        createDataListeners(snapshot, pageElement);
+      }
       $(pageElement).removeClass('hidden'); //element created, so display it.
     }
 
@@ -893,10 +899,11 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
       taskLength = task.length; //get the length of the task string
      if(task == "s"){ //if the task is just "s" it must be idle
         element.innerHTML = "Idle Sensor";
-      }else{
-        if(task == "zone"){ //if the task is just "zone", then it's a static zone sensor
+      }else if(task == "zone"){ //if the task is just "zone", then it's a static zone sensor
           element.innerHTML = "Zone sensor";
-        }else{
+      }else if(task == "sc"){
+        element.innerHTML = "";
+      }else{
           var elementString = ""; //initialise a string
           var appendCommas = false;
           for(var i = 0; i < taskLength; i++){ //loop through every letter
@@ -928,7 +935,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         }
         element.innerHTML = elementString + "Sensor"; //once the string has been  built, append sensor and then insert it to the DOM
       }
-      }
+
     }
     /**
      * DESCRIPTION
@@ -1016,7 +1023,9 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
       $(link).data('status', snapshot.alive);
       $(link).data('battery', snapshot.battery);
 
+      console.log("Old Task : " + oldTask + " | New Task : "+ snapshot.task);
       if(oldTask != snapshot.task){
+        console.log("Delete readings");
         dataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address);
         dataRef.remove()
       }
@@ -1025,6 +1034,45 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         appendSensor(snapshot.zone,changedElement);
       }
     }
+
+    function updateCup(snapshot, changedElement){
+      $(changedElement).find("#spotName")[0].innerHTML = snapshot.name; //populate element name
+      var batteryElement =  $(changedElement).find("#battery")[0]
+      setBattery(batteryElement, parseInt(snapshot.battery));
+      var spotTask = $(changedElement).find("#spotTask")[0];
+      setTask(spotTask, snapshot.task); //set the task
+
+      var status = $(changedElement).find("#status")[0]
+      $(status).css('background-color','green');
+
+      if(!snapshot.alive ){
+        $(status).css('background-color','darkred');
+
+      }
+
+      var link = $(changedElement).find("#editCupBtn")[0]; //find the link to Edit modal
+
+      var oldZone = $(link).data('zone'); //get the old task from the data attribute on the link
+      var oldTask = $(link).data('task');
+
+      $(link).data('name', snapshot.name); //update the data attributes to the new data
+      $(link).data('task', snapshot.task);
+      $(link).data('zone', snapshot.zone);
+      $(link).data('status', snapshot.alive);
+      $(link).data('battery', snapshot.battery);
+
+      //console.log("Old Task : " + oldTask + " | New Task : "+ snapshot.task);
+      if(oldTask != snapshot.task){
+      //  console.log("Delete readings");
+        dataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address);
+        dataRef.remove()
+      }
+
+      if (oldZone != snapshot.zone) { //if the task has changed, the element needs to move to a different sub-heading
+        appendSensor(snapshot.zone,changedElement);
+      }
+    }
+
     /**
      * DESCRIPTION
      * @author Josh Stennett
@@ -1050,7 +1098,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
      * @author Josh Stennett
      */
     function createDataListeners(snapshot, element){
-      console.log("LiveData Listener created");
+      //console.log("LiveData Listener created");
 
       if(newSensor.task.indexOf("b") !== -1){
         var btnoutput = $(element).find("#liveDatabtn")[0]
@@ -1125,6 +1173,52 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         })
       }
 
+      if(newSensor.task.indexOf("c") !== -1){
+          var glass = $(element).find("#glassContainer")[0];
+          var water = $(element).find("#water")[0];
+          var amountConsumed = $(element).find(".progress-bar")[0];
+          var waterLevel = $(element).find("#waterLevel")[0];
+
+
+
+      var amountLeftRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address + "/cup/left")
+
+          amountLeftRef.on("value", function(snapshot){
+            var amountLeft = snapshot.val();
+
+            waterLevel.innerHTML = Math.round(amountLeft) + "%";
+
+            var leftPixels = (amountLeft/2)
+
+            $(water).animate({height: leftPixels+"px"});
+
+            })
+
+
+
+      var dailyConsumptionRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address + "/cup/drankToday")
+
+        dailyConsumptionRef.on("value", function(snapshot){
+
+          var drankToday = snapshot.val()
+          var percent = (drankToday / 2000) * 100 + "%"
+          $(amountConsumed).css('width', percent );
+          amountConsumed.innerHTML = "<span>" + Math.round((drankToday / 2000) * 100) + "%" + "</span>";
+          $(amountConsumed).find("span").css('width',percent)
+
+
+
+        })
+
+        var angleRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address + "/cup/angle");
+
+        angleRef.on("value", function(snapshot){
+          var angle = snapshot.val();
+          //console.log(angle);
+         $(glass).css('transform', "rotate(" + angle + "deg)");
+
+        });
+      }
 
     }
 
@@ -1144,17 +1238,12 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
        })
 
        hammerEvent.on('pinchend', function(ev){
-         //console.log("ROTATE END AND/OR PINCH END");
-
-         //console.log(ev);
          if(ev.rotation >= 40 || ev.rotation <= -40){
-          // console.log("Trigger rotation");
            element.parent().find("#locationHistoryBtn")[0].click();
          } else if(ev.scale > 1){
-           //console.log("Trigger pinch out");
            element.parent().find("#historySensorBtn")[0].click();
          } else if(ev.scale < 1){
-           //console.log("Trigger pinch in")
+
            element.parent().find(".card-header")[0].click();
          }
        })
@@ -1177,14 +1266,11 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
        })
 
        hammerEvent.on('pinchend', function(ev){
-         //console.log("ROTATE END AND/OR PINCH END");
 
-         //console.log(ev);
+
          if(ev.rotation >= 40 || ev.rotation <= -40){
-          // console.log("Trigger rotation");
            element.parent().find("#locationHistoryBtn")[0].click();
          }else if(ev.scale < 1){
-           //console.log("Trigger pinch in")
            element.parent().find(".card-header")[0].click();
          }
        })
@@ -1200,25 +1286,9 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
           //console.log(snapshot.key());
 
         newSensor = snapshot.val();
-        console.log(newSensor.task.indexOf("p"));
-        if(newSensor.task.indexOf("p") === -1){ //sensor is not a person tracker as p is not in the task string.
-
-          newSensor.address = snapshot.key();
-
-          var sensorElement = $("#sensorTemplate").clone(); //create an instance of the template
-          $(sensorElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
-
-          createSensor(newSensor, sensorElement);
-
-          createDataListeners(newSensor, sensorElement);
-
-          createSensorTouchEvents(sensorElement);
-
-          $(sensorElement).draggable({containment: "parent"});
-
-        }else{ //sensor is a person tracker
-
-          newSensor.address = snapshot.key();
+        newSensor.address = snapshot.key();
+        //console.log(newSensor.task.indexOf("p"));
+        if(newSensor.task === "sp"){ //sensor is person sensor
 
           var personElement = $("#personTemplate").clone();
           $(personElement).attr('id', newSensor.address.replace(/ /g, "_"));
@@ -1228,6 +1298,30 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
             createPersonTouchEvents(personElement);
 
             $(personElement).draggable({containment: "parent"});
+
+
+
+        }else if(newSensor.task == "sc"){ //sensor is cup sensor
+
+          var cupElement = $("#cupTemplate").clone(); //create an instance of the template
+          $(cupElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
+          createSensor(newSensor, cupElement);
+
+          $(cupElement).draggable({containment: "parent"});
+        }else{ //sensor is a multi sensor
+
+          var sensorElement = $("#sensorTemplate").clone(); //create an instance of the template
+          $(sensorElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
+
+          console.log(newSensor);
+
+          createSensor(newSensor, sensorElement);
+
+
+          createSensorTouchEvents(sensorElement);
+
+          $(sensorElement).draggable({containment: "parent"});
+
         }
 
 
@@ -1252,42 +1346,76 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
         console.log("newTask : " + newTask + " | oldTask : " + oldTask);
 
-        if(oldTask == "sp" && newTask == "sp"){
-            //person stayed a person
-          updatePersonSensor(changedSensor, changedElement);
+        if(oldTask == "sp"){ //old task is person
+          if(newTask == "sp"){ //new task is person
+              updatePersonSensor(changedSensor, changedElement);
+          }else if(newTask == "sc"){ //new task is cup
+           $(changedElement).remove(); //remove the old sensor, as it's type has changed.
 
+            changedSensor.address = snapshot.key();
 
-        }
-        else if(oldTask == "sp" && newTask != "sp"){
-          console.log("Triggered");
-          //person became sensor
-          $(changedElement).remove(); //remove the old sensor, as it's type has changed.
+           var cupElement = $("#cupTemplate").clone(); //create an instance of the new template
+           $(cupElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
+
+           createSensor(changedSensor, cupElement);
+          }else{ //new task is multisensor
+            //person became sensor
+           $(changedElement).remove(); //remove the old sensor, as it's type has changed.
 
           changedSensor.address = snapshot.key();
 
-          var sensorElement = $("#sensorTemplate").clone(); //create an instance of the new template
-          $(sensorElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
+            var sensorElement = $("#sensorTemplate").clone(); //create an instance of the new template
+            $(sensorElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
 
-          createSensor(changedSensor, sensorElement);
+            createSensor(changedSensor, sensorElement);
 
+          }
+        }else if(oldTask == "sc"){ //old task is cup
+          if(newTask == "sp"){ //new task is person
+           $(changedElement).remove();
+           var personElement = $("#personTemplate").clone();
+           $(personElement).attr('id', changedSensor.address.replace(/ /g, "_"));
 
-        }
-        else if(oldTask != "sp" && newTask == "sp"){
-          //sensor became person
-                    $(changedElement).remove();
-                    var personElement = $("#personTemplate").clone();
-                    $(personElement).attr('id', changedSensor.address.replace(/ /g, "_"));
+            createSensor(changedSensor, personElement);
+          }else if(newTask == "sc"){ //new task is cup
+            updateCup(changedSensor, changedElement);
+          }else{ //new task is multisensor
+            $(changedElement).remove(); //remove the old sensor, as it's type has changed.
 
-                    createSensor(changedSensor, personElement);
+            changedSensor.address = snapshot.key();
 
-        }
-        else if(oldTask != "sp" && newTask != "sp"){
-          //sensor stayed sensor
-          updateSensor(changedSensor, changedElement);
+            var sensorElement = $("#sensorTemplate").clone(); //create an instance of the new template
+            $(sensorElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
 
+            createSensor(changedSensor, sensorElement);
+
+          }
+        }else{ //old task is multisensor
+          if(newTask == "sp"){ //new task is person
+            //sensor became person
+                     $(changedElement).remove();
+                     var personElement = $("#personTemplate").clone();
+                     $(personElement).attr('id', changedSensor.address.replace(/ /g, "_"));
+
+                     createSensor(changedSensor, personElement);
+          }else if(newTask == "sc"){ //new task is cup
+            $(changedElement).remove(); //remove the old sensor, as it's type has changed.
+
+            changedSensor.address = snapshot.key();
+
+            var cupElement = $("#cupTemplate").clone(); //create an instance of the new template
+            $(cupElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
+
+            createSensor(changedSensor, cupElement);
+          }else{ //new task is multisensor
+              updateSensor(changedSensor, changedElement);
+          }
         }
 
     });
+
+
+
     /**
      * DESCRIPTION
      * @author Josh Stennett
@@ -1312,6 +1440,8 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         }else if(task == "s"){
           //idle sensor
           modal.find("#editSensorTypeSelect").val("s").change();
+        }else if(task == "sc"){
+          modal.find("#editSensorTypeSelect").val("sc").change();
         }else{
           //multi sensor
           modal.find("#editSensorTypeSelect").val("multi").change();
@@ -1346,6 +1476,68 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
       //  console.log(name);
     });
 
+
+    $(document).on("click", "#editCupBtn", function() { //when you open the Edit modal
+
+        var name = $(this).data('name'); //populate variables from data-attributes
+        var task = $(this).data('task');
+        //console.log(task);
+        var address = $(this).data('address');
+        var zone = $(this).data('zone');
+        var status = $(this).data('status');
+        var battery = $(this).data('battery');
+
+        var modal = $("#editCup"); //get the modal element
+
+        if(task == "sp"){
+          //person sensor
+          modal.find("#editSensorTypeSelect").val("sp").change();
+        }else if(task == "zone"){
+          //zone sensor
+          modal.find("#editSensorTypeSelect").val("zone").change();
+        }else if(task == "s"){
+          //idle sensor
+          modal.find("#editSensorTypeSelect").val("s").change();
+        }else if(task == "sc"){
+          modal.find("#editSensorTypeSelect").val("sc").change();
+        }else{
+          //multi sensor
+          modal.find("#editSensorTypeSelect").val("multi").change();
+          if(task.indexOf("m") !== -1){
+              $("input#m").prop("checked", true);
+          }
+          if(task.indexOf("l") !== -1){
+              $("input#l").prop("checked", true);
+          }
+          if(task.indexOf("t") !== -1){
+              $("input#t").prop("checked", true);
+          }
+          if(task.indexOf("b") !== -1){
+              $("input#b").prop("checked", true);
+          }
+
+        }
+
+        var volumeRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + address + "/cupStat/volume");
+        volumeRef.once("value", function(snapshot){
+          console.log(snapshot.val());
+          $("#editCup").find("input#volume")[0].value = snapshot.val()
+        });
+
+        modal.find("#myModalLabel")[0].innerHTML = name; //insert variables to the element
+
+        modal.find("#spotAddress")[0].innerHTML = address;
+        modal.find("input#name")[0].value = name;
+        modal.find("input#" + task).prop("checked", true);
+        modal.find("#sensorZone")[0].innerHTML = zone;
+        modal.find("#sensorStatus")[0].innerHTML = status;
+        modal.find("#battery")[0].innerHTML = battery;
+        var modal = $("#deleteModal");
+        modal.find("#myModalLabel")[0].innerHTML = name;
+        modal.find("#deleteSpotAddress")[0].innerHTML = address;
+
+      //  console.log(name);
+    });
     /**
    * When #historySensorBtn is clicked, it opens a dialog and sets spotId to its <div>
    * to allow setSensorHistoryChart to plot graph on the div
@@ -1613,8 +1805,10 @@ $scope.deleteAlarm = function(){
       console.log("Deleting " + address); //log the delete address just in case
 
       var delRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings/" + address); //programatically generate the reference url
+      var delReadingsRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + address);
       var delMapRef = new Firebase("https://sunsspot.firebaseio.com/map/" + address);
       delRef.remove(); //call the remove function to remove the data from Firebase
+      delReadingsRef.remove();
       delMapRef.remove() //delete the spot from the map, as well.
       $("#" + address.replace(/ /g, "_")).remove(); //remove th element from the DOM
       $('.modal').modal('hide');
@@ -1670,6 +1864,59 @@ $scope.deleteAlarm = function(){
       $("input#b").prop("checked", false);
   };
 
+  $scope.cupSubmit = function() {
+
+      var modal = $("#editCup")
+      var address = modal.find("#spotAddress")[0].innerHTML //populate variables based off of form values
+      var newName = modal.find("#name")[0].value;
+      var newZone = parseInt($("span#sensorZone")[0].innerHTML);
+      var newTask = modal.find('#editSensorTypeSelect').val();
+      var status = modal.find("#sensorStatus")[0].innerHTML;
+      var newBattery = modal.find("#battery")[0].innerHTML;
+
+      var newVolume = parseInt(modal.find("input#volume")[0].value);
+
+      if(newTask == "multi"){
+        var multiTask = "s";
+        if($("input#m").is(':checked')){
+
+          multiTask += "m";
+        }
+        if($("input#l").is(':checked')){
+
+          multiTask += "l";
+        }
+        if($("input#t").is(':checked')){
+
+          multiTask += "t";
+        }
+        if($("input#b").is(':checked')){
+
+          multiTask += "b";
+        }
+        newTask = multiTask;
+      }
+
+      var updateRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings/"); //create reference
+
+      updateRef.child(address).set({
+          name: newName,
+          task: newTask,
+          zone: newZone,
+          alive: status,
+          battery: newBattery
+      }); //update the record with the new data
+
+      var volumeRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + address +"/cupStat/")
+      volumeRef.update({volume: newVolume});
+
+
+      $("input#m").prop("checked", false);
+      $("input#l").prop("checked", false);
+      $("input#t").prop("checked", false);
+      $("input#b").prop("checked", false);
+  };
+
   /**
    * DESCRIPTION
    * @param {type} paramName - Description.
@@ -1709,6 +1956,9 @@ $scope.deleteAlarm = function(){
       console.log("Profile pic : " + chosenProfilePic);
       var profRef =  new Firebase("sunsspot.firebaseio.com/spotProfile/"+address+"/FileName")
       profRef.set(chosenProfilePic + ".jpg");
+
+      var personCard = $("#" +address.replace(/ /g, "_"))
+      $(personCard).find("#profileImage").find("img").attr('src', '../images/profile/' + chosenProfilePic + ".jpg");
 
 
       var updateRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings/"); //create reference
