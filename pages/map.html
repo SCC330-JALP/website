@@ -8,11 +8,42 @@
         ng-drop="true"
         ng-drop-success="onDropComplete($data, $event, mainIndex)">
     
-    <span class="title" style="opacity:0.3">{{$index}}</span>
+    <span class="title" style="opacity:0.3;position:absolute;left:45%;top:30%;">{{$index}}</span>
     
     <div ng-repeat="obj in mergeObjects(objIndexList, objSettingsList)" >
-      <div ng-if="obj.mainIndex == mainIndex" ng-drag="true" ng-drag-data="obj" class="draggable">
-        {{obj.name}}
+      <div ng-if="obj.mainIndex == mainIndex" ng-drag="true" ng-drag-data="obj" class="draggable btn btn-default" ng-class="{
+          'btn-success' : obj.alive == true,
+          'btn-danger' : obj.alive == 'false' || obj.alive == false}">
+        <span class="fa" 
+          ng-class="{
+          'fa-battery-0' : obj.battery <= 20,
+          'fa-battery-1' : obj.battery <= 40,
+          'fa-battery-2' : obj.battery <= 60,
+          'fa-battery-3' : obj.battery <= 80,
+          'fa-battery-4' : obj.battery <= 100}">
+          </span>
+          {{obj.name}}<br/>
+
+          <!-- Person -->
+          <span class="glyphicon glyphicon-user" aria-hidden="true" ng-if="obj.task.indexOf('p')>-1"></span>
+
+          <!-- Light -->
+          <span class="glyphicon glyphicon-certificate" aria-hidden="true" ng-if="obj.task.indexOf('l')>-1"></span>
+          
+          <!-- Temperature -->
+          <span class="glyphicon glyphicon-fire" aria-hidden="true" ng-if="obj.task.indexOf('t')>-1"></span>
+
+          <!-- Motion -->
+          <span class="glyphicon glyphicon-option-horizontal" aria-hidden="true" ng-if="obj.task.indexOf('m')>-1"></span>
+
+          <!-- Button -->
+          <span class="glyphicon glyphicon-hand-up" aria-hidden="true" ng-if="obj.task.indexOf('b')>-1"></span>
+
+          <!-- Cup -->
+          <span class="glyphicon glyphicon-tint" aria-hidden="true" ng-if="obj.task.indexOf('c')>-1"></span>
+
+          <!-- Cup -->
+          <span class="glyphicon glyphicon-signal" aria-hidden="true" ng-if="obj.task.indexOf('zone')>-1"></span>
       </div>
     </div>
 
@@ -38,7 +69,7 @@
         ng-class="{
           'btn-success' : obj.alive == true,
           'btn-danger' : obj.alive == 'false' || obj.alive == false}">
-          
+
         <span class="fa" 
           ng-class="{
           'fa-battery-0' : obj.battery <= 20,

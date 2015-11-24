@@ -28,11 +28,10 @@
 }
 
 .draggable{
-    background: rgba(255, 0, 0, 0.5);
     color: white;
     text-align: center;
     cursor: move;
-    margin:5px;
+    font-size:11px;
 }
 ul.draggable-objects:after {
     display: block;
@@ -58,6 +57,7 @@ ul.draggable-objects:after {
     height: 55px;
     float: left;
     border: 1px dashed rgb(136, 165, 249);
+    position:relative;
 }
 .droppable.drag-enter {
     border: dashed 1px #000;
@@ -70,4 +70,7 @@ ul.draggable-objects:after {
 .unassigned{
     float:left;
     margin:5px;
+}
+.glyphicon-user:before{
+    
 }
