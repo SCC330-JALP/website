@@ -206,6 +206,70 @@
 
 
 
+
+<!--
+
+  CUP TEMPLATE
+
+ -->
+<div id="cupTemplate" class="col-xs-6  object-card hidden">
+
+    <div class="card">
+      <div class="row card-header">
+        <div class="col-xs-1">
+            <div id="battery"></div>
+        </div>
+
+        <div class="col-xs-8">
+          <div id="spotName"> Spot name </div>
+        </div>
+        <div class="col-xs-1">
+          <div id="status" class="status-light"> </div>
+        </div>
+
+      </div>
+
+      <div class="card-content">
+
+        <div id="glassContainer">
+        <div id="glass">
+            <div id="water"></div>
+        </div>
+        </div>
+
+        <div id="waterLevel" class="centered"></div>
+
+
+        <div class="divider"></div>
+        <label>Reccomended daily intake</label>
+        <div class="progress">
+          <div class="progress-bar progress-bar-success progress-bar-striped" style="width: 0%">
+          </div>
+        </div>
+
+        <span id="spotTask" class="col-xs-12">Spot type</span>
+
+      </div>
+
+        <div class="card-footer">
+
+          <small id="spotMAC"> Spot MAC</small><br>
+          <div class="btn-group" role="group">
+            <button id="editCupBtn" class="btn btn-primary data-button" data-toggle="modal" data-target="#editCup" data-name="" data-task="" data-address="" data-zone="" data-status="" data-battery=""><span class="fa fa-edit"></span></button>
+
+
+            <button id="locationHistoryBtn" data-toggle="modal" data-target="#historyPlayback" data-address="" class="btn btn-primary btn"><span class="fa fa-history"></span></button>
+            <button id="spotAlarmsBtn" data-address="" data-name="" data-toggle="modal" data-target="#listAlarms" class="btn btn-primary btn"><span class="fa fa-clock-o"></span></button>
+
+          </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+<!-- end template -->
 <!--
 
   PERSON TEMPLATE
@@ -318,7 +382,11 @@ LIST ALARMS MODAL
 
       </div>
       <div class="modal-body">
+        <div class="container-fluid">
           <button id="newAlarmBtn" type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#newAlarm" data-address="" ><span class="fa fa-plus"></span> New</button>
+  
+        </div>
+
         <div id="alarmTable"></div>
       </div>
       <div class="modal-footer">
@@ -483,6 +551,10 @@ HISTORY PLAYBACK MODAL
                 <span class="input-group-addon playhistory-info">{{index}}/{{ history.length }}</span>
               </div>
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> 9ee850ea7685ab52c4d642d37d348dffd3a46b33
 
             <!-- Player options -->
             <div class="center-wrap">
@@ -496,17 +568,17 @@ HISTORY PLAYBACK MODAL
                 <select class="btn btn-info" style="border-bottom: 2px solid #5BC0DE" ng-options="selectedSpeed as selectedSpeed.speed for selectedSpeed in playbackSpeed " ng-model="selectedSpeed" ng-change="changeSpeed(history.length)"></select>
               </div>
             </div>
-              
-            <hr>  
-            
+
+            <hr>
+
             <!-- Mini Date Squares -->
             <div class="container-fluid">
               <div ng-repeat="square in history track by $index">
-                    
-                    <div class="date-square" 
-                    ng-class="{ 
-                    'zone1-date-square' : (square.newVal == 1), 
-                    'zone2-date-square' : (square.newVal == 2), 
+
+                    <div class="date-square"
+                    ng-class="{
+                    'zone1-date-square' : (square.newVal == 1),
+                    'zone2-date-square' : (square.newVal == 2),
                     'zone3-date-square' : (square.newVal == 3),
                     'zone-size-1' : ((history[$index+1].timestamp - square.timestamp) >= 60000*5),
                     'zone-size-2' : ((history[$index+1].timestamp - square.timestamp) >= 60000*30),
@@ -517,12 +589,12 @@ HISTORY PLAYBACK MODAL
                     'zone-size-7' : ((history[$index+1].timestamp - square.timestamp) >= 60000*60*24*7),
                     'date-square-selected' : index == $index }"
                     ng-click="setIndex($index);console(history[$index+1].timestamp - square.timestamp)">{{square.newVal}}</div>
-                    
+
               </div>
             </div>
 
             </div>
-            
+
             <div id="timeline_div"></div>
             <div id="table_div"></div>
         </div>
@@ -537,6 +609,92 @@ HISTORY PLAYBACK MODAL
  </div><!-- /.modal -->
 
 <!--
+
+<!--
+
+  EDIT CUP MODAL
+
+ -->
+<!-- Modal boilerplate code: will get customised when it is loaded.  -->
+<div class="modal fade" id="editCup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Spot Name</h4><small id="spotAddress">Address Unknown</small> | <small> Zone : <span id="sensorZone">N/A </span> </small> | Status : <span id="sensorStatus">?</span>  | Battery : <span id="battery">?</span>%
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="email">Name:</label>
+                        <div class="col-sm-10">
+                            <input type="name" class="form-control" id="name" placeholder="Enter Name" value=>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="email">Volume (ml):</label>
+                        <div class="col-sm-10">
+                            <input type="name" class="form-control" id="volume" placeholder="Enter cup volume in ml." value=>
+                        </div>
+                    </div>
+
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="email">Sensor Type:</label>
+                            Warning: changing the sensor type will remove any data stored currently.
+
+                            <div class="col-sm-10">
+                              <select id="editSensorTypeSelect">
+                                <option value="zone">Zone</option>
+                                <option value="sc">Cup sensor</option>
+                                <option value="sp">Person tracker</option>
+                                <option value="multi">Multi-sensor</option>
+                                <option value="s">Idle</option>
+                              </select>
+
+                                <div id="editSensorCheckbox" class="radio hidden">
+                                    <label>
+                                        <input type="checkbox" id="m" value="m" name="optradio">Motion</label>
+                                    <br>
+
+                                    <label>
+                                        <input type="checkbox" id="l" value="l" name="optradio">Light</label>
+                                    <br>
+
+                                    <label>
+                                        <input type="checkbox" id="t" value="t" name="optradio">Temperature</label>
+                                    <br>
+                                    <label>
+                                        <input type="checkbox" id="b" value="b" name="optradio">Button</label>
+                                    <br>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10 modal-footer">
+                                <!-- <button type="submit" class="btn btn-default" data-dismiss="modal" -->
+                                <button id="deleteBtn" class="btn btn-danger pull-left" data-toggle="modal" data-target="#deleteModal" data-name="">Delete spot</button>
+                                <div class="pull-right">
+                                    <button class="btn btn-default" data-dismiss="modal"> Cancel </button>
+                                    <button type="submit" class="btn btn-default" data-dismiss="modal" ng-click="cupSubmit()">Save changes</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /#wrapper -->
+
 
 <!--
 
@@ -562,7 +720,7 @@ HISTORY PLAYBACK MODAL
 
                     </div>
 
-                    <div class="form-group">
+                    <div id="profilePictureSelection" class="form-group">
                         <label class="control-label col-sm-2" for="email">Profile Picture:</label>
 
                         <div class="col-sm-10">
@@ -590,6 +748,7 @@ HISTORY PLAYBACK MODAL
                             <div class="col-sm-10">
                               <select id="viewSensorTypeSelect">
                                 <option value="zone">Zone</option>
+                                <option value="sc">Cup sensor</option>
                                 <option value="sp">Person tracker</option>
                                 <option value="multi">Multi-sensor</option>
                                 <option value="s">Idle</option>
@@ -670,6 +829,7 @@ HISTORY PLAYBACK MODAL
                             <div class="col-sm-10">
                               <select id="editSensorTypeSelect">
                                 <option value="zone">Zone</option>
+                                <option value="sc">Cup sensor</option>
                                 <option value="sp">Person tracker</option>
                                 <option value="multi">Multi-sensor</option>
                                 <option value="s">Idle</option>
