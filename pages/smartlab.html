@@ -21,7 +21,7 @@
 
                         <div class="card-footer">
 
-                          <button ng-click="openHistory('zone1light')" class="btn btn-default btn-block">
+                          <button ng-click="open(1, 'light')" class="btn btn-default btn-block">
                             <div google-chart chart="sparkline(1, 'light', 'blue')" class="sparkline"></div>
                           </button>
 
@@ -40,7 +40,7 @@
                         </div>
 
                         <div class="card-footer">
-                            <button ng-click="openHistory('zone1temp')" class="btn btn-default btn-block">  <div google-chart chart="sparkline(1, 'temp', 'red')" class="sparkline"></div>
+                            <button ng-click="open(1, 'temp')" class="btn btn-default btn-block">  <div google-chart chart="sparkline(1, 'temp', 'red')" class="sparkline"></div>
                             </button>
                         </div>
 
@@ -58,7 +58,6 @@
         <div class="container-fluid ">
             <h3>Sensors</h3>
             <div class="row sensorsContainer" id="zone1Sensors">
-
 
             </div>
 
@@ -87,10 +86,10 @@
                         </div>
 
                         <div class="card-footer">
-                        <button ng-click="openHistory('zone2light')" class="btn btn-default btn-block">
+                        <button ng-click="open(2, 'light')" class="btn btn-default btn-block">
                             <div google-chart chart="sparkline(2, 'light', 'blue')" class="sparkline"></div>
                         </button>
-
+                        
                         </div>
 
                     </div>
@@ -105,7 +104,7 @@
                         </div>
 
                         <div class="card-footer">
-                        <button ng-click="openHistory('zone2temp')" class="btn btn-default btn-block">
+                        <button ng-click="open(2, 'temp')" class="btn btn-default btn-block">
                             <div google-chart chart="sparkline(2, 'temp', 'red')" class="sparkline"></div>
                         </button>
                         </div>
@@ -153,7 +152,7 @@
                         </div>
 
                         <div class="card-footer">
-                        <button ng-click="openHistory('zone3light')" class="btn btn-default btn-block">
+                        <button ng-click="open(1, 'light')" class="btn btn-default btn-block">
                             <div google-chart chart="sparkline(3, 'light', 'blue')" class="sparkline"></div>
                         </button>
 
@@ -171,7 +170,7 @@
                         </div>
 
                         <div class="card-footer">
-                        <button ng-click="openHistory('zone3temp')" class="btn btn-default btn-block">
+                        <button ng-click="open(3, 'temp')" class="btn btn-default btn-block">
                             <div google-chart chart="sparkline(3, 'temp', 'red')" class="sparkline"></div>
                         </button>
                         </div>
@@ -521,25 +520,30 @@ HISTORY PLAYBACK MODAL
         <div class="container-fluid">
 
             <div class="container-fluid">
+              <!-- Display Zones -->
               <div id="playbackZone1" class="col-xs-4 playbackZone">
                   <span class="zone-label">Zone 1</span>
                   <div class="playbackObject" ng-class="{ 'show' : history[index].newVal == 1 }"></div>
               </div>
+              
               <div id="playbackZone2" class="col-xs-4 playbackZone">
                   <span class="zone-label">Zone 2</span>
                   <div class="playbackObject" ng-class="{ 'show' : history[index].newVal == 2 }"></div>
               </div>
+              
               <div id="playbackZone3" class="col-xs-4 playbackZone">
                   <span class="zone-label">Zone 3</span>
                   <div class="playbackObject" ng-class="{ 'show' : history[index].newVal == 3 }"></div>
               </div>
-
+              
+              <!-- Video Info -->
               <span class="playhistory-info">
                 <span ng-if="history.length == 0" class="alert-danger">Selected range has no data.</span>
                 <span ng-if="index <= history.length"class="alert-info">{{ history[index].timestamp | date:'medium' }}</span>
                 <span ng-if="index == history.length && index > 0" class="alert-success">Completed</span>
               </span>
-
+              
+              <!-- Progress Bar -->
               <div class="input-group progress" style="clear:both;">
                 <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{index}}" aria-valuemin="0" aria-valuemax="{{ history.length }}" style="width: {{ (index/history.length)*100 }}%">
                 <span class="sr-only">{{(index/history.length)*100}}% Complete</span>
@@ -547,7 +551,10 @@ HISTORY PLAYBACK MODAL
                 <span class="input-group-addon playhistory-info">{{index}}/{{ history.length }}</span>
               </div>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9ee850ea7685ab52c4d642d37d348dffd3a46b33
 
             <!-- Player options -->
             <div class="center-wrap">
@@ -897,3 +904,22 @@ DELETE MODAL
         <!-- /.modal-content -->
     </div>
     <!-- /.modal-dialog -->
+
+
+
+<script type="text/ng-template" id="zoneHistory.html">
+
+    <div class="modal-header">
+        <h3 class="modal-title">Zone History</h3>
+    </div>
+    <div class="modal-body">
+
+        <div google-chart chart="zoneHistory" class="history-chart"></div>
+
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+
+</script>
