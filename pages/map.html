@@ -34,7 +34,11 @@
         ng-if="obj.mainIndex == -1 && obj.zone == 1" 
         ng-drag="true" 
         ng-drag-data="obj" 
-        class="btn btn-default btn-primary unassigned">
+        class="btn btn-default btn-primary unassigned"
+        ng-class="{
+          'btn-success' : obj.alive == true,
+          'btn-danger' : obj.alive == 'false' || obj.alive == false}">
+          
         <span class="fa" 
           ng-class="{
           'fa-battery-0' : obj.battery <= 20,
@@ -61,7 +65,11 @@
         ng-if="obj.mainIndex == -1 && obj.zone == 2" 
         ng-drag="true" 
         ng-drag-data="obj" 
-        class="btn btn-default btn-primary unassigned">
+        class="btn btn-default unassigned"
+        ng-class="{
+          'btn-success' : obj.alive == true,
+          'btn-danger' : obj.alive == 'false' || obj.alive == false}">
+
           <span class="fa" 
           ng-class="{
           'fa-battery-0' : obj.battery <= 20,
@@ -88,7 +96,11 @@
         ng-if="obj.mainIndex == -1 && obj.zone == 3" 
         ng-drag="true" 
         ng-drag-data="obj" 
-        class="btn btn-default btn-primary unassigned">
+        class="btn btn-default btn-primary unassigned"
+        ng-class="{
+          'btn-success' : obj.alive == true,
+          'btn-danger' : obj.alive == 'false' || obj.alive == false}">
+
         <span class="fa" 
           ng-class="{
           'fa-battery-0' : obj.battery <= 20,
@@ -103,86 +115,5 @@
   </div>
 
 
+<!-- JSON DEBUG -->
 <pre style="clear:both;">{{ mergeObjects(objIndexList, objSettingsList, objReadingsList) | json }}</pre>
-
-
-<!-- <div 
-  ng-repeat="i in range(list.length) track by $index" 
-  ng-init="mainIndex = $index">
-    
-    <div 
-      ng-class="{
-        'zone1':(zone1.indexOf(mainIndex)>-1), 
-        'zone2':(zone2.indexOf(mainIndex)>-1), 
-        'zone3':(zone3.indexOf(mainIndex)>-1)}"  
-      ng-drop="true" 
-      ng-drop-success="onDropComplete($data, $event, mainIndex)">
-
-      <span class="title" style="opacity:0.3">{{$index}}</span>
-
-      <div 
-        ng-repeat="obj in list[mainIndex]" 
-        ng-drag="true" 
-        ng-drag-data="obj">
-          {{obj.name}}
-      </div>
-
-    </div>
-</div>
- -->  
-
-  <!-- <div ng-drop="true" ng-drop-success="onDropComplete1($data,$event)">
-      <span class="title">Drop area #1</span>
-
-      <div ng-repeat="obj in list[0]" ng-drag="true" ng-drag-data="obj" ng-drag-success="onDragSuccess1($data, $event)">
-          {{obj.name}}
-      </div>
-  </div> -->
-
-<!--   <div ng-drop="true" ng-drop-success="onDropComplete2($data,$event)">
-      <span class="title">Drop area #2</span>
-
-      <div ng-repeat="obj in list[1]" ng-drag="true" ng-drag-data="obj" ng-drag-success="onDragSuccess2($data,$event)">
-          {{obj.name}}
-      </div>
-
-  </div> -->
-
-<!--   <pre style="clear:both;">{{list[0] | json}}</pre>
-  <pre style="clear:both;">{{list[1] | json}}</pre> -->
-
-
-
-
-
-
-
-<!--################################ OLD MAP CODE ################################-->
-<!-- LAB VIEW -->        
-<!-- <div ng-repeat="i in range(number) track by $index" ng-init="mainIndex = $index">
-    <div ng-drop="true" ng-drop-success="onDropCompleteArray[mainIndex]($data,$event)"> -->
-        
-<!--         <div ng-repeat="sensor in sensors" ng-if="sensor.mainIndex != null && sensor.mainIndex == mainIndex" ng-drag="true" ng-drag-data="sensor"
-             ng-drag-success="onDragSuccessArray[mainIndex]($data,$event)">
-            {{ sensor.name }}
-        </div> -->
-        
-<!--         <div ng-repeat="obj in droppedObjectsArray[mainIndex]" ng-drag="true" ng-drag-data="obj"
-             ng-drag-success="onDragSuccessArray[mainIndex]($data,$event)"> -->
-                <!-- {{$log.log(obj.mainIndex == mainIndex)}} -->
-<!--                 {{obj.name}}
-        </div>
-    </div>
-</div>
- -->
-<!-- UNASSIGNED -->
-<!-- <div ng-drop="true" ng-drop-success="onDropComplete($data,$event)" class="unassigned">
-    <div ng-repeat="sensor in sensors" ng-drag="true" ng-drag-data="sensor"
-         ng-drag-success="onDragSuccess($data,$event)"> -->
-
-        <!-- Show unassigned sensors -->
-<!--         <span ng-if="sensor.mainIndex == null">{{ sensor.name }}</span>
-    </div>
-</div>
- <pre>{{droppedObjectsArray | json}}</pre>
- <pre>{{sensors | json}}</pre>
