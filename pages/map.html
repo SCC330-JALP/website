@@ -34,7 +34,15 @@
         ng-if="obj.mainIndex == -1 && obj.zone == 1" 
         ng-drag="true" 
         ng-drag-data="obj" 
-        class="btn btn-default btn-primary unassigned">{{obj.name}}
+        class="btn btn-default btn-primary unassigned">
+        <span class="fa" 
+          ng-class="{
+          'fa-battery-0' : obj.battery <= 20,
+          'fa-battery-1' : obj.battery <= 40,
+          'fa-battery-2' : obj.battery <= 60,
+          'fa-battery-3' : obj.battery <= 80,
+          'fa-battery-4' : obj.battery <= 100}">
+          </span> {{obj.name}}
       </span>
 
     </div>
