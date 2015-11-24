@@ -2089,11 +2089,7 @@ spotApp.controller('zoneHistoryCtrl', function ($rootScope, $scope, $uibModalIns
 
   $scope.zoneHistory = zoneHistory;
 
-  $scope.ok = function () {
-    $uibModalInstance.close($scope.selected.item);
-  };
-
-  $scope.cancel = function () {
-    $uibModalInstance.dismiss('cancel');
+  $scope.close = function () {
+    $uibModalInstance.dismiss('close');
   };
 });
