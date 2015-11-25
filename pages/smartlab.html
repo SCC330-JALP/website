@@ -252,16 +252,32 @@
       </div>
 
         <div class="card-footer">
-
-          <small id="spotMAC"> Spot MAC</small><br>
-          <div class="btn-group" role="group">
-            <button id="editCupBtn" class="btn btn-primary data-button" data-toggle="modal" data-target="#editCup" data-name="" data-task="" data-address="" data-zone="" data-status="" data-battery=""><span class="fa fa-edit"></span></button>
-
-
-            <button id="locationHistoryBtn" data-toggle="modal" data-target="#historyPlayback" data-address="" class="btn btn-primary btn"><span class="fa fa-history"></span></button>
-            <button id="spotAlarmsBtn" data-address="" data-name="" data-toggle="modal" data-target="#listAlarms" class="btn btn-primary btn"><span class="fa fa-clock-o"></span></button>
-
+          <div class="col-xs-6">
+            <small id="spotMAC"> Spot MAC</small><br>
           </div>
+
+          <div class="col-xs-6">
+
+            <div class="dropup pull-right">
+              <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="fa fa-cog"></span>
+                  <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                <li>
+                  <a id="editCupBtn" class="data-button" data-toggle="modal" data-target="#editCup" data-name="" data-task="" data-address="" data-zone="" data-status="" data-battery=""><span class="fa fa-edit"></span> Edit</a>
+                </li>
+                <li>
+                  <a id="locationHistoryBtn" data-toggle="modal" data-target="#historyPlayback" data-address="" class=""><span class="fa fa-history"></span> History</a>
+                </li>
+                <li>
+                  <a id="spotAlarmsBtn" data-address="" data-name="" data-toggle="modal" data-target="#listAlarms" class=""><span class="fa fa-clock-o"></span> Alarms</a>
+                </li>
+
+              </ul>
+            </div>
+          </div>
+
 
         </div>
 
@@ -298,13 +314,38 @@
     </div>
 
     <div class="card-footer">
-        <small id="spotMAC">Unknown Address</small><br>
-        <div class="btn-group" role="group">
-            <button id="viewPersonBtn" class="btn btn-primary data-button " type="button" name="button" data-toggle="modal" data-target="#viewPerson" data-name="" data-address="" data-zone="" data-task="" data-status="" data-battery=""><span class="fa fa-eye"></span></button>
-            <span id="locationHistoryBtn" data-toggle="modal" data-target="#historyPlayback" class="btn btn-primary btn"><span class="fa fa-history"></span></span>
-            <button id="spotAlarmsBtn" data-address="" data-name="" data-toggle="modal" data-target="#listAlarms" class="btn btn-primary btn"><span class="fa fa-clock-o"></span></button>
 
+        <div class="col-xs-6">
+          <small id="spotMAC"> Spot MAC</small><br>
         </div>
+
+        <div class="col-xs-6">
+
+          <div class="dropup pull-right">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="fa fa-cog"></span>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+              <li>
+                <a id="viewPersonBtn" class="data-button " type="button" name="button" data-toggle="modal" data-target="#viewPerson" data-name="" data-address="" data-zone="" data-task="" data-status="" data-battery=""><span class="fa fa-eye"></span> View</a>
+
+              </li>
+              <li>
+                <a id="locationHistoryBtn" data-toggle="modal" data-target="#historyPlayback" class=""><span class="fa fa-history"></span> History</a>
+
+              </li>
+              <li>
+                <a id="spotAlarmsBtn" data-address="" data-name="" data-toggle="modal" data-target="#listAlarms" class=""><span class="fa fa-clock-o"></span> Alarms</a>
+
+              </li>
+
+            </ul>
+          </div>
+        </div>
+
+
+      </div>
     </div>
   </div>
 </div>
@@ -346,19 +387,36 @@
 
         <div class="card-footer">
 
-          <small id="spotMAC"> Spot MAC</small><br>
-          <div class="btn-group" role="group">
-            <button id="editSensorBtn" class="btn btn-primary data-button" data-toggle="modal" data-target="#myModal" data-name="" data-task="" data-address="" data-zone="" data-status="" data-battery=""><span class="fa fa-edit"></span></button>
-
-            <button id="historySensorBtn" data-address="" data-task="" class="btn btn-primary btn"><span class="fa fa-bar-chart"></span></button>
-            <button id="locationHistoryBtn" data-toggle="modal" data-target="#historyPlayback" data-address="" class="btn btn-primary btn"><span class="fa fa-history"></span></button>
-            <button id="spotAlarmsBtn" data-address="" data-name="" data-toggle="modal" data-target="#listAlarms" class="btn btn-primary btn"><span class="fa fa-clock-o"></span></button>
-
+          <div class="col-xs-6">
+            <small id="spotMAC"> Spot MAC</small><br>
           </div>
 
-        </div>
+          <div class="col-xs-6">
 
+            <div class="dropup pull-right">
+              <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="fa fa-cog"></span>
+                  <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                <li>
+                  <a id="editSensorBtn" class="data-button" data-toggle="modal" data-target="#myModal" data-name="" data-task="" data-address="" data-zone="" data-status="" data-battery=""><span class="fa fa-edit"></span> Edit</a>
+                </li>
+                <li>
+                  <a id="historySensorBtn" data-address="" data-task="" class=""><span class="fa fa-bar-chart"></span> Graphs</a>
+                </li>
+                <li>
+                  <a id="locationHistoryBtn" data-toggle="modal" data-target="#historyPlayback" data-address="" class=" "><span class="fa fa-history"></span> History</a>
+                </li>
+                <li>
+                  <a id="spotAlarmsBtn" data-address="" data-name="" data-toggle="modal" data-target="#listAlarms" class=""><span class="fa fa-clock-o"></span> Alarms</a>
+                </li>
 
+              </ul>
+            </div>
+          </div>
+
+      </div>
     </div>
 
 </div>
