@@ -1022,11 +1022,8 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
       $(link).data('zone', snapshot.zone);
       $(link).data('status', snapshot.alive);
       $(link).data('battery', snapshot.battery);
-      if(oldTask != snapshot.task){
 
-        dataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings" + snapshot.address);
-        dataRef.remove()
-      }
+
 
       if (oldZone != snapshot.zone) { //if the zone has changed, the element needs to move to a different sub-heading
         appendSensor(snapshot.zone,changedElement);
@@ -1080,12 +1077,8 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
       $(link).data('status', snapshot.alive);
       $(link).data('battery', snapshot.battery);
 
-      console.log("Old Task : " + oldTask + " | New Task : "+ snapshot.task);
-      if(oldTask != snapshot.task){
-        console.log("Delete readings");
-        dataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address);
-        dataRef.remove()
-      }
+      //console.log("Old Task : " + oldTask + " | New Task : "+ snapshot.task);
+
 
       if (oldZone != snapshot.zone) { //if the task has changed, the element needs to move to a different sub-heading
         appendSensor(snapshot.zone,changedElement);
@@ -1119,11 +1112,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
       $(link).data('battery', snapshot.battery);
 
       //console.log("Old Task : " + oldTask + " | New Task : "+ snapshot.task);
-      if(oldTask != snapshot.task){
-      //  console.log("Delete readings");
-        dataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address);
-        dataRef.remove()
-      }
+
 
       if (oldZone != snapshot.zone) { //if the task has changed, the element needs to move to a different sub-heading
         appendSensor(snapshot.zone,changedElement);
@@ -1426,76 +1415,48 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
         console.log("newTask : " + newTask + " | oldTask : " + oldTask);
 
-        if(oldTask == "sp"){ //old task is person
-          if(newTask == "sp"){ //new task is person
-              updatePersonSensor(changedSensor, changedElement);
-          }else if(newTask == "sc"){ //new task is cup
-           $(changedElement).remove(); //remove the old sensor, as it's type has changed.
-
-            changedSensor.address = snapshot.key();
-
-           var cupElement = $("#cupTemplate").clone(); //create an instance of the new template
-           $(cupElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
-
-           createSensor(changedSensor, cupElement);
-          }else{ //new task is multisensor
-            //person became sensor
-           $(changedElement).remove(); //remove the old sensor, as it's type has changed.
-
-          changedSensor.address = snapshot.key();
-
-            var sensorElement = $("#sensorTemplate").clone(); //create an instance of the new template
-            $(sensorElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
-
-            createSensor(changedSensor, sensorElement);
-
-          }
-        }else if(oldTask == "sc"){ //old task is cup
-          if(newTask == "sp"){ //new task is person
-           $(changedElement).remove();
-           var personElement = $("#personTemplate").clone();
-           $(personElement).attr('id', changedSensor.address.replace(/ /g, "_"));
-
-            createSensor(changedSensor, personElement);
-          }else if(newTask == "sc"){ //new task is cup
+        if(oldTask == newTask){
+          if(newTask == "sc"){
             updateCup(changedSensor, changedElement);
-          }else{ //new task is multisensor
-            $(changedElement).remove(); //remove the old sensor, as it's type has changed.
-
-            changedSensor.address = snapshot.key();
-
-            var sensorElement = $("#sensorTemplate").clone(); //create an instance of the new template
-            $(sensorElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
-
-            createSensor(changedSensor, sensorElement);
-
+          }else if(newTask == "sp"){
+            updatePersonSensor(changedSensor, changedElement);
+          }else{
+            updateSensor(changedSensor, changedElement);
           }
-        }else{ //old task is multisensor
-          if(newTask == "sp"){ //new task is person
-            //sensor became person
-                     $(changedElement).remove();
-                     var personElement = $("#personTemplate").clone();
-                     $(personElement).attr('id', changedSensor.address.replace(/ /g, "_"));
+        }else{
+          $(changedElement).remove(); //remove the old sensor, as it's type has changed.
+          changedSensor.address = snapshot.key();
+          removeDataFromTaskChange(snapshot.key());
 
-                     createSensor(changedSensor, personElement);
-          }else if(newTask == "sc"){ //new task is cup
-            $(changedElement).remove(); //remove the old sensor, as it's type has changed.
-
-            changedSensor.address = snapshot.key();
-
+          if(newTask == "sc"){
             var cupElement = $("#cupTemplate").clone(); //create an instance of the new template
-            $(cupElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
-
+            $(cupElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of space
             createSensor(changedSensor, cupElement);
-          }else{ //new task is multisensor
-              updateSensor(changedSensor, changedElement);
+          }else if(newTask == "sp"){
+            var personElement = $("#personTemplate").clone();
+            $(personElement).attr('id', changedSensor.address.replace(/ /g, "_"));
+            createSensor(changedSensor, personElement);
+          }else{
+            var sensorElement = $("#sensorTemplate").clone(); //create an instance of the new template
+            $(sensorElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of space
+            createSensor(changedSensor, sensorElement);
           }
         }
 
     });
 
 
+    function removeDataFromTaskChange(address){
+      readingsRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + address);
+      readingsRef.remove()
 
+      profileRef = new Firebase("https://sunsspot.firebaseio.com/spotProfile/" + address);
+      profileRef.remove()
+
+      alarmRef = new Firebase("https://sunsspot.firebaseio.com/spotAlarms/" + address);
+      alarmRef.remove()
+
+    }
     /**
      * DESCRIPTION
      * @author Josh Stennett
@@ -1525,6 +1486,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         }else{
           //multi sensor
           modal.find("#editSensorTypeSelect").val("multi").change();
+
           if(task.indexOf("m") !== -1){
               $("input#m").prop("checked", true);
           }
@@ -1808,11 +1770,20 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
      * @author Josh Stennett
      */
     $("#editSensorTypeSelect").change(function(){
-
+      //console.log("select change");
       if($(this).val() == "multi"){
         $("#editSensorCheckbox").removeClass("hidden");
       }else{
         $("#editSensorCheckbox").addClass("hidden");
+      }
+    })
+
+    $("#editCupTypeSelect").change(function(){
+      //console.log("select change");
+      if($(this).val() == "multi"){
+        $("#editCupCheckbox").removeClass("hidden");
+      }else{
+        $("#editCupCheckbox").addClass("hidden");
       }
     })
     /**
@@ -1820,7 +1791,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
      * @author Josh Stennett
      */
     $("#viewSensorTypeSelect").change(function(){
-      //console.log("Select changed!");
+      console.log("Select changed!");
       //console.log($(this).val());
       if($(this).val() == "multi"){
         $("#viewSensorCheckbox").removeClass("hidden");
@@ -1957,7 +1928,7 @@ $scope.deleteAlarm = function(){
       var address = modal.find("#spotAddress")[0].innerHTML //populate variables based off of form values
       var newName = modal.find("#name")[0].value;
       var newZone = parseInt($("span#sensorZone")[0].innerHTML);
-      var newTask = modal.find('#editSensorTypeSelect').val();
+      var newTask = modal.find('#editCupTypeSelect').val();
       var status = modal.find("#sensorStatus")[0].innerHTML;
       var newBattery = modal.find("#battery")[0].innerHTML;
 
