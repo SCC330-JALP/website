@@ -406,12 +406,12 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
                 if(zoneNumber==3)
                     return $rootScope.zone3temp;
             }
-            
+
         }
       },
-      
+
     });
-      
+
     modalInstance.result.then(function (selectedItem) {
       $scope.selected = selectedItem;
     }, function () {
@@ -449,7 +449,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
     /**
      * Load and synchronize history from firebase to local object
      * @constructor
-     * @author Anson Cheung 
+     * @author Anson Cheung
      */
     $scope.loadHistory = function(){
 
@@ -488,7 +488,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
      * Playback history - It increases its index every 1 second d ivided by the choose speed
      * The interface function is being called and stored inside a promise variable to be closed later on.
      * @param {int} length - The length of the history records.
-     * @author Anson Cheung 
+     * @author Anson Cheung
      */
     var promise;
     $scope.play = function(length){
@@ -507,7 +507,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
     /**
      * Stop/Pause history playing - Close the promise that was initialized by play function
      * @param {int} length - The length of the history records.
-     * @author Anson Cheung 
+     * @author Anson Cheung
      */
     $scope.stop = function(){
         $interval.cancel(promise);
@@ -520,7 +520,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
      * Change the speed/FPS for the animation
      * It first change the speed, then stop the player, and finally play it again.
      * @param {int} length - The length of the history records.
-     * @author Anson Cheung 
+     * @author Anson Cheung
      */
     $scope.changeSpeed = function(length){
         $scope.speed = $scope.selectedSpeed.code;
@@ -532,7 +532,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
     /**
      * It increases its index by 1 so user can manually forward the animation
      * @param {int} length - The length of the history records.
-     * @author Anson Cheung 
+     * @author Anson Cheung
      */
     $scope.forward = function(length){
         if($scope.index < length){
@@ -544,7 +544,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
     /**
      * It decreases its index by 1 so user can manually backward the animation
      * @param {int} length - The length of the history records.
-     * @author Anson Cheung 
+     * @author Anson Cheung
      */
     $scope.backward = function(length){
         if($scope.index > 0 && $scope.index <= length){
@@ -555,15 +555,15 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
     /**
      * It restarts its index back to 0 so the animation will start from the beginning.
-     * @author Anson Cheung 
+     * @author Anson Cheung
      */
     $scope.restart = function(){
         $scope.index = 0;
     }
 
     /**
-     * It clears everything when the player is closed. 
-     * @author Anson Cheung 
+     * It clears everything when the player is closed.
+     * @author Anson Cheung
      */
     $scope.clear = function(){
         console.log("Clearing...");
@@ -577,7 +577,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
     /**
      * It allows user to change the index of the history.
      * @param {index} - The index number you want to set.
-     * @author Anson Cheung 
+     * @author Anson Cheung
      */
     $scope.setIndex = function(index){
         // console.log($scope.index);
@@ -810,22 +810,6 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
             table.draw(data, {width: '100%', height: '100%'});
           });
-
-
-/* Animation code
-          ref.on("value", function(snapshot, prevChildKey) {
-            var newLog = snapshot.val();
-            console.log(curDate);
-            console.log(hoursMilli);
-            for (var log in newLog){
-              if(newLog[log].timestamp >= (curDate - hoursMilli))
-                zoneArray.push(newLog[log]);
-
-            }
-            $scope.playback(zoneArray, speed);
-
-          });
-*/
 
         }
 
@@ -1156,7 +1140,12 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
           $(element).draggable("destroy");
           $(element).removeAttr('style');
         }catch(err){}
+
+        $(element).css('display', 'none');
         $("#zone"+zone+"Sensors").append(element)
+        $(element).slideDown('slow');
+        countChildren();
+
         try{
           $(element).draggable({containment: "parent"});
         }catch(err){}
@@ -1164,6 +1153,24 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
       }else{
         $("#zoneContainer").append(element)
       }
+
+    }
+
+    function countChildren(){
+      var zone1 = $("#zone1Sensors")[0];
+      var zone2 = $("#zone2Sensors")[0];
+      var zone3 = $("#zone3Sensors")[0];
+
+      zone1Children = $(zone1).children().length;
+      zone2Children = $(zone2).children().length;
+      zone3Children = $(zone3).children().length;
+
+      //console.log("z1:" + zone1Children + " z2:" + zone2Children + " z3:" + zone3Children);
+
+      $("#zone1SensorCounter")[0].innerHTML = zone1Children;
+      $("#zone2SensorCounter")[0].innerHTML = zone2Children;
+      $("#zone3SensorCounter")[0].innerHTML = zone3Children;
+
 
     }
     /**
@@ -1386,7 +1393,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
           var sensorElement = $("#sensorTemplate").clone(); //create an instance of the template
           $(sensorElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
 
-          console.log(newSensor);
+        //  console.log(newSensor);
 
           createSensor(newSensor, sensorElement);
 
@@ -1897,9 +1904,16 @@ $scope.deleteAlarm = function(){
       var modal = $("#myModal")
       var address = modal.find("#spotAddress")[0].innerHTML //populate variables based off of form values
       var newName = modal.find("#name")[0].value;
-      var newZone = parseInt($("span#sensorZone")[0].innerHTML);
+      var newZone = parseInt(modal.find("span#sensorZone")[0].innerHTML);
       var newTask = modal.find('#editSensorTypeSelect').val();
       var status = modal.find("#sensorStatus")[0].innerHTML;
+
+      if(status == "true"){
+        status = true;
+      }else{
+        status = false;
+      }
+
       var newBattery = modal.find("#battery")[0].innerHTML;
       if(newTask == "multi"){
         var multiTask = "s";
@@ -2221,7 +2235,7 @@ function($scope, $firebaseObject, $firebaseArray, $q) {
                 for(j in objB)
                         if(objA[i].$id == objB[j].$id)
                             mergedObjects.push(angular.extend(objA[i], objB[j]));
-                    
+
             return mergedObjects;
         }
 
@@ -2304,7 +2318,7 @@ function($scope, $firebaseObject, $firebaseArray, $q) {
         $scope.onDropComplete=function(data, evt, indexNumber){
 
             var ref = new Firebase("https://sunsspot.firebaseio.com/map/" + trim(data.$id));
-            
+
             ref.once("value", function(snapshot){
                ref.set({mainIndex: indexNumber});
             })
