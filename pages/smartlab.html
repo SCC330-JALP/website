@@ -908,8 +908,46 @@ DELETE MODAL
         <h3 class="modal-title">Zone History</h3>
     </div>
     <div class="modal-body">
+    <div ng-init="loadData(dataFirst[0].timestamp, dataLast[0].timestamp)"></div>
 
-        <div google-chart chart="zoneHistory" class="history-chart"></div>
+<button type="button" class="btn btn-default" ng-click="isCollapsed = !isCollapsed">Compare history</button>
+  <hr>
+  <div uib-collapse="isCollapsed">
+    <div class="well well-lg">
+        <div class="container-fluid">
+
+          <rzslider
+          rz-slider-model="slider.startAt"
+          rz-slider-high="slider.endAt"
+          rz-slider-options="slider.options"></rzslider>
+
+          <rzslider
+          rz-slider-model="slider.nextStartAt"
+          rz-slider-high="slider.nextStartAt + (slider.endAt - slider.startAt)"
+          rz-slider-options="slider.options"></rzslider>
+
+        <div ng-if="undefined !== slider.startAt && undefined !== slider.endAt && undefined !== slider.nextStartAt">
+
+        <button class="btn btn-default" ng-click="play()">Load</button>
+
+        </div>
+
+        <linechart data="data" options="options" height="500" width="1500"></linechart>
+        </div>
+    </div>
+  </div>
+
+        
+
+        
+
+
+        
+        
+
+        <div google-chart chart="zoneData" class="history-chart"></div>
+
+
 
     </div>
     <div class="modal-footer">
@@ -917,3 +955,9 @@ DELETE MODAL
     </div>
 
 </script>
+
+<!-- <div ng-repeat="data in zoneData">
+<div ng-init="get(1447940943200, 1447940993213, 1447942788750)"></div>
+  <pre>{{ data.timestamp | date:'medium' }}</pre>
+  <div google-chart chart="zoneHistory" class="history-chart"></div>
+</div> -->
