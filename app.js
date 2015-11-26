@@ -874,10 +874,11 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
         if(snapshot.task == "sc"){
             var editButton = $(pageElement).find("#editCupBtn")[0]; //set up the links as seen in child_changed listener
-        }if(snapshot.task =="sv" || snapshot.task =="si" || snapshot.task =="sd"){
+        }else if(snapshot.task =="sv" || snapshot.task =="si" || snapshot.task =="sd"){
             var editButton = $(pageElement).find("#editBespokeBtn")[0]; //set up the links as seen in child_changed listener
         }else{
             var editButton = $(pageElement).find("#editSensorBtn")[0]; //set up the links as seen in child_changed listener
+
         }
 
         $(editButton).data('name', snapshot.name);
@@ -1041,7 +1042,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
       profileRef.once("value", function(snapshot){
         var fileName = snapshot.val();
-        console.log(snapshot);
+        //console.log(snapshot);
         if(fileName != "undefined.jpg"){
           var img = document.createElement("img");
           img.src = "../images/profile/" + fileName;
@@ -1338,7 +1339,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
       if(newSensor.task == "sd"){
         var doorOutput = $(element).find("#liveData")[0]
         var newDataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address + "/door")
-        console.log($(element).find(".card-content"));
+        //console.log($(element).find(".card-content"));
         $(element).find(".card-content").prepend("<div id='doorOpen' class='col-xs-6 centered' style='color: grey;'> <b> OPEN </b> </div>  <div id='doorClosed'class='col-xs-6 centered' style='color: grey;'> <b> CLOSED </b></div>")
         //doorOutput.innerHTML = " <div id='door' style = 'width: 20px; height: 100px; background-color:brown'>"
 
@@ -1502,19 +1503,21 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
      */
     settingsRef.on("child_changed", function(snapshot) { //listen for when a child is edited
         //console.log('child changed');
-        console.log(snapshot.val());
+      //  console.log(snapshot.val());
         var changedSensor = snapshot.val();
         changedSensor.address = snapshot.key();
 
 
         var changedElement = $('#' + snapshot.key().replace(/ /g, "_"))[0] //element ID's are the MAC address with underscores instead of spaces
 
+
         var link = $(changedElement).find(".data-button")[0]; //find the link to Edit modal
+
         var oldTask = $(link).data('task');
 
         var newTask = changedSensor.task;
 
-        //console.log("newTask : " + newTask + " | oldTask : " + oldTask);
+      //  console.log("newTask : " + newTask + " | oldTask : " + oldTask);
 
         if(oldTask == newTask){
           if(newTask == "sc"){
@@ -1630,7 +1633,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         var battery = $(this).data('battery');
 
         var modal = $("#editBespokeSensor"); //get the modal element
-        console.log("click + :" + name);
+        //console.log("click + :" + name);
 
 
 
@@ -1650,10 +1653,10 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
     });
 
     $(document).on('click', "#buzzSpot", function(){
-      console.log( $(this).parents(".object-card").attr('id'));
+      //console.log( $(this).parents(".object-card").attr('id'));
       rawAddress = $(this).parents(".object-card").attr('id');
       address = rawAddress.replace(/_/g, " ");
-      console.log(address);
+    //  console.log(address);
 
       buzzRef = new Firebase("https://sunsspot.firebaseio.com/buzz/" + address)
 
@@ -1703,7 +1706,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
         var volumeRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + address + "/cupStat/volume");
         volumeRef.once("value", function(snapshot){
-          console.log(snapshot.val());
+          //console.log(snapshot.val());
           $("#editCup").find("input#volume")[0].value = snapshot.val()
         });
 
@@ -1825,7 +1828,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
 
     $(document).on("click", ".card-header", function(){
-      console.log("trigger minimise");
+      //console.log("trigger minimise");
       $(this).parent(".card").find(".card-content").toggle();
       $(this).parent(".card").find(".card-footer").toggle();
     })
@@ -1932,7 +1935,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
      * @author Josh Stennett
      */
     $("#viewSensorTypeSelect").change(function(){
-      console.log("Select changed!");
+      //console.log("Select changed!");
       //console.log($(this).val());
       if($(this).val() == "multi"){
         $("#viewSensorCheckbox").removeClass("hidden");
@@ -1946,13 +1949,13 @@ $scope.newAlarmSubmit = function(){
 
   var modal = $("#newAlarm");
   var address = modal.find("#spotAddress")[0].innerHTML;
-  console.log(address);
+  //console.log(address);
   var name = modal.find("#newAlarmName").val();
   var tune = modal.find("#newAlarmTune").find(":selected").val();
   var type = modal.find("#newAlarmType").find(":selected").val();
 
   var date = modal.find("#newAlarmDay").val().split('/');
-  console.log(date);
+  //console.log(date);
   var day = date[1]
   var month = date[0]
   var year = date[2]
@@ -1980,7 +1983,7 @@ $scope.deleteAlarm = function(){
   var address = $("#deleteAlarm").find("#spotAddress")[0].innerHTML;
   var name = $("#deleteAlarm").find("#alarmName")[0].innerHTML;
 
-  console.log("DELETE: " + address + name);
+  //console.log("DELETE: " + address + name);
 
   deleteRef = new Firebase("https://sunsspot.firebaseio.com/spotAlarms/"+address+"/"+name);
 
@@ -1992,7 +1995,7 @@ $scope.deleteAlarm = function(){
    * @author Josh Stennett
    */
   $scope.deleteSubmit = function() {
-    console.log("in func");
+    //console.log("in func");
       var address = document.getElementById('deleteSpotAddress').innerHTML; //read in the address
       console.log("Deleting " + address); //log the delete address just in case
 
@@ -2184,7 +2187,7 @@ $scope.deleteAlarm = function(){
     }
 
       var chosenProfilePic = $('input[name=profilePic]:checked').val();
-      console.log("Profile pic : " + chosenProfilePic);
+      //console.log("Profile pic : " + chosenProfilePic);
       var profRef =  new Firebase("sunsspot.firebaseio.com/spotProfile/"+address+"/FileName")
       profRef.set(chosenProfilePic + ".jpg");
 
