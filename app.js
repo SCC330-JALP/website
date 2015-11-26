@@ -434,7 +434,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         }
       },
     });
-      
+
     modalInstance.result.then(function (selectedItem) {
       // $scope.selected = selectedItem;
     }, function () {
@@ -472,7 +472,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
     /**
      * Load and synchronize history from firebase to local object
      * @constructor
-     * @author Anson Cheung 
+     * @author Anson Cheung
      */
     $scope.loadHistory = function(){
 
@@ -511,7 +511,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
      * Playback history - It increases its index every 1 second d ivided by the choose speed
      * The interface function is being called and stored inside a promise variable to be closed later on.
      * @param {int} length - The length of the history records.
-     * @author Anson Cheung 
+     * @author Anson Cheung
      */
     var promise;
     $scope.play = function(length){
@@ -530,7 +530,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
     /**
      * Stop/Pause history playing - Close the promise that was initialized by play function
      * @param {int} length - The length of the history records.
-     * @author Anson Cheung 
+     * @author Anson Cheung
      */
     $scope.stop = function(){
         $interval.cancel(promise);
@@ -543,7 +543,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
      * Change the speed/FPS for the animation
      * It first change the speed, then stop the player, and finally play it again.
      * @param {int} length - The length of the history records.
-     * @author Anson Cheung 
+     * @author Anson Cheung
      */
     $scope.changeSpeed = function(length){
         $scope.speed = $scope.selectedSpeed.code;
@@ -555,7 +555,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
     /**
      * It increases its index by 1 so user can manually forward the animation
      * @param {int} length - The length of the history records.
-     * @author Anson Cheung 
+     * @author Anson Cheung
      */
     $scope.forward = function(length){
         if($scope.index < length){
@@ -567,7 +567,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
     /**
      * It decreases its index by 1 so user can manually backward the animation
      * @param {int} length - The length of the history records.
-     * @author Anson Cheung 
+     * @author Anson Cheung
      */
     $scope.backward = function(length){
         if($scope.index > 0 && $scope.index <= length){
@@ -578,15 +578,15 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
     /**
      * It restarts its index back to 0 so the animation will start from the beginning.
-     * @author Anson Cheung 
+     * @author Anson Cheung
      */
     $scope.restart = function(){
         $scope.index = 0;
     }
 
     /**
-     * It clears everything when the player is closed. 
-     * @author Anson Cheung 
+     * It clears everything when the player is closed.
+     * @author Anson Cheung
      */
     $scope.clear = function(){
         console.log("Clearing...");
@@ -600,7 +600,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
     /**
      * It allows user to change the index of the history.
      * @param {index} - The index number you want to set.
-     * @author Anson Cheung 
+     * @author Anson Cheung
      */
     $scope.setIndex = function(index){
         // console.log($scope.index);
@@ -834,22 +834,6 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
             table.draw(data, {width: '100%', height: '100%'});
           });
 
-
-/* Animation code
-          ref.on("value", function(snapshot, prevChildKey) {
-            var newLog = snapshot.val();
-            console.log(curDate);
-            console.log(hoursMilli);
-            for (var log in newLog){
-              if(newLog[log].timestamp >= (curDate - hoursMilli))
-                zoneArray.push(newLog[log]);
-
-            }
-            $scope.playback(zoneArray, speed);
-
-          });
-*/
-
         }
 
         /**
@@ -913,6 +897,8 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
         if(snapshot.task == "sc"){
             var editButton = $(pageElement).find("#editCupBtn")[0]; //set up the links as seen in child_changed listener
+        }if(snapshot.task =="sv" || snapshot.task =="si" || snapshot.task =="sd"){
+            var editButton = $(pageElement).find("#editBespokeBtn")[0]; //set up the links as seen in child_changed listener
         }else{
             var editButton = $(pageElement).find("#editSensorBtn")[0]; //set up the links as seen in child_changed listener
         }
@@ -999,6 +985,12 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
           element.innerHTML = "Zone sensor";
       }else if(task == "sc"){
         element.innerHTML = "";
+      }else if(task == "sv"){
+        element.innerHTML = "Volume sensor";
+      }else if(task == "si"){
+        element.innerHTML = "Infrared sensor";
+      }else if(task == "sd"){
+        element.innerHTML = "Door sensor";
       }else{
           var elementString = ""; //initialise a string
           var appendCommas = false;
@@ -1061,11 +1053,8 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
       $(link).data('zone', snapshot.zone);
       $(link).data('status', snapshot.alive);
       $(link).data('battery', snapshot.battery);
-      if(oldTask != snapshot.task){
 
-        dataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings" + snapshot.address);
-        dataRef.remove()
-      }
+
 
       if (oldZone != snapshot.zone) { //if the zone has changed, the element needs to move to a different sub-heading
         appendSensor(snapshot.zone,changedElement);
@@ -1108,7 +1097,11 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
       }
 
-      var link = $(changedElement).find("#editSensorBtn")[0]; //find the link to Edit modal
+      if(snapshot.task == "sv" || snapshot.task =="sd" || snapshot.task == "si"){
+        var link = $(changedElement).find("#editBespokeBtn")[0]; //find the link to Edit modal
+      }else{
+        var link = $(changedElement).find("#editSensorBtn")[0]; //find the link to Edit modal
+      }
 
       var oldZone = $(link).data('zone'); //get the old task from the data attribute on the link
       var oldTask = $(link).data('task');
@@ -1119,17 +1112,15 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
       $(link).data('status', snapshot.alive);
       $(link).data('battery', snapshot.battery);
 
-      console.log("Old Task : " + oldTask + " | New Task : "+ snapshot.task);
-      if(oldTask != snapshot.task){
-        console.log("Delete readings");
-        dataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address);
-        dataRef.remove()
-      }
+      //console.log("Old Task : " + oldTask + " | New Task : "+ snapshot.task);
+
 
       if (oldZone != snapshot.zone) { //if the task has changed, the element needs to move to a different sub-heading
         appendSensor(snapshot.zone,changedElement);
       }
     }
+
+
 
     function updateCup(snapshot, changedElement){
       $(changedElement).find("#spotName")[0].innerHTML = snapshot.name; //populate element name
@@ -1158,11 +1149,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
       $(link).data('battery', snapshot.battery);
 
       //console.log("Old Task : " + oldTask + " | New Task : "+ snapshot.task);
-      if(oldTask != snapshot.task){
-      //  console.log("Delete readings");
-        dataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address);
-        dataRef.remove()
-      }
+
 
       if (oldZone != snapshot.zone) { //if the task has changed, the element needs to move to a different sub-heading
         appendSensor(snapshot.zone,changedElement);
@@ -1179,7 +1166,12 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
           $(element).draggable("destroy");
           $(element).removeAttr('style');
         }catch(err){}
+
+        $(element).css('display', 'none');
         $("#zone"+zone+"Sensors").append(element)
+        $(element).slideDown('slow');
+        countChildren();
+
         try{
           $(element).draggable({containment: "parent"});
         }catch(err){}
@@ -1189,12 +1181,31 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
       }
 
     }
+
+    function countChildren(){
+      var zone1 = $("#zone1Sensors")[0];
+      var zone2 = $("#zone2Sensors")[0];
+      var zone3 = $("#zone3Sensors")[0];
+
+      zone1Children = $(zone1).children().length;
+      zone2Children = $(zone2).children().length;
+      zone3Children = $(zone3).children().length;
+
+      //console.log("z1:" + zone1Children + " z2:" + zone2Children + " z3:" + zone3Children);
+
+      $("#zone1SensorCounter")[0].innerHTML = zone1Children;
+      $("#zone2SensorCounter")[0].innerHTML = zone2Children;
+      $("#zone3SensorCounter")[0].innerHTML = zone3Children;
+
+
+    }
     /**
      * DESCRIPTION
      * @author Josh Stennett
      */
     function createDataListeners(snapshot, element){
       //console.log("LiveData Listener created");
+      var spotAddress = snapshot.address;
 
       if(newSensor.task.indexOf("b") !== -1){
         var btnoutput = $(element).find("#liveDatabtn")[0]
@@ -1275,9 +1286,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
           var amountConsumed = $(element).find(".progress-bar")[0];
           var waterLevel = $(element).find("#waterLevel")[0];
 
-
-
-      var amountLeftRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address + "/cup/left")
+          var amountLeftRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address + "/cup/left")
 
           amountLeftRef.on("value", function(snapshot){
             var amountLeft = snapshot.val();
@@ -1291,8 +1300,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
             })
 
 
-
-      var dailyConsumptionRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address + "/cup/drankToday")
+            var dailyConsumptionRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address + "/cup/drankToday")
 
         dailyConsumptionRef.on("value", function(snapshot){
 
@@ -1316,6 +1324,75 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         });
       }
 
+      if(newSensor.task == "sv"){
+        var volumeOutput = $(element).find("#liveData")[0]
+        var newDataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address + "/sound")
+
+        newDataRef.limitToLast(1).on("child_added", function(snapshot){
+
+        volume = snapshot.val().newVal;
+
+        if(volume == 0){
+          volumeOutput.innerHTML = "<i class=' fa fa-4x fa-volume-off'>";
+        }else{
+          volumeOutput.innerHTML = "<i class=' fa fa-4x fa-volume-up' style='color:#8ad5f8'>";
+        }
+
+        })
+      }
+
+      if(newSensor.task == "si"){
+        var irOutput = $(element).find("#liveData")[0]
+        var newDataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address + "/infrared")
+
+        newDataRef.limitToLast(1).on("child_added", function(snapshot){
+
+        ir = snapshot.val().newVal;
+
+        if(ir == 0){
+          irOutput.innerHTML = "<i class=' fa fa-4x fa-arrows'>";
+        }else{
+          irOutput.innerHTML = "<i class=' fa fa-4x fa-spin fa-arrows' style='color:#8ad5f8'>";
+        }
+
+        })
+      }
+
+      if(newSensor.task == "sd"){
+        var doorOutput = $(element).find("#liveData")[0]
+        var newDataRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + snapshot.address + "/door")
+        console.log($(element).find(".card-content"));
+        $(element).find(".card-content").prepend("<div id='doorOpen' class='col-xs-6 centered' style='color: grey;'> <b> OPEN </b> </div>  <div id='doorClosed'class='col-xs-6 centered' style='color: grey;'> <b> CLOSED </b></div>")
+        //doorOutput.innerHTML = " <div id='door' style = 'width: 20px; height: 100px; background-color:brown'>"
+
+        newDataRef.limitToLast(1).on("child_added", function(snapshot){
+
+        doorOpen = snapshot.val().newVal;
+
+        if(doorOpen == 1){
+          console.log("door is open");
+
+          $(element).find("#doorOpen").css('color','orange');
+          $(element).find("#doorClosed").css('color','grey');
+
+
+          var doorAngleRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + spotAddress + "/doorAngle")
+          doorAngleRef.on("value", function(snapshot){
+            console.log(snapshot.val());
+          //  $("#door").css('transform', "rotate(" + snapshot.val() -170 + "deg)");
+          });
+
+
+
+        }else{
+          console.log("door is closed");
+          $(element).find("#doorOpen").css('color','grey');
+          $(element).find("#doorClosed").css('color','green');
+
+        }
+
+        })
+      }
     }
 
     function createSensorTouchEvents(element){
@@ -1398,21 +1475,41 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
 
         }else if(newSensor.task == "sc"){ //sensor is cup sensor
-
+            console.log("cup sensor");
           var cupElement = $("#cupTemplate").clone(); //create an instance of the template
           $(cupElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
           createSensor(newSensor, cupElement);
 
           $(cupElement).draggable({containment: "parent"});
+        }else if(newSensor.task == "sv"){
+
+          var sensorElement = $("#bespokeTemplate").clone(); //create an instance of the template
+          $(sensorElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
+          createSensor(newSensor, sensorElement);
+          createSensorTouchEvents(sensorElement);
+          $(sensorElement).draggable({containment: "parent"});
+
+        }else if(newSensor.task == "si"){
+          var sensorElement = $("#bespokeTemplate").clone(); //create an instance of the template
+          $(sensorElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
+          createSensor(newSensor, sensorElement);
+          createSensorTouchEvents(sensorElement);
+          $(sensorElement).draggable({containment: "parent"});
+        }else if(newSensor.task == "sd"){
+          console.log("door sensor");
+          var sensorElement = $("#bespokeTemplate").clone(); //create an instance of the template
+          $(sensorElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
+          createSensor(newSensor, sensorElement);
+          createSensorTouchEvents(sensorElement);
+          $(sensorElement).draggable({containment: "parent"});
         }else{ //sensor is a multi sensor
 
           var sensorElement = $("#sensorTemplate").clone(); //create an instance of the template
           $(sensorElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
 
-          console.log(newSensor);
+        //  console.log(newSensor);
 
           createSensor(newSensor, sensorElement);
-
 
           createSensorTouchEvents(sensorElement);
 
@@ -1427,8 +1524,8 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
      * @author Josh Stennett
      */
     settingsRef.on("child_changed", function(snapshot) { //listen for when a child is edited
-        console.log('child changed');
-
+        //console.log('child changed');
+        console.log(snapshot.val());
         var changedSensor = snapshot.val();
         changedSensor.address = snapshot.key();
 
@@ -1440,78 +1537,50 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
         var newTask = changedSensor.task;
 
-        console.log("newTask : " + newTask + " | oldTask : " + oldTask);
+        //console.log("newTask : " + newTask + " | oldTask : " + oldTask);
 
-        if(oldTask == "sp"){ //old task is person
-          if(newTask == "sp"){ //new task is person
-              updatePersonSensor(changedSensor, changedElement);
-          }else if(newTask == "sc"){ //new task is cup
-           $(changedElement).remove(); //remove the old sensor, as it's type has changed.
-
-            changedSensor.address = snapshot.key();
-
-           var cupElement = $("#cupTemplate").clone(); //create an instance of the new template
-           $(cupElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
-
-           createSensor(changedSensor, cupElement);
-          }else{ //new task is multisensor
-            //person became sensor
-           $(changedElement).remove(); //remove the old sensor, as it's type has changed.
-
-          changedSensor.address = snapshot.key();
-
-            var sensorElement = $("#sensorTemplate").clone(); //create an instance of the new template
-            $(sensorElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
-
-            createSensor(changedSensor, sensorElement);
-
-          }
-        }else if(oldTask == "sc"){ //old task is cup
-          if(newTask == "sp"){ //new task is person
-           $(changedElement).remove();
-           var personElement = $("#personTemplate").clone();
-           $(personElement).attr('id', changedSensor.address.replace(/ /g, "_"));
-
-            createSensor(changedSensor, personElement);
-          }else if(newTask == "sc"){ //new task is cup
+        if(oldTask == newTask){
+          if(newTask == "sc"){
             updateCup(changedSensor, changedElement);
-          }else{ //new task is multisensor
-            $(changedElement).remove(); //remove the old sensor, as it's type has changed.
-
-            changedSensor.address = snapshot.key();
-
-            var sensorElement = $("#sensorTemplate").clone(); //create an instance of the new template
-            $(sensorElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
-
-            createSensor(changedSensor, sensorElement);
-
+          }else if(newTask == "sp"){
+            updatePersonSensor(changedSensor, changedElement);
+          }else{
+            updateSensor(changedSensor, changedElement);
           }
-        }else{ //old task is multisensor
-          if(newTask == "sp"){ //new task is person
-            //sensor became person
-                     $(changedElement).remove();
-                     var personElement = $("#personTemplate").clone();
-                     $(personElement).attr('id', changedSensor.address.replace(/ /g, "_"));
+        }else{
+          $(changedElement).remove(); //remove the old sensor, as it's type has changed.
+          changedSensor.address = snapshot.key();
+          removeDataFromTaskChange(snapshot.key());
 
-                     createSensor(changedSensor, personElement);
-          }else if(newTask == "sc"){ //new task is cup
-            $(changedElement).remove(); //remove the old sensor, as it's type has changed.
-
-            changedSensor.address = snapshot.key();
-
+          if(newTask == "sc"){
             var cupElement = $("#cupTemplate").clone(); //create an instance of the new template
-            $(cupElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of spaces
-
+            $(cupElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of space
             createSensor(changedSensor, cupElement);
-          }else{ //new task is multisensor
-              updateSensor(changedSensor, changedElement);
+          }else if(newTask == "sp"){
+            var personElement = $("#personTemplate").clone();
+            $(personElement).attr('id', changedSensor.address.replace(/ /g, "_"));
+            createSensor(changedSensor, personElement);
+          }else{
+            var sensorElement = $("#sensorTemplate").clone(); //create an instance of the new template
+            $(sensorElement).attr('id', snapshot.key().replace(/ /g, "_")); //set the id of the element to the MAC address, with underscores instead of space
+            createSensor(changedSensor, sensorElement);
           }
         }
 
     });
 
 
+    function removeDataFromTaskChange(address){
+      readingsRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + address);
+      readingsRef.remove()
 
+      profileRef = new Firebase("https://sunsspot.firebaseio.com/spotProfile/" + address);
+      profileRef.remove()
+
+      alarmRef = new Firebase("https://sunsspot.firebaseio.com/spotAlarms/" + address);
+      alarmRef.remove()
+
+    }
     /**
      * DESCRIPTION
      * @author Josh Stennett
@@ -1541,6 +1610,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         }else{
           //multi sensor
           modal.find("#editSensorTypeSelect").val("multi").change();
+
           if(task.indexOf("m") !== -1){
               $("input#m").prop("checked", true);
           }
@@ -1572,6 +1642,46 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
       //  console.log(name);
     });
 
+
+    $(document).on("click", "#editBespokeBtn", function() { //when you open the Edit modal
+        var name = $(this).data('name'); //populate variables from data-attributes
+        var task = $(this).data('task');
+        //console.log(task);
+        var address = $(this).data('address');
+        var zone = $(this).data('zone');
+        var status = $(this).data('status');
+        var battery = $(this).data('battery');
+
+        var modal = $("#editBespokeSensor"); //get the modal element
+        console.log("click + :" + name);
+
+
+
+        modal.find("#myModalLabel")[0].innerHTML = name; //insert variables to the element
+        modal.find("#spotTask")[0].innerHTML = task;
+        modal.find("#spotAddress")[0].innerHTML = address;
+        modal.find("input#name")[0].value = name;
+        modal.find("input#" + task).prop("checked", true);
+        modal.find("#sensorZone")[0].innerHTML = zone;
+        modal.find("#sensorStatus")[0].innerHTML = status;
+        modal.find("#battery")[0].innerHTML = battery;
+        var modal = $("#deleteModal");
+        modal.find("#myModalLabel")[0].innerHTML = name;
+        modal.find("#deleteSpotAddress")[0].innerHTML = address;
+
+      //  console.log(name);
+    });
+
+    $(document).on('click', "#buzzSpot", function(){
+      console.log( $(this).parents(".object-card").attr('id'));
+      rawAddress = $(this).parents(".object-card").attr('id');
+      address = rawAddress.replace(/_/g, " ");
+      console.log(address);
+
+      buzzRef = new Firebase("https://sunsspot.firebaseio.com/buzz/" + address)
+
+      buzzRef.set(1);
+    })
 
     $(document).on("click", "#editCupBtn", function() { //when you open the Edit modal
 
@@ -1824,11 +1934,20 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
      * @author Josh Stennett
      */
     $("#editSensorTypeSelect").change(function(){
-
+      //console.log("select change");
       if($(this).val() == "multi"){
         $("#editSensorCheckbox").removeClass("hidden");
       }else{
         $("#editSensorCheckbox").addClass("hidden");
+      }
+    })
+
+    $("#editCupTypeSelect").change(function(){
+      //console.log("select change");
+      if($(this).val() == "multi"){
+        $("#editCupCheckbox").removeClass("hidden");
+      }else{
+        $("#editCupCheckbox").addClass("hidden");
       }
     })
     /**
@@ -1836,7 +1955,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
      * @author Josh Stennett
      */
     $("#viewSensorTypeSelect").change(function(){
-      //console.log("Select changed!");
+      console.log("Select changed!");
       //console.log($(this).val());
       if($(this).val() == "multi"){
         $("#viewSensorCheckbox").removeClass("hidden");
@@ -1920,9 +2039,16 @@ $scope.deleteAlarm = function(){
       var modal = $("#myModal")
       var address = modal.find("#spotAddress")[0].innerHTML //populate variables based off of form values
       var newName = modal.find("#name")[0].value;
-      var newZone = parseInt($("span#sensorZone")[0].innerHTML);
+      var newZone = parseInt(modal.find("span#sensorZone")[0].innerHTML);
       var newTask = modal.find('#editSensorTypeSelect').val();
       var status = modal.find("#sensorStatus")[0].innerHTML;
+
+      if(status == "true"){
+        status = true;
+      }else{
+        status = false;
+      }
+
       var newBattery = modal.find("#battery")[0].innerHTML;
       if(newTask == "multi"){
         var multiTask = "s";
@@ -1960,13 +2086,45 @@ $scope.deleteAlarm = function(){
       $("input#b").prop("checked", false);
   };
 
+  $scope.bespokeSubmit = function() {
+
+      var modal = $("#editBespokeSensor")
+      var address = modal.find("#spotAddress")[0].innerHTML //populate variables based off of form values
+      var newName = modal.find("#name")[0].value;
+      var newZone = parseInt(modal.find("span#sensorZone")[0].innerHTML);
+      var newTask = modal.find("#spotTask")[0].innerHTML;
+      var status = modal.find("#sensorStatus")[0].innerHTML;
+
+      if(status == "true"){
+        status = true;
+      }else{
+        status = false;
+      }
+
+      var newBattery = modal.find("#battery")[0].innerHTML;
+
+
+      var updateRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings/"); //create reference
+
+      updateRef.child(address).set({
+          name: newName,
+          task: newTask,
+          zone: newZone,
+          alive: status,
+          battery: newBattery
+      }); //update the record with the new data
+
+  };
+
+
+
   $scope.cupSubmit = function() {
 
       var modal = $("#editCup")
       var address = modal.find("#spotAddress")[0].innerHTML //populate variables based off of form values
       var newName = modal.find("#name")[0].value;
       var newZone = parseInt($("span#sensorZone")[0].innerHTML);
-      var newTask = modal.find('#editSensorTypeSelect').val();
+      var newTask = modal.find('#editCupTypeSelect').val();
       var status = modal.find("#sensorStatus")[0].innerHTML;
       var newBattery = modal.find("#battery")[0].innerHTML;
 
@@ -2229,7 +2387,7 @@ function($scope, $firebaseObject, $firebaseArray, $q) {
                 for(j in objB)
                         if(objA[i].$id == objB[j].$id)
                             mergedObjects.push(angular.extend(objA[i], objB[j]));
-                    
+
             return mergedObjects;
         }
 
@@ -2312,7 +2470,7 @@ function($scope, $firebaseObject, $firebaseArray, $q) {
         $scope.onDropComplete=function(data, evt, indexNumber){
 
             var ref = new Firebase("https://sunsspot.firebaseio.com/map/" + trim(data.$id));
-            
+
             ref.once("value", function(snapshot){
                ref.set({mainIndex: indexNumber});
             })
