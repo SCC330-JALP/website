@@ -9,7 +9,7 @@
  *************************************************************************/
 
 //modules
-var spotApp = angular.module('spotApp', ['ngRoute', 'ngResource', 'firebase', 'googlechart', 'ngDialog', 'ngDraggable', 'n3-line-chart', 'ngAnimate', 'ui.bootstrap']);
+var spotApp = angular.module('spotApp', ['ngRoute', 'ngResource', 'firebase', 'googlechart', 'ngDialog', 'ngDraggable', 'n3-line-chart', 'ngAnimate', 'ui.bootstrap', 'rzModule']);
 var ref = new Firebase("https://sunsspot.firebaseio.com");
 var spotSettingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
 
@@ -47,6 +47,10 @@ spotApp.run(function($rootScope, $firebaseObject) {
     $rootScope.zone1hourly = $firebaseObject(ref.child('zone1hourly'));
     $rootScope.zone2hourly = $firebaseObject(ref.child('zone2hourly'));
     $rootScope.zone3hourly = $firebaseObject(ref.child('zone3hourly'));
+
+    $rootScope.zone1Data = $firebaseObject(ref.child('zone1'));
+    $rootScope.zone2Data = $firebaseObject(ref.child('zone2'));
+    $rootScope.zone3Data = $firebaseObject(ref.child('zone3'));
 
     /**
      * Set chart options
@@ -406,14 +410,33 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
                 if(zoneNumber==3)
                     return $rootScope.zone3temp;
             }
-
+            
+        },
+        zoneReference: function(){
+            // if(zoneNumber==1)
+            //     return $rootScope.zone1Data;
+            // if(zoneNumber==2)
+            //     return $rootScope.zone2Data;
+            // if(zoneNumber==3)
+            //     return $rootScope.zone3Data;
+            if(zoneNumber==1)
+                return ref.child('zone1');
+            if(zoneNumber==2)
+                return ref.child('zone2');
+            if(zoneNumber==3)
+                return ref.child('zone3');
+        },
+        zoneNumber: function(){
+            return zoneNumber;
+        },
+        type: function(){
+            return type;
         }
       },
-
     });
 
     modalInstance.result.then(function (selectedItem) {
-      $scope.selected = selectedItem;
+      // $scope.selected = selectedItem;
     }, function () {
             console.log('Modal dismissed at: ' + new Date());
         });
@@ -2213,21 +2236,6 @@ $scope.deleteAlarm = function(){
 
   };
 
-
-    /**
-   * Pop up light & temp history graphs for the 3 zones.
-   * Developer note: It uses ngDialog directive
-   * @param {String} zoneHistory - For example zone 1 light would be 'zone1light', zone 2 temp 'zone2temp' etc.
-   * @author Anson Cheung
-   */
-    $scope.openHistory = function(zoneHistory){
-        ngDialog.open({
-            template: '<div google-chart chart="' + zoneHistory + '" class="history-chart"></div>',
-            plain: true
-        });
-    };
-
-
     /**
      * Generate a annotation graph and set it to a <div>
      * @param {String} address - Full address of a sensor.
@@ -2496,11 +2504,151 @@ function trim(string){
 
 // Please note that $modalInstance represents a modal window (instance) dependency.
 // It is not the same as the $uibModal service used above.
-spotApp.controller('zoneHistoryCtrl', function ($rootScope, $scope, $uibModalInstance, zoneHistory) {
+spotApp.controller('zoneHistoryCtrl', function ($rootScope, $firebaseObject, $firebaseArray, $scope, $filter, $interval, $timeout, $uibModalInstance, zoneHistory, zoneReference, zoneNumber, type) {
+    console.log(zoneNumber);
+    console.log(type);
+    $scope.isCollapsed = true;
+    if(type=='light'){
+        $scope.unit = '(lm)';
+    }else{
+        $scope.unit = '(℃)'
+    }
+  $scope.zoneData = zoneHistory;
 
-  $scope.zoneHistory = zoneHistory;
+  $scope.dataFirst = $firebaseArray(zoneReference.orderByChild("timestamp").limitToFirst(1));
+  $scope.dataLast = $firebaseArray(zoneReference.orderByChild("timestamp").limitToLast(1));
+
+    $scope.options = {
+      axes: [
+        {
+          axis: "y",
+          series: [
+            "id_0", "id_1"
+          ]
+        }
+      ],
+      lineMode: "cardinal",
+      series: [
+        {
+          id: "id_0",
+          y: "val_0",
+          label: type + " A",
+          type: "area",
+          color: "#1f77b4"
+        },
+        {
+          id: "id_1",
+          y: "val_1",
+          label: type + " B",
+          type: "area",
+          color: "#ff7f0e"
+        },
+      ],
+      tooltip: {
+        mode: "scrubber",
+            formatter: function (x, y, series) {
+                if(series.id == "id_0"){
+                    var date = $filter('date')($scope.data1[x].timestamp, 'short');
+                }else{
+                    var date = $filter('date')(new Date($scope.data2[x].timestamp), 'short');
+                }
+                return date + ' : ' + y + $scope.unit;
+            }
+        }
+    };
+
+  $scope.get = function(startAt, endAt, nextStart){
+
+
+    var nextEnd = nextStart + (endAt - startAt);
+
+    console.log('startAt:     ' + new Date(startAt));
+    console.log('endAt:       ' + new Date(endAt));
+    console.log('Date Length: ' + new Date(endAt - startAt));
+    console.log('nextStart:   ' +  new Date(nextStart));
+    console.log('nextEnd:     ' + new Date(nextEnd));
+
+    $scope.data1 = $firebaseArray(zoneReference.orderByChild("timestamp").startAt(startAt).endAt(endAt));
+    $scope.data2 = $firebaseArray(zoneReference.orderByChild("timestamp").startAt(nextStart).endAt(nextEnd));
+
+  }
+
+    $scope.push = function(length) {
+
+        $scope.data = []; //Initialize and clear data
+
+        if(type=='light'){
+            for(var i=0;i<length;i++){
+                $scope.data.push({
+                    x: i, 
+                    val_0: $scope.data1[i].light, 
+                    val_1: $scope.data2[i].light
+                });
+            }
+        }else{
+            for(var i=0;i<length;i++){
+                $scope.data.push({
+                    x: i, 
+                    val_0: ($scope.data1[i].temp).toFixed(2), 
+                    val_1: ($scope.data2[i].temp).toFixed(2)
+                });
+            }
+        }
+        
+
+    }
+
+    $scope.loadData = function(floor, ceil){
+    
+    $scope.slider = {
+      startAt: floor,
+      endAt: ceil,
+      nextStartAt: ceil + 600000,
+      options: {
+        floor: floor,
+        ceil: ceil,
+        step: 60000,
+        draggableRange: true,
+        translate: function(value) {
+          return $filter('date')(value, 'short');
+        }
+      }
+    };
+
+        // $scope.zoneRef = $firebaseObject(zoneReference);
+    }
+
+    var promise;
+    $scope.play = function(){
+        console.log("play buttion pressed.");
+        var i = 0;
+        promise = $interval(function(){
+            if(i==0){
+                console.log('GETTING DATA...');
+                $scope.get($scope.slider.startAt, $scope.slider.endAt, $scope.slider.nextStartAt);
+                i++;
+            }else if(i==1){
+                console.log("PUSHING DATA...");
+                $scope.push($scope.data2.length);
+                i++;
+            }else{
+                console.log("STOPPING...");
+                $scope.stop();
+            }
+                        
+                    }, 500);
+
+    }
+
+    $scope.stop = function(){
+        $interval.cancel(promise);
+        promise = $timeout(function(){
+        }, 1000);
+    }
+
 
   $scope.close = function () {
     $uibModalInstance.dismiss('close');
   };
+
 });
