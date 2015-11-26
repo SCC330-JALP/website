@@ -335,3 +335,6 @@ h3
 {
     border: 2px solid #00bfff;
 }
+.modal-lg{
+    width: 1500px !important;
+}
