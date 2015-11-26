@@ -1765,6 +1765,45 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
       })
 
+    /*
+        Kettle Boil Animation
+    */
+    var boilInterval;
+    var coolInterval;
+    $(document).on('click', "#boilKettleBtn", function(){
+        var element = $("#kettleCard");
+        var startTime = Date.now();
+        var currentTime;
+        var tempoutput = $(element).find("#kettleIcon")[0];
+        var tempScale = ["#00FF00","#44FF00","#99FF00","#DDFF00","#FFEE00","#FFBB00","#FF8800","#FF5500","#FF2200","#FF0000"];
+        var tempScaleIndex = 0;
+        boilInterval = setInterval(function(){
+            if(tempScaleIndex >= 9){
+                clearInterval(boilInterval);
+                coolInterval = setInterval(function(){
+                    if(tempScaleIndex <= 0){clearInterval(coolInterval); $(tempoutput).animate({color: "#000000"},1000);}
+                    console.log(tempScaleIndex);
+                    $(tempoutput).animate({color: tempScale[tempScaleIndex]},1000);
+                    tempScaleIndex --;
+                },1000);
+            }
+            console.log(tempScaleIndex);
+            $(tempoutput).animate({color: tempScale[tempScaleIndex]},2000);
+            tempScaleIndex ++;
+        },2000);
+    })
+
+    /*
+        Kettle Boil Animation
+    */
+    $(document).on('click', "#kettleOffBtn", function(){
+        clearInterval(boilInterval);
+        clearInterval(coolInterval);
+        var element = $("#kettleCard");
+        var tempoutput = $(element).find("#kettleIcon")[0];
+        $(tempoutput).animate({color: "#000000"},1000);
+    })
+
     /**
      * DESCRIPTION
      * @author Josh Stennett

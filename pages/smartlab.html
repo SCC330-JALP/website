@@ -50,8 +50,32 @@
 
             </div>
             <!-- row -->
+            <!-- @author Liam Cottier -->
+            <div class="row">
+              <div class="col-xs-6 object-card">
+                <div id="kettleCard" class="card">
+                  <div class="card-header">
+                    <div class="col-xs-8">
+                      <div> iKettle </div>
+                    </div>
+                    <div class="col-xs-1">
+                      <div class="fa fa-cog"> </div>
+                    </div>
+                  </div>
 
+                  <div class="card-content col-xs-12 centered">
+                    <div id="kettleIcon" class="fa fa-coffee fa-4x"> </div>
+                  </div>
 
+                  <div class="card-footer">
+                    <div class="col-xs-6"><button id="boilBtn" type="button" data-toggle="modal" data-target="#kettleModal"> Boil </button></div>
+                    <div class="col-xs-6"><button id="kettleOffBtn" type="button" data-toggle="modal" data-target="#kettleBoil"> Standby </button></div>
+                  </div>
+                </div>
+              </div>
+                  <!-- card -->
+              </div>
+            <!-- row -->
         </div>
         <!-- //container -->
 
@@ -930,6 +954,70 @@ HISTORY PLAYBACK MODAL
 </div>
 <!-- /#wrapper -->
 
+
+<!--
+
+  KETTLE MODAL
+  @author Liam Cottier
+ -->
+<!-- Modal boilerplate code: will get customised when it is loaded.  -->
+<div class="modal fade" id="kettleModal" tabindex="-1" role="dialog" aria-labelledby="kettleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">iKettle</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form">
+                    <form class="form-horizontal" role="form">
+                        <div id="kettleTempRadio"class="form-group">
+                            <label class="control-label col-xs-2" for="email">Boil Temperature:</label>
+                               
+                                    <div class="col-xs-10">
+                                        <input type="radio" id="65" value="65" name="optradio">65</input>
+                                    </div>
+                                        
+                                    <div class="col-xs-10">
+                                        <input type="radio" id="80" value="80" name="optradio">80</input>
+                                    </div>
+
+                                    <div class="col-xs-10">
+                                        <input type="radio" id="95" value="95" name="optradio">95</input>
+                                    </div>
+                                    
+                                    <div class="col-xs-10">
+                                        <input type="radio" id="100" value="100" name="optradio">100</input>
+                                    </div>
+
+                               
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10 modal-footer">
+                                <!-- <button type="submit" class="btn btn-default" data-dismiss="modal" -->
+                                <div class="pull-right">
+                                    <button class="btn btn-default" data-dismiss="modal"> Cancel </button>
+                                    <button id="boilKettleBtn" class="btn btn-default" data-dismiss="modal"> Boil </button>
+                                    <!-- <button type="submit" class="btn btn-default" data-dismiss="modal" ng-click="modalSubmit()">Save changes</button> -->
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+                </form>
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /#wrapper -->
+
+
 <!--
 
 DELETE MODAL
@@ -958,8 +1046,9 @@ DELETE MODAL
     </div>
     <!-- /.modal-dialog -->
 
-
-
+<!--
+ZONE HISTORY MODAL
+ -->
 <script type="text/ng-template" id="zoneHistory.html">
 
     <div class="modal-header">
