@@ -1197,8 +1197,10 @@ ZONE HISTORY MODAL
 
         <div ng-if="undefined !== slider.startAt && undefined !== slider.endAt && undefined !== slider.nextStartAt">
 
-        <button class="btn btn-default" ng-click="play()">Load</button>
-
+        <button class="btn btn-default" ng-click="get(slider.startAt, slider.endAt, slider.nextStartAt)">Load History</button>
+        <button class="btn btn-default" ng-click="push(data2.length)">Display Data</button>
+        {{ data1.length }}
+        {{ data2.length }}
         </div>
 
         <linechart data="data" options="options" height="500" width="1500"></linechart>
@@ -1224,12 +1226,3 @@ ZONE HISTORY MODAL
     </div>
 
 </script>
-<<<<<<< HEAD
-
-<!-- <div ng-repeat="data in zoneData">
-<div ng-init="get(1447940943200, 1447940993213, 1447942788750)"></div>
-  <pre>{{ data.timestamp | date:'medium' }}</pre>
-  <div google-chart chart="zoneHistory" class="history-chart"></div>
-</div> -->
-=======
->>>>>>> fb48431c1d039cff28be7c86a83846ba4fe36ebf
