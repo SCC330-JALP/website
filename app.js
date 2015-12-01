@@ -2663,15 +2663,14 @@ spotApp.controller('zoneHistoryCtrl', function ($rootScope, $firebaseObject, $fi
     var promise;
     $scope.play = function(){
         $scope.isDisabled = true;
-        console.log("play buttion pressed.");
+         $scope.status = 'Rendering data...';
+        // console.log("play buttion pressed.");
         var i = 0;
         promise = $interval(function(){
             if(i==0){
-                $scope.status = 'Loading data...';
                 $scope.get($scope.slider.startAt, $scope.slider.endAt, $scope.slider.nextStartAt);
                 i++;
             }else if(i==1){
-                $scope.status = 'Rendering data...';
                 
                 if($scope.data2.length > $scope.data1.length){
                     $scope.push($scope.data1.length);
