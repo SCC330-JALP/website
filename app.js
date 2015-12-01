@@ -2656,23 +2656,44 @@ spotApp.controller('zoneHistoryCtrl', function ($rootScope, $firebaseObject, $fi
 
         // $scope.zoneRef = $firebaseObject(zoneReference);
     }
+    $scope.status = 'Load';
+    $scope.isDisabled = false;
+    $scope.message = null;
 
     var promise;
     $scope.play = function(){
+        $scope.isDisabled = true;
         console.log("play buttion pressed.");
         var i = 0;
         promise = $interval(function(){
             if(i==0){
-                console.log('GETTING DATA...');
+                $scope.status = 'Loading data...';
                 $scope.get($scope.slider.startAt, $scope.slider.endAt, $scope.slider.nextStartAt);
                 i++;
             }else if(i==1){
-                console.log("PUSHING DATA...");
-                $scope.push($scope.data2.length);
-                i++;
+                $scope.status = 'Rendering data...';
+                
+                if($scope.data2.length > $scope.data1.length){
+                    $scope.push($scope.data1.length);
+                    i++;
+                }else{
+                    $scope.push($scope.data2.length);
+                    i++;
+                }
+
+                if($scope.data1.length == 0){
+                    $scope.message = 'Found no data in the first selection. Please select another range.';
+                }else if($scope.data2.length == 0){
+                    $scope.message = 'Found no data in the second selection. Please select another range.';
+                }else if($scope.data1.length == 0 && $scope.data2.length == 0){
+                    $scope.message = 'Please select range.';
+                }else{
+                    $scope.message = null;
+                }
             }else{
-                console.log("STOPPING...");
                 $scope.stop();
+                $scope.isDisabled = false;
+                $scope.status = 'Load';
             }
                         
                     }, 500);
