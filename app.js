@@ -2017,12 +2017,22 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
     var boilInterval;
     var coolInterval;
     $(document).on('click', "#boilKettleBtn", function(){
+
+        clearInterval(boilInterval);
+        clearInterval(coolInterval);
+        
         var element = $("#kettleCard");
         var startTime = Date.now();
         var currentTime;
         var tempoutput = $(element).find("#kettleIcon")[0];
         var tempScale = ["#00FF00","#44FF00","#99FF00","#DDFF00","#FFEE00","#FFBB00","#FF8800","#FF5500","#FF2200","#FF0000"];
         var tempScaleIndex = 0;
+        var temp = parseInt($("input[name=kettleTemperature]:checked")[0].value);
+        
+        var kettleRef = new Firebase("https://sunsspot.firebaseio.com/kettle");
+
+        kettleRef.update({boil: true, temperature: temp});
+
         boilInterval = setInterval(function(){
             if(tempScaleIndex >= 9){
                 clearInterval(boilInterval);
@@ -2047,6 +2057,11 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         clearInterval(boilInterval);
         clearInterval(coolInterval);
         var element = $("#kettleCard");
+
+        var kettleRef = new Firebase("https://sunsspot.firebaseio.com/kettle");
+
+        kettleRef.update({boil: false});
+
         var tempoutput = $(element).find("#kettleIcon")[0];
         $(tempoutput).animate({color: "#000000"},1000);
     })
