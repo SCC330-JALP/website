@@ -1231,6 +1231,12 @@ ZONE HISTORY MODAL
     <div class="well well-lg">
         <div class="container-fluid">
 
+          <div ng-if="message != null" class="alert alert-danger" role="alert">
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            <span class="sr-only">Error:</span>
+            {{message}}
+          </div>
+
           <rzslider
           rz-slider-model="slider.startAt"
           rz-slider-high="slider.endAt"
@@ -1243,8 +1249,7 @@ ZONE HISTORY MODAL
 
         <div ng-if="undefined !== slider.startAt && undefined !== slider.endAt && undefined !== slider.nextStartAt">
 
-        <button class="btn btn-default" ng-click="play()">Load</button>
-
+        <button ng-disabled="isDisabled" class="btn btn-default" ng-click="play()">{{ status }}</button><br/>
         </div>
 
         <linechart data="data" options="options" height="500" width="1500"></linechart>
@@ -1268,5 +1273,6 @@ ZONE HISTORY MODAL
     <div class="modal-footer">
         <button class="btn btn-warning" type="button" ng-click="close()">Close</button>
     </div>
+
 
 </script>
