@@ -1934,6 +1934,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
     /*
         Kettle Boil Animation
+        @author Liam Cottier
     */
     var boilInterval;
     var coolInterval;
@@ -1962,6 +1963,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
     /*
         Kettle Boil Animation
+        @author Liam Cottier
     */
     $(document).on('click', "#kettleOffBtn", function(){
         clearInterval(boilInterval);
