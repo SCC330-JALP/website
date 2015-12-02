@@ -1514,6 +1514,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
     }
 
 
+
     var notificationRef = new Firebase("https://sunsspot.firebaseio.com/notification");
 
     notificationRef.limitToLast(1).on("child_added",function(snapshot){
@@ -1525,7 +1526,14 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
       handleNotification(message);
     });
 
+    function pushNotification(message){
 
+      notificationRef.push().set({
+        msg: message
+      });
+
+
+    }
 
 
     var settingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
@@ -1536,7 +1544,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
     settingsRef.on("child_added", function(snapshot) { //listen for when a child is added : also triggers once for each child in database on page load.
           //console.log(snapshot.key());
-
+          pushNotification("Child added:" + snapshot.val().name)
         newSensor = snapshot.val();
         newSensor.address = snapshot.key();
         //console.log(newSensor.task.indexOf("p"));
@@ -2020,7 +2028,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
         clearInterval(boilInterval);
         clearInterval(coolInterval);
-        
+
         var element = $("#kettleCard");
         var startTime = Date.now();
         var currentTime;
@@ -2028,7 +2036,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         var tempScale = ["#00FF00","#44FF00","#99FF00","#DDFF00","#FFEE00","#FFBB00","#FF8800","#FF5500","#FF2200","#FF0000"];
         var tempScaleIndex = 0;
         var temp = parseInt($("input[name=kettleTemperature]:checked")[0].value);
-        
+
         var kettleRef = new Firebase("https://sunsspot.firebaseio.com/kettle");
 
         kettleRef.update({boil: true, temperature: temp});
@@ -2832,7 +2840,7 @@ spotApp.controller('zoneHistoryCtrl', function ($rootScope, $firebaseObject, $fi
                 $scope.get($scope.slider.startAt, $scope.slider.endAt, $scope.slider.nextStartAt);
                 i++;
             }else if(i==1){
-                
+
                 if($scope.data2.length > $scope.data1.length){
                     $scope.push($scope.data1.length);
                     i++;
