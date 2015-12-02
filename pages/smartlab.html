@@ -1,5 +1,5 @@
 <header class="container-fluid">
-  <h1 class="centered">Smart lab   <a href="#/map" class="btn btn-primary"> <span class="fa fa-map-o"></span> </a></h1>
+  <h1 class="centered">Smart lab   <a href="#/map" class="btn btn-primary"> <span class="fa fa-map-o"></span> </a>  <a class="btn btn-primary" ng-click="configureBases()" data-toggle="modal" data-target="#configureBases"> <span class="fa fa-mobile"></span> </a></h1>
 
 </header>
 
@@ -135,12 +135,21 @@
 
                     </div>
                     <!-- card -->
-
-
                 </div>
 
             </div>
             <!-- row -->
+            <div class="row">
+              <div class="col-xs-12 object-card">
+                <div class="card">
+                  <div class="card-content">
+                    <a class="twitter-timeline" href="https://twitter.com/scc330jalp" data-widget-id="671335141994840068" width="100%" height="100%" data-chrome="noheader nofooter noborders transparent">Tweets by @scc330jalp</a>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
 
 
         </div>
@@ -229,7 +238,44 @@
 </div>
 
 
+<!--
 
+    CONFIGURE BASES MODAL
+
+ -->
+<div id="configureBases" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Configure Base Stations</h4>
+      </div>
+      <div class="modal-body">
+
+        <form id="baseForm" class="form-horizontal">
+
+
+
+
+        </form>
+
+        <div id="baseFormTemplate" class="form-group hidden">
+          <label class="col-sm-4 control-label"></label>
+          <div class="col-sm-6">
+            <input type="email" class="form-control" placeholder="Email">
+          </div>
+        </div>
+
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" ng-click="saveBaseConfig()" data-dismiss="modal">Save changes</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 <!--
 
@@ -1095,11 +1141,11 @@ HISTORY PLAYBACK MODAL
                     <form class="form-horizontal" role="form">
                         <div id="kettleTempRadio"class="form-group">
                             <label class="control-label col-xs-2" for="email">Boil Temperature:</label>
-                               
+
                                     <div class="col-xs-10">
                                         <input type="radio" id="65" value="65" name="optradio">65</input>
                                     </div>
-                                        
+
                                     <div class="col-xs-10">
                                         <input type="radio" id="80" value="80" name="optradio">80</input>
                                     </div>
@@ -1107,12 +1153,12 @@ HISTORY PLAYBACK MODAL
                                     <div class="col-xs-10">
                                         <input type="radio" id="95" value="95" name="optradio">95</input>
                                     </div>
-                                    
+
                                     <div class="col-xs-10">
                                         <input type="radio" id="100" value="100" name="optradio">100</input>
                                     </div>
 
-                               
+
                             </div>
                         </div>
 
@@ -1211,13 +1257,13 @@ ZONE HISTORY MODAL
     </div>
   </div>
 
-        
-
-        
 
 
-        
-        
+
+
+
+
+
 
         <div google-chart chart="zoneData" class="history-chart"></div>
 
@@ -1227,5 +1273,6 @@ ZONE HISTORY MODAL
     <div class="modal-footer">
         <button class="btn btn-warning" type="button" ng-click="close()">Close</button>
     </div>
+
 
 </script>
