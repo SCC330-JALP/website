@@ -410,7 +410,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
                 if(zoneNumber==3)
                     return $rootScope.zone3temp;
             }
-            
+
         },
         zoneReference: function(){
             // if(zoneNumber==1)
@@ -868,6 +868,9 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
          * DESCRIPTION
          * @author Josh Stennett
          */
+          //TWITTER WIDGET
+    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+
     function createSensor(snapshot, pageElement){
 
       //all of this applies to both person sensors && non-person sensors
@@ -1371,22 +1374,22 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         doorOpen = snapshot.val().newVal;
 
         if(doorOpen == 1){
-          console.log("door is open");
+        //  console.log("door is open");
 
           $(element).find("#doorOpen").css('color','orange');
           $(element).find("#doorClosed").css('color','grey');
 
 
-          var doorAngleRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + spotAddress + "/doorAngle")
+        /*  var doorAngleRef = new Firebase("https://sunsspot.firebaseio.com/spotReadings/" + spotAddress + "/doorAngle")
           doorAngleRef.on("value", function(snapshot){
             console.log(snapshot.val());
           //  $("#door").css('transform', "rotate(" + snapshot.val() -170 + "deg)");
-          });
+        });*/
 
 
 
         }else{
-          console.log("door is closed");
+        //  console.log("door is closed");
           $(element).find("#doorOpen").css('color','grey');
           $(element).find("#doorClosed").css('color','green');
 
@@ -1451,11 +1454,86 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
     }
 
+
+//  notification implementation
+
+
+    faviconCounter = 0;
+    var notificationList = []
+    var favicon = new Favico({
+      animation:'none'
+    });
+    var windowFocus = true;
+
+    window.onfocus = function(){
+        windowFocus = true;
+        console.log("Window focussed")
+        faviconCounter = 0;
+        favicon.badge(0);
+
+
+      if(notificationList.length){
+
+        for(i=0;i<notificationList.length;i++){
+
+          toastr.info(notificationList[i]);
+
+        }
+
+      }
+
+      notificationList = [];
+
+    }
+
+    window.onblur = function(){
+      windowFocus = false;
+      console.log("window out of focus");
+    }
+
+    function handleNotification(message){
+
+      if(windowFocus){
+        //window focussed
+        console.log("notification displayed: " + message);
+        toastr.info(message);
+
+      }else{
+
+
+        //window not focussed
+        faviconCounter++;
+
+        notificationList.push(message);
+
+        console.log(notificationList);
+
+        favicon.badge(faviconCounter);
+
+      }
+    }
+
+
+    var notificationRef = new Firebase("https://sunsspot.firebaseio.com/notification");
+
+    notificationRef.limitToLast(1).on("child_added",function(snapshot){
+
+      message = snapshot.val().msg;
+
+      //console.log(message);
+
+      handleNotification(message);
+    });
+
+
+
+
     var settingsRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings");
     /**
      * DESCRIPTION
      * @author Josh Stennett
      */
+
     settingsRef.on("child_added", function(snapshot) { //listen for when a child is added : also triggers once for each child in database on page load.
           //console.log(snapshot.key());
 
@@ -2006,6 +2084,72 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
       }
     })
   }
+
+$scope.configureBases = function(){
+  console.log("config bases");
+    $("#baseForm").empty();
+  var basesRef = new Firebase("https://sunsspot.firebaseio.com/bases");
+
+  basesRef.once("value",function(snapshot){
+
+    var bases = snapshot.val();
+    //console.log(bases);
+    for (var address in bases){
+      //console.log(address);
+      //console.log(bases[address]);
+
+      var formEntry = $("#baseFormTemplate").clone()
+
+      $(formEntry).find("label")[0].innerHTML = address;
+      $(formEntry).find("input").val(bases[address]);
+
+      $("#baseForm").append(formEntry);
+
+      $(formEntry).removeClass('hidden');
+    }
+  })
+
+
+
+}
+
+$scope.saveBaseConfig = function(){
+  console.log("save bases");
+
+  var form = $("#baseForm");
+
+  $(form).find("label").each(function(){
+      address = $(this)[0].innerHTML;
+
+      zoneID = parseInt($(this).parents("div.form-group").find("input")[0].value)
+
+      console.log("Address: " +  address + " Zone: " + zoneID);
+
+      baseRef = new Firebase("https://sunsspot.firebaseio.com/bases");
+
+      var data = {}
+      data[address] = zoneID;
+
+      baseRef.update(data);
+
+  })
+
+
+/*
+  var updateRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings/"); //create reference
+
+  updateRef.child(address).set({
+      name: newName,
+      task: newTask,
+      zone: newZone,
+      alive: status,
+      battery: newBattery
+  }); //update the record with the new data
+*/
+
+
+}
+
 
 $scope.newAlarmSubmit = function(){
 
@@ -2619,26 +2763,26 @@ spotApp.controller('zoneHistoryCtrl', function ($rootScope, $firebaseObject, $fi
         if(type=='light'){
             for(var i=0;i<length;i++){
                 $scope.data.push({
-                    x: i, 
-                    val_0: $scope.data1[i].light, 
+                    x: i,
+                    val_0: $scope.data1[i].light,
                     val_1: $scope.data2[i].light
                 });
             }
         }else{
             for(var i=0;i<length;i++){
                 $scope.data.push({
-                    x: i, 
-                    val_0: ($scope.data1[i].temp).toFixed(2), 
+                    x: i,
+                    val_0: ($scope.data1[i].temp).toFixed(2),
                     val_1: ($scope.data2[i].temp).toFixed(2)
                 });
             }
         }
-        
+
 
     }
 
     $scope.loadData = function(floor, ceil){
-    
+
     $scope.slider = {
       startAt: floor,
       endAt: ceil,
@@ -2674,7 +2818,7 @@ spotApp.controller('zoneHistoryCtrl', function ($rootScope, $firebaseObject, $fi
                 console.log("STOPPING...");
                 $scope.stop();
             }
-                        
+
                     }, 500);
 
     }

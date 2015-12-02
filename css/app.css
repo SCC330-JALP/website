@@ -1,3 +1,5 @@
+
+
 #kettleIcon
 {
     transition: all;
@@ -44,7 +46,7 @@
     position: absolute;
     bottom: 0;
 
-    width: 34px;
+    width: 35px;
     height: 50px;
 
     transition: all .2s ease-out;
@@ -335,6 +337,7 @@ h3
 {
     border: 2px solid #00bfff;
 }
-.modal-lg{
+.modal-lg
+{
     width: 1500px !important;
 }
