@@ -2056,6 +2056,74 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
             tempScaleIndex ++;
         },2000);
     })
+    
+    /*
+        Kettle Add
+        @author Liam Cottier
+    */
+    $scope.newKettleSubmit = function(){
+
+      var modal = $("#newKettle");
+      //console.log(address);
+      var temp = modal.find("#newKettleTemp").find(":selected").val();
+
+      var hour = modal.find("#newKettleHour").val();
+      var minute = modal.find("#newKettleMinute").val();
+      var time = "" + hour + minute;
+
+      saveRef = new Firebase("https://sunsspot.firebaseio.com/kettle/timer/"+time);
+
+      saveRef.set(temp);
+
+
+    }
+    
+
+    /*
+        Kettle Fill
+        @author Liam Cottier
+    */
+    $(document).on('click', "#kettleAutomation", function(){
+
+        $("#kettleTable").empty();
+        modal = $("#listKettles");
+
+        kettleListRef = new Firebase("https://sunsspot.firebaseio.com/kettle/timer");
+           var dataTable = new google.visualization.DataTable();
+           dataTable.addColumn('string','Time');
+           dataTable.addColumn('string','Temperature');
+           dataTable.addColumn('string','Delete'); //button column
+
+        kettleListRef.on("child_added", function(snapshot){
+
+          time = snapshot.key();
+          temp = snapshot.val();
+
+        button = "<button id='deleteKettleTime' type='button' class='btn btn-danger' data-name='"+time+"' data-toggle='modal' data-target='#deleteKettleModal'')><span class='fa fa-trash-o'></span></button>";
+          dataTable.addRow([time,temp, {v:'Delete', f:button}]);
+          var table = new google.visualization.Table(document.getElementById('kettleTable'));
+
+          table.draw(dataTable, {allowHtml: true, width: '100%', height: '100%'});
+
+        });
+    });
+
+    
+    $(document).on('click', "#deleteKettleBtn", function(){
+        var time = $(this).data('name');
+        console.log(time);
+        var kettleRef = new Firebase("https://sunsspot.firebaseio.com/kettle/timer/"+time);
+
+        kettleRef.remove();
+
+    })
+
+    $(document).on('click', "#deleteKettleTime", function(){
+        var time = $(this).data('name');
+        $("#deleteKettleModal").find("#deleteKettleBtn").data('name', time);
+    })
+
+
 
     /*
         Kettle Boil Animation
