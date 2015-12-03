@@ -2112,43 +2112,72 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
       })
 
+      var boilLisRef = new Firebase("sunsspot.firebaseio.com/kettle/boil")
+
+      boilLisRef.on("value", function(snapshot){
+        boilAnimation(snapshot.val());
+      });
+
+
     /*
         Kettle Boil Animation
         @author Liam Cottier
     */
     var boilInterval;
     var coolInterval;
+    function boilAnimation(boiling){
+            if(boiling == true){
+                clearInterval(boilInterval);
+                clearInterval(coolInterval);
+
+                var element = $("#kettleCard");
+                var startTime = Date.now();
+                var currentTime;
+                var tempoutput = $(element).find("#kettleIcon")[0];
+                var tempScale = ["#00FF00","#44FF00","#99FF00","#DDFF00","#FFEE00","#FFBB00","#FF8800","#FF5500","#FF2200","#FF0000"];
+                var tempScaleIndex = 0;
+
+                boilInterval = setInterval(function(){
+                    if(tempScaleIndex >= 9){
+                        clearInterval(boilInterval);
+                        coolInterval = setInterval(function(){
+                            if(tempScaleIndex <= 0){
+                                clearInterval(coolInterval); 
+                                $(tempoutput).animate({color: "#000000"},1000);
+                                
+                                var kettleRef = new Firebase("https://sunsspot.firebaseio.com/kettle");
+
+                                kettleRef.update({boil: false});
+                            }
+                            $(tempoutput).animate({color: tempScale[tempScaleIndex]},1000);
+                            tempScaleIndex --;
+                        },1000);
+                    }
+                    $(tempoutput).animate({color: tempScale[tempScaleIndex]},2000);
+                    tempScaleIndex ++;
+                },2000);
+            }
+            else if(boiling == false){
+                clearInterval(boilInterval);
+                clearInterval(coolInterval);
+                var element = $("#kettleCard");
+
+                var tempoutput = $(element).find("#kettleIcon")[0];
+                $(tempoutput).animate({color: "#000000"},1000);
+            }
+    }
+    
     $(document).on('click', "#boilKettleBtn", function(){
-
-        clearInterval(boilInterval);
-        clearInterval(coolInterval);
-
-        var element = $("#kettleCard");
-        var startTime = Date.now();
-        var currentTime;
-        var tempoutput = $(element).find("#kettleIcon")[0];
-        var tempScale = ["#00FF00","#44FF00","#99FF00","#DDFF00","#FFEE00","#FFBB00","#FF8800","#FF5500","#FF2200","#FF0000"];
-        var tempScaleIndex = 0;
+        var kettleRef = new Firebase("https://sunsspot.firebaseio.com/kettle");
         var temp = parseInt($("input[name=kettleTemperature]:checked")[0].value);
 
+        kettleRef.update({boil: true, temperature: temp});
+    })
+
+    $(document).on('click', "#kettleOffBtn", function(){
         var kettleRef = new Firebase("https://sunsspot.firebaseio.com/kettle");
 
-        kettleRef.update({boil: true, temperature: temp});
-
-        boilInterval = setInterval(function(){
-            if(tempScaleIndex >= 9){
-                clearInterval(boilInterval);
-                coolInterval = setInterval(function(){
-                    if(tempScaleIndex <= 0){clearInterval(coolInterval); $(tempoutput).animate({color: "#000000"},1000);}
-                    console.log(tempScaleIndex);
-                    $(tempoutput).animate({color: tempScale[tempScaleIndex]},1000);
-                    tempScaleIndex --;
-                },1000);
-            }
-            console.log(tempScaleIndex);
-            $(tempoutput).animate({color: tempScale[tempScaleIndex]},2000);
-            tempScaleIndex ++;
-        },2000);
+        kettleRef.update({boil: false});
     })
 
     /*
@@ -2174,7 +2203,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
 
     /*
-        Kettle Fill
+        Kettle Table Fill
         @author Liam Cottier
     */
     $(document).on('click', "#kettleAutomation", function(){
@@ -2215,25 +2244,6 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
     $(document).on('click', "#deleteKettleTime", function(){
         var time = $(this).data('name');
         $("#deleteKettleModal").find("#deleteKettleBtn").data('name', time);
-    })
-
-
-
-    /*
-        Kettle Boil Animation
-        @author Liam Cottier
-    */
-    $(document).on('click', "#kettleOffBtn", function(){
-        clearInterval(boilInterval);
-        clearInterval(coolInterval);
-        var element = $("#kettleCard");
-
-        var kettleRef = new Firebase("https://sunsspot.firebaseio.com/kettle");
-
-        kettleRef.update({boil: false});
-
-        var tempoutput = $(element).find("#kettleIcon")[0];
-        $(tempoutput).animate({color: "#000000"},1000);
     })
 
     /**
