@@ -708,6 +708,18 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
    */
   $scope.init = function() {
 
+
+    $("#colourSlider").slider({
+      min: -128,
+      max: 127
+    })
+
+    $("#brightnessSlider").slider({
+      min: 0,
+      max: 59
+    })
+
+
     //Bind graphs to zone(zoneNumber)light/temp.
      // $scope.setHistoryChart(i, 'light', 'zone1light');
 
@@ -1674,6 +1686,72 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
      * DESCRIPTION
      * @author Josh Stennett
      */
+  lightref = new Firebase("https://sunsspot.firebaseio.com/lamps")
+     $(document).on("click", "#lightSwitch", function(){
+
+       $(this).toggleClass('on');
+
+
+
+       if($(this).hasClass('on')){
+          //has just been turned on
+
+          lightref.update({
+            task : "off"
+          })
+
+       }else{//has just been turned off
+
+
+         lightref.update({
+           task : "on"
+         })
+       }
+
+
+     })
+
+     $("#colourSlider").on("slide", function(event, ui){
+       //console.log(ui.value);
+
+
+       lightref.update({
+         task: "colour",
+         value: ui.value
+       })
+     })
+
+     $("#brightnessSlider").on("slide", function(event, ui){
+       console.log(ui.value);
+
+
+       lightref.update({
+         task: "brightness",
+         value: ui.value
+       })
+     })
+
+     $("#brightnessSlider").on("slidechange", function(event, ui){
+       console.log(ui.value);
+
+
+       lightref.update({
+         task: "brightness",
+         value: ui.value
+       })
+     })
+
+     $(document).on("click", "#setLightToWhite", function(){
+       lightref.update({
+         task: "white"
+       })
+
+
+       $("#brightnessSlider").slider("value",59)
+
+     })
+
+
     $(document).on("click", "#editSensorBtn", function() { //when you open the Edit modal
         var name = $(this).data('name'); //populate variables from data-attributes
         var task = $(this).data('task');
@@ -2228,6 +2306,7 @@ $scope.deleteAlarm = function(){
   $scope.deleteSubmit = function() {
     //console.log("in func");
       var address = document.getElementById('deleteSpotAddress').innerHTML; //read in the address
+
       console.log("Deleting " + address); //log the delete address just in case
 
       var delRef = new Firebase("https://sunsspot.firebaseio.com/spotSettings/" + address); //programatically generate the reference url
@@ -2238,6 +2317,8 @@ $scope.deleteAlarm = function(){
       delMapRef.remove() //delete the spot from the map, as well.
       $("#" + address.replace(/ /g, "_")).remove(); //remove th element from the DOM
       $('.modal').modal('hide');
+
+      pushNotification("Spot successfully deleted.");
   };
 
   /**
