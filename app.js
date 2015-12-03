@@ -716,7 +716,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
     $("#brightnessSlider").slider({
       min: 0,
-      max: 59
+      max: 27
     })
 
 
@@ -1747,7 +1747,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
        })
 
 
-       $("#brightnessSlider").slider("value",59)
+       $("#brightnessSlider").slider("value",27)
 
      })
 
