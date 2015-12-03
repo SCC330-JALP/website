@@ -1200,25 +1200,80 @@ HISTORY PLAYBACK MODAL
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Modal title</h4>
+        <h4 class="modal-title">Automatic Boil Settings</h4>
       </div>
       <div class="modal-body">
 
             <!-- FORM GOES HERE -->
-
-
-
-
-
+            <div class="form-horizontal" role="form">
+                <div id="kettleTable"><div>
+            </div>
 
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button id="newKettleBtn" type="button" class="btn btn-primary" data-toggle="modal" data-target="#newKettle" data-address="" ><span class="fa fa-plus"></span> New</button>
         <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+</div>
+</div>
+
+<!--
+  New Kettle Modal
+-->
+<div id="newKettle" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">New Automatic Boil</h4>
+
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form">
+            <div class="form-group">
+
+                <label class="control-label col-sm-2" for="email">Hour:</label>
+                <div class="col-sm-10">
+                    <input type="name" class="form-control" id="newKettleHour" placeholder="Enter Hour 0 - 24" value=>
+                </div>
+
+            </div>
+
+            <div class="form-group">
+
+                <label class="control-label col-sm-2" for="email">Minute:</label>
+                <div class="col-sm-10">
+                    <input type="name" class="form-control" id="newKettleMinute" placeholder="Enter Minute 0 - 60" value=>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="email">Temperature:</label>
+                <div class="col-sm-10">
+                  <select id="newKettleTemp">
+                    <option value="65">65</option>
+                    <option value="80">80</option>
+                    <option value="95">95</option>
+                    <option value="100">100</option>
+                  </select>
+                </div>
+            </div>
+
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="newKettleSubmit()">Save changes</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 
 
 <!--
@@ -1255,7 +1310,7 @@ HISTORY PLAYBACK MODAL
 
 
                                       <div class="col-xs-6 col-xs-offset-4">
-                                        <input type="radio" id="100" value="100" name="kettleTemperature">100</input>
+                                        <input type="radio" id="100" value="100" checked="checked" name="kettleTemperature">100</input>
                                       </div>
 
 
@@ -1287,6 +1342,39 @@ HISTORY PLAYBACK MODAL
     <!-- /.modal-dialog -->
 </div>
 <!-- /#wrapper -->
+
+
+<!--
+
+DELETE KETTLE MODAL
+
+ -->
+<!-- Modal boilerplate code: will get customised when it is loaded.  -->
+<div class="modal fade" id="deleteKettleModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Delete <span id="myModalLabel">Automation</span> </h4>
+            </div>
+            <div class="modal-body">
+                Are you sure that you want to delete this sensor? All data it has collected will also be deleted.
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"> Cancel </button>
+                <button id="deleteKettleBtn" class="btn btn-danger" data-dismiss="modal"> Yes, delete this kettle. </button>
+
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+
+
 
 
 <!--
