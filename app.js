@@ -719,6 +719,11 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
       max: 27
     })
 
+    $("#kettleAutoTemp").slider({
+      min: 18,
+      max: 25
+    })
+
 
     //Bind graphs to zone(zoneNumber)light/temp.
      // $scope.setHistoryChart(i, 'light', 'zone1light');
@@ -1686,6 +1691,17 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
      * DESCRIPTION
      * @author Josh Stennett
      */
+
+     var kettleAutoTempRef = new Firebase("https://sunsspot.firebaseio.com/kettle");
+     $("#kettleAutoTemp").on("slide", function(event, ui){
+       console.log(ui.value);
+       
+        kettleAutoTempRef.update({
+          autoTimer: ui.value
+        });
+
+     });
+
   lightref = new Firebase("https://sunsspot.firebaseio.com/lamps")
      $(document).on("click", "#lightSwitch", function(){
 
@@ -1718,8 +1734,8 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
        lightref.update({
          task: "colour",
          value: ui.value
-       })
-     })
+       });
+     });
 
      $("#brightnessSlider").on("slide", function(event, ui){
        console.log(ui.value);
@@ -2134,7 +2150,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
             tempScaleIndex ++;
         },2000);
     })
-    
+
     /*
         Kettle Add
         @author Liam Cottier
@@ -2155,7 +2171,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
 
 
     }
-    
+
 
     /*
         Kettle Fill
@@ -2186,7 +2202,7 @@ function($rootScope, $scope, $interval, $timeout, $firebaseObject, $parse, ngDia
         });
     });
 
-    
+
     $(document).on('click', "#deleteKettleBtn", function(){
         var time = $(this).data('name');
         console.log(time);
