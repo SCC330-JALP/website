@@ -351,3 +351,21 @@ h3
 {
     width: 1500px !important;
 }
+
+.colourSlider
+{
+    height: 20px;
+
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    background: linear-gradient(to right, yellow,orange,red,pink,purple,blue,cyan,turquoise,green,lime);
+}
+
+.brightnessSlider
+{
+    height: 20px;
+
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    background: linear-gradient(to right,black, white);
+}
